@@ -1,5 +1,6 @@
 import Head from "next/head";
 import { useState } from "react";
+import InputBox from './InputBox';
 import styles from "./index.module.css";
 
 export default function Home() {
@@ -52,6 +53,7 @@ export default function Home() {
           <input type="submit" value="Generate names" />
         </form>
         <div className={styles.result}>{result}</div>
+        <InputBox />
       </main>
     </div>
   );
