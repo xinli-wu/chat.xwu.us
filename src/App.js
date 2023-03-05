@@ -1,7 +1,6 @@
 import { useMediaQuery } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import TopBar from 'components/TopBar';
 import { ColorModeContext } from 'contexts/utilContext';
 import Home from 'pages/Home';
 import React from 'react';
@@ -39,7 +38,6 @@ function App() {
       <ThemeProvider theme={theme}>
         <ColorModeContext.Provider value={colorMode}>
           <CssBaseline />
-          <TopBar />
           <Routes>
             <Route path="/" element={<Home />} />
           </Routes>

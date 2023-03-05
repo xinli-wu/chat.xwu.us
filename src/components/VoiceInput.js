@@ -9,7 +9,8 @@ const hasGetUserMedia = () => {
 
 
 export default function VoiceInputIconBtn({ setQ, setInterimTranscript, voiceInput, setVoiceInput }) {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
+  // const recognition = new SpeechRecognition();
   let recognition = useMemo(() => new SpeechRecognition() || null, [SpeechRecognition]);
 
   if (!SpeechRecognition) console.log("Speech Recognition Not Available");
@@ -22,8 +23,10 @@ export default function VoiceInputIconBtn({ setQ, setInterimTranscript, voiceInp
     setVoiceInput(true);
   };
 
-  // recognition.onspeechstart = () => {
+  // recognition.onspeechstart = (e) => {
   //   console.log('onspeechstart');
+  //   console.log(e);
+
   // };
 
   // recognition.onspeechend = () => {
@@ -33,6 +36,25 @@ export default function VoiceInputIconBtn({ setQ, setInterimTranscript, voiceInp
 
   // recognition.onaudiostart = () => {
   //   console.log('onaudiostart');
+  //   console.log(recognition);
+
+  //   const audioCtx = new AudioContext();
+  //   const source = audioCtx.createMediaStreamSource(recognition.stream);
+  //   const analyser = audioCtx.createAnalyser();
+  //   source.connect(analyser);
+
+  //   const bufferLength = analyser.frequencyBinCount;
+  //   const dataArray = new Uint8Array(bufferLength);
+
+  //   const getVolume = () => {
+  //     requestAnimationFrame(getVolume);
+  //     analyser.getByteFrequencyData(dataArray);
+  //     const volume = dataArray.reduce((acc, val) => acc + val) / bufferLength;
+  //     console.log('Volume: ', volume);
+  //   };
+
+  //   getVolume();
+
   // };
 
   // recognition.onaudioend = () => {
@@ -45,8 +67,10 @@ export default function VoiceInputIconBtn({ setQ, setInterimTranscript, voiceInp
     setInterimTranscript('');
     // setFocus();
   };
-  // recognition.onsoundstart = () => {
+  // recognition.onsoundstart = (e) => {
   //   console.log('onsoundstart');
+  //   console.log(e);
+
   // };
   // recognition.onsoundend = () => {
   //   console.log('onsoundend');
@@ -85,7 +109,7 @@ export default function VoiceInputIconBtn({ setQ, setInterimTranscript, voiceInp
   }, [voiceInput, recognition]);
 
   return (
-    <IconButton aria-label="voice" size='small' onClick={toggleRecording}>
+    <IconButton aria-label="voice" size='small' onClick={toggleRecording} sx={{ alignSelf: 'flex-end', bottom: 5 }}>
       <MicIcon />
     </IconButton>
   );

@@ -1,6 +1,5 @@
 import { Box, Stack, Typography } from '@mui/material';
 import InputBox from 'components/InputBox';
-import LoadingProgress from 'components/LoadingProgress';
 import React, { useEffect, useRef } from 'react';
 import axios from 'axios';
 import dayjs from 'dayjs';
@@ -8,7 +7,8 @@ import { Paper } from '@mui/material';
 import { Snackbar } from '@mui/material';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { nord } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import TopBar from '../components/TopBar';
 // import { Avatar } from '@mui/material';
 
 export default function Home() {
@@ -38,13 +38,19 @@ export default function Home() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chats]);
 
-  // console.log(chats);
 
   return (
     <>
-      <LoadingProgress show={showLoading} />
-      <Stack sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', height: 'calc(100vh - 170px)', maxHeight: 'calc(100vh - 170px)', overflow: 'scroll' }}>
-        <Stack spacing={2} sx={{ width: '90%' }}>
+      <TopBar />
+      <Stack sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        height: 'calc(100vh - 170px)',
+        maxHeight: 'calc(100vh - 170px)',
+        overflow: 'scroll'
+      }}>
+        <Stack spacing={2} sx={{ width: '90%', maxWidth: 1280 }}>
           {chats.map((chat, index) => {
             const isAssistant = chat.message.role === 'assistant';
             console.log(chat.message.content);
@@ -52,24 +58,32 @@ export default function Home() {
               <Stack key={index} sx={{ width: '100%', alignItems: isAssistant ? 'start' : 'end' }}>
                 <Stack direction='row' spacing={1} sx={{ alignItems: 'end' }}>
                   {/* {isAI && <Avatar sx={{ bgcolor: 'rgb(46,149,118)' }}>AI</Avatar>} */}
-                  <Paper elevation={24} sx={{
+                  <Paper elevation={12} sx={{
                     p: 1,
                     borderRadius: 3,
-                    textAlign: isAssistant ? 'left' : 'right'
+                    textAlign: isAssistant ? 'left' : 'right',
+                    maxWidth: 1200
+                    // ...(isAssistant && { backgroundColor: 'rgb(46,149,118)' })
                   }}>
                     {isAssistant
                       ? <ReactMarkdown
                         components={{
                           code({ node, inline, className, children, ...props }) {
-                            const match = /language-(\w+)/.exec(className || '');
+                            console.log({ node, inline, className, children, ...props });
+                            const match = /language-(\w+)/.exec(className || '') || ['language-javascript', 'javascript'];
+                            console.log(match);
                             return !inline && match ? (
                               <SyntaxHighlighter
-                                children={String(children).replace(/\n$/, '')}
-                                style={nord}
-                                language={match[1] || 'bash'}
+                                showLineNumbers
+                                wrapLines
+                                wrapLongLines
+                                style={vscDarkPlus}
+                                language={match[1]}
                                 PreTag="div"
                                 {...props}
-                              />
+                              >
+                                {String(children).replace(/\n$/, '')}
+                              </SyntaxHighlighter>
                             ) : (
                               <code className={className} {...props}>
                                 {children}
@@ -93,19 +107,19 @@ export default function Home() {
           })}
         </Stack>
         <div ref={bottomRef} />
-        <Box sx={{ width: '90%', maxWidth: 768, position: 'absolute', bottom: 50 }}>
-          <InputBox onMessagesSubmit={onMessagesSubmit} />
-          <Typography variant='body2' sx={{ fontSize: '0.65rem', textAlign: 'right', color: 'grey' }}>Powered by gpt-3.5-turbo</Typography>
-          <Typography variant='body2' sx={{ fontSize: '0.65rem', textAlign: 'right', color: 'grey' }}>Voice Recognition is processed on device</Typography>
+        <Box sx={{ width: '90%', maxWidth: 1280, position: 'absolute', bottom: 50 }}>
+          <InputBox onMessagesSubmit={onMessagesSubmit} showLoading={showLoading} />
+          <Typography variant='body2' sx={{ fontSize: '0.65rem', textAlign: 'right', color: 'grey' }}>Powered by gpt-3.5-turbo.</Typography>
+          <Typography variant='body2' sx={{ fontSize: '0.65rem', textAlign: 'right', color: 'grey' }}>Your audio may be sent to a web service for recognition processing on certain browsers, such as Chrome.</Typography>
         </Box>
-        <Snackbar
-          open={noti.open}
-          autoHideDuration={6000}
-          // onClose={(event, reason) => }
-          message={noti.message}
-        // action={action}
-        />
       </Stack>
+      <Snackbar
+        open={noti.open}
+        autoHideDuration={6000}
+        // onClose={(event, reason) => }
+        message={noti.message}
+      // action={action}
+      />
     </>
   );
 }

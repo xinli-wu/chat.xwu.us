@@ -6,9 +6,10 @@ import InputBase from '@mui/material/InputBase';
 import dayjs from 'dayjs';
 import React, { useEffect, useRef, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
+import LoadingProgress from './LoadingProgress';
 import VoiceInput from './VoiceInput';
 
-export default function InputBox({ onMessagesSubmit }) {
+export default function InputBox({ onMessagesSubmit, showLoading }) {
   const theme = useTheme();
   const [q, setQ] = useState('');
   const [interimTranscript, setInterimTranscript] = useState('');
@@ -16,6 +17,7 @@ export default function InputBox({ onMessagesSubmit }) {
   const [suggestOpen, setSuggestOpen] = useState(false);
   const [voiceInput, setVoiceInput] = useState(false);
   const inputElement = useRef(null);
+  // let keyPressed = {};
 
   useEffect(() => {
     if (inputElement.current) {
@@ -28,13 +30,14 @@ export default function InputBox({ onMessagesSubmit }) {
   }, [suggestions]);
 
   const updateSuggestions = (q) => {
-    setSuggestions(prev => ([...prev.filter(x => x.q !== q), { q, t: dayjs().unix() }].sort((a, b) => b.t - a.t).slice(0, 5)));
+    setSuggestions(prev => ([...prev.filter(x => x.q !== q), { q, t: dayjs().unix() }].sort((a, b) => b.t - a.t).slice(0, 7)));
     onMessagesSubmit(q);
     setQ('');
   };
 
   const onQSubmit = (e) => {
     e.preventDefault();
+    // keyPressed = {};
     updateSuggestions(q);
     setSuggestOpen(false);
   };
@@ -64,25 +67,51 @@ export default function InputBox({ onMessagesSubmit }) {
     setSuggestions(prev => ([...prev.filter(x => x.q !== q)]));
   };
 
+  const BoldedText = ({ text, shouldBeBold }) => {
+    const textArray = text.split(shouldBeBold);
+    return (
+      <span>
+        {textArray.map((item, index) => (
+          <span key={index}>
+            {item}
+            {index !== textArray.length - 1 && (
+              <b><span
+                style={{
+                  backgroundColor: theme.palette.mode === 'light' ? 'rgb(150,200,100)' : 'rgb(46,149,118)',
+                  // ...(theme.palette.mode === 'light' && { color: 'white' }),
+                }}>
+                {shouldBeBold}
+              </span></b>
+            )}
+          </span>
+        ))}
+      </span>
+    );
+  };
+
+
+
   return (
-    <Paper elevation={24} component='form' onSubmit={onQSubmit}>
+    <Paper elevation={suggestOpen ? 24 : 6} component='form' onSubmit={onQSubmit}>
       {suggestions.length > 0 &&
         <Collapse in={suggestOpen} timeout={150}>
           <Stack sx={{ m: 0.25, textAlign: 'start' }}>
             <List>
               <TransitionGroup>
-                {suggestions?.map(({ q }) => (
-                  <Collapse key={q}>
-                    <Stack direction={'row'} >
-                      <ListItem button dense onMouseDown={(e) => onSuggestionClick(e, q)}>
-                        <ListItemText>{q}</ListItemText>
-                      </ListItem>
-                      <IconButton aria-label="delete" size='small' onMouseDown={(e) => onSuggestionDeleteClick(e, q)}>
-                        <ClearIcon />
-                      </IconButton>
-                    </Stack>
-                  </Collapse>
-                ))}
+                {suggestions?.filter(x => x.q.includes(q)).map(x => {
+                  return (
+                    <Collapse key={x.q} >
+                      <Stack direction={'row'} >
+                        <ListItem button dense onMouseDown={(e) => onSuggestionClick(e, x.q)}>
+                          <ListItemText><BoldedText text={x.q} shouldBeBold={q} /></ListItemText>
+                        </ListItem>
+                        <IconButton aria-label="delete" size='small' onMouseDown={(e) => onSuggestionDeleteClick(e, x.q)}>
+                          <ClearIcon />
+                        </IconButton>
+                      </Stack>
+                    </Collapse>
+                  );
+                })}
               </TransitionGroup>
             </List>
             <Divider />
@@ -90,14 +119,17 @@ export default function InputBox({ onMessagesSubmit }) {
         </Collapse>
       }
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <IconButton type="submit" sx={{ p: '10px' }} aria-label="search" disabled={q.length === 0}>
-          <SearchIcon />
-        </IconButton>
+        <VoiceInput setQ={setQ} setInterimTranscript={setInterimTranscript} voiceInput={voiceInput} setVoiceInput={setVoiceInput} />
+        <Box sx={{ width: 80, height: 24, bgcolor: 'red' }}>
+          <div></div>
+        </Box>
         <InputBase
           ref={inputElement}
           sx={{ ml: 1 }}
           disabled={voiceInput}
           fullWidth
+          multiline={false}
+          // maxRows={10}
           placeholder="Start typing..."
           inputProps={{ 'aria-label': 'start typing' }}
           value={voiceInput ? interimTranscript : q}
@@ -109,11 +141,24 @@ export default function InputBox({ onMessagesSubmit }) {
               style: { fontStyle: voiceInput ? 'italic' : 'normal', color: voiceInput ? theme.palette.grey[400] : theme.palette.text.primary },
             }
           }}
+        // onKeyDown={(e) => {
+        //   keyPressed[e.key] = true;
+        //   console.log(q.length, keyPressed);
+        //   if (keyPressed.Enter && !keyPressed.Control && !keyPressed.Alt && q.trim().length !== 0) onQSubmit(e);
+        // }}
+        // onKeyUp={() => keyPressed = {}}
         />
-        <VoiceInput setQ={setQ} setInterimTranscript={setInterimTranscript} voiceInput={voiceInput} setVoiceInput={setVoiceInput} />
+        <Box sx={{ alignSelf: 'flex-end', bottom: 5, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          {/* <Box sx={{ display: 'flex', position: 'absolute' }}>
+            <LoadingProgress variant='circular' show={showLoading} />
+          </Box> */}
+          <IconButton type="submit" sx={{ p: '10px' }} aria-label="search" disabled={q.trim().length === 0}>
+            {showLoading ?
+              <LoadingProgress variant='circular' show={showLoading} />
+              : <SearchIcon />}
+          </IconButton>
+        </Box>
       </Box>
-
     </Paper >
-
   );
 }
