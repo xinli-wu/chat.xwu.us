@@ -1,10 +1,7 @@
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, Paper, Snackbar, Stack, Typography } from '@mui/material';
 import InputBox from 'components/InputBox';
-import React, { useEffect, useRef } from 'react';
-import axios from 'axios';
 import dayjs from 'dayjs';
-import { Paper } from '@mui/material';
-import { Snackbar } from '@mui/material';
+import React, { useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
@@ -15,28 +12,71 @@ export default function Home() {
   document.title = 'chat';
   const { REACT_APP_CHAT_API_URL } = process.env;
   const bottomRef = useRef(null);
+  const lastMsgRef = useRef(null);
 
   const [showLoading, setShowLoading] = React.useState(false);
   const [chats, setChats] = React.useState([]);
   const [noti, setNoti] = React.useState({ open: false, message: '' });
+  const [lastMsgHeight, setLastMsgHeight] = React.useState();
 
   const onMessagesSubmit = async (newMsg) => {
-    setChats(prev => [...prev, { metadata: { ts: dayjs().format('h:mm a') }, message: { role: 'user', content: newMsg } }]);
+    const newChat = { metadata: { id: 'user' + chats.length, ts: dayjs().format('h:mm a') }, message: { role: 'user', content: newMsg } };
+    setChats(prev => [...prev, newChat]);
     setShowLoading(true);
-    const res = await axios.post(`${REACT_APP_CHAT_API_URL}/openai/chat/completion`, {
-      messages: [...chats.map(x => x.message), { role: 'user', content: newMsg }],
-    }).catch((err) => {
-      console.error(err);
-      setNoti({ open: true, message: err.response.data.error.message });
+
+    const raw = await fetch(`${REACT_APP_CHAT_API_URL}/openai/chat/completion`, {
+      method: 'POST', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: [...chats.map(x => x.message), newChat.message] })
     });
 
-    if (res) setChats(prev => [...prev, { metadata: { ts: dayjs().format('h:mm a') }, message: { ...res.data.message, content: res.data.message.content } }]); //.replace('\n\n', '')
+    if (!raw.ok) throw new Error(await raw.text());
+
+    const reader = raw.body.getReader();
+
+    let finalMsg = '';
+
+    const read = () => reader.read().then(({ done, value }) => {
+      if (done) return;
+      const decoder = new TextDecoder();
+      const line = decoder.decode(value).toString().split('\n').filter(line => line.trim() !== '');
+      line.forEach(l => {
+
+        const msg = l.replace(/^data: /, '');
+        if (msg !== '[DONE]' && JSON.parse(msg).choices[0].delta.content) {
+          const msgObj = JSON.parse(msg);
+
+          const { content } = msgObj.choices[0].delta;
+          const lastMsg = chats.find(x => x.metadata.id === msgObj.id);
+          finalMsg += content;
+          setChats(prev => [
+            ...prev.filter(x => x.metadata.id !== msgObj.id),
+            {
+              metadata: { id: msgObj.id, ts: dayjs().format('h:mm a') },
+              message: {
+                role: 'assistant',
+                content: finalMsg
+              }
+            }]
+          );
+
+          if (lastMsgRef.current) {
+            const boundingRect = lastMsgRef.current.getBoundingClientRect();
+            const { height } = boundingRect;
+            // console.log(height);
+            setLastMsgHeight(height);
+          }
+        }
+      });
+      read();
+    });
+    read();
+
     setShowLoading(false);
   };
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [chats]);
+  }, [lastMsgHeight]);
 
   return (
     <>
@@ -54,7 +94,7 @@ export default function Home() {
         <Stack spacing={2} sx={{ width: '90%', maxWidth: 1280 }}>
           {chats.map((chat, index) => {
             const isAssistant = chat.message.role === 'assistant';
-            console.log(chat.message.content);
+            // console.log(chat.message.content);
             return (
               <Stack key={index} sx={{ width: '100%', alignItems: isAssistant ? 'start' : 'end' }}>
                 <Stack direction='row' spacing={1} sx={{ alignItems: 'end' }}>
@@ -67,35 +107,35 @@ export default function Home() {
                     // ...(isAssistant && { backgroundColor: 'rgb(46,149,118)' })
                   }}>
                     {isAssistant
-                      ? <ReactMarkdown
-                        components={{
-                          code({ node, inline, className, children, ...props }) {
-                            console.log({ node, inline, className, children, ...props });
-                            const match = /language-(\w+)/.exec(className || '') || ['language-javascript', 'javascript'];
-                            console.log(match);
-                            return !inline && match ? (
-                              <SyntaxHighlighter
-                                showLineNumbers
-                                wrapLines
-                                wrapLongLines
-                                style={vscDarkPlus}
-                                language={match[1]}
-                                PreTag="div"
-                                {...props}
-                              >
-                                {String(children).replace(/\n$/, '')}
-                              </SyntaxHighlighter>
-                            ) : (
-                              <code className={className} {...props}>
-                                {children}
-                              </code>
-                            );
-                          }
-                        }}
-
-                      >
-                        {chat.message.content}
-                      </ReactMarkdown>
+                      ? <div ref={index === chats.length - 1 ? lastMsgRef : undefined}>
+                        <ReactMarkdown
+                          components={{
+                            code({ node, inline, className, children, ...props }) {
+                              // console.log({ node, inline, className, children, ...props });
+                              const match = /language-(\w+)/.exec(className || '') || ['language-javascript', 'javascript'];
+                              // console.log(match);
+                              return !inline && match ? (
+                                <SyntaxHighlighter
+                                  showLineNumbers
+                                  wrapLines
+                                  wrapLongLines
+                                  style={vscDarkPlus}
+                                  language={match[1]}
+                                  PreTag="div"
+                                  {...props}
+                                >
+                                  {String(children).replace(/\n$/, '')}
+                                </SyntaxHighlighter>
+                              ) : (
+                                <code className={className} {...props}>
+                                  {children}
+                                </code>
+                              );
+                            }
+                          }}
+                        >
+                          {chat.message.content}
+                        </ReactMarkdown></div>
                       // ? <pre style={{ whiteSpace: 'pre-wrap', margin: 0 }}>{chat.message.content}</pre>
                       : <Typography>{chat.message.content}</Typography>
                     }
@@ -103,6 +143,7 @@ export default function Home() {
                   {/* {!isAI && <Avatar />} */}
                 </Stack>
                 <Typography sx={{ fontSize: '0.6rem', textAlign: 'end', color: 'grey' }}>{chat.metadata.ts}</Typography>
+                {/* {index === chats.length - 1 && <Box sx={{ p: 2 }} ref={bottomRef} />} */}
               </Stack>
             );
           })}
