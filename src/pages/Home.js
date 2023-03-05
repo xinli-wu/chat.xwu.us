@@ -29,7 +29,10 @@ export default function Home() {
       body: JSON.stringify({ messages: [...chats.map(x => x.message), newChat.message] })
     });
 
-    if (!raw.ok) throw new Error(await raw.text());
+    if (!raw.ok) {
+      setNoti('API error');
+      throw new Error(await raw.text());
+    };
 
     const reader = raw.body.getReader();
 
@@ -46,7 +49,6 @@ export default function Home() {
           const msgObj = JSON.parse(msg);
 
           const { content } = msgObj.choices[0].delta;
-          const lastMsg = chats.find(x => x.metadata.id === msgObj.id);
           finalMsg += content;
           setChats(prev => [
             ...prev.filter(x => x.metadata.id !== msgObj.id),
@@ -62,7 +64,6 @@ export default function Home() {
           if (lastMsgRef.current) {
             const boundingRect = lastMsgRef.current.getBoundingClientRect();
             const { height } = boundingRect;
-            // console.log(height);
             setLastMsgHeight(height);
           }
         }
@@ -70,7 +71,6 @@ export default function Home() {
       read();
     });
     read();
-
     setShowLoading(false);
   };
 
