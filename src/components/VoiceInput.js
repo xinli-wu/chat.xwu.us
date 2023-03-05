@@ -129,6 +129,7 @@ export default function VoiceInputIconBtn({ setQ, setInterimTranscript, voiceInp
             <Siriwave
               width={70}
               height={30}
+              // eslint-disable-next-line
               style={'ios9'}
               amplitude={4}
             />
