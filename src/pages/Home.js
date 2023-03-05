@@ -38,16 +38,17 @@ export default function Home() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chats]);
 
-
   return (
     <>
       <TopBar />
       <Stack sx={{
+        pt: 2,
+        pb: 2,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        height: 'calc(100vh - 170px)',
-        maxHeight: 'calc(100vh - 170px)',
+        height: 'calc(100vh - 120px)',
+        // maxHeight: 'calc(100vh - 120px)',
         overflow: 'scroll'
       }}>
         <Stack spacing={2} sx={{ width: '90%', maxWidth: 1280 }}>
@@ -107,10 +108,10 @@ export default function Home() {
           })}
         </Stack>
         <div ref={bottomRef} />
-        <Box sx={{ width: '90%', maxWidth: 1280, position: 'absolute', bottom: 50 }}>
+        <Box sx={{ width: '90%', maxWidth: 1280, position: 'absolute', bottom: 20 }}>
           <InputBox onMessagesSubmit={onMessagesSubmit} showLoading={showLoading} />
-          <Typography variant='body2' sx={{ fontSize: '0.65rem', textAlign: 'right', color: 'grey' }}>Powered by gpt-3.5-turbo.</Typography>
-          <Typography variant='body2' sx={{ fontSize: '0.65rem', textAlign: 'right', color: 'grey' }}>Your audio may be sent to a web service for recognition processing on certain browsers, such as Chrome.</Typography>
+          <Typography variant='body2' sx={{ fontSize: '0.65rem', textAlign: 'right', color: 'grey' }}>Powered by gpt-3.5-turbo</Typography>
+          <Typography variant='body2' sx={{ fontSize: '0.65rem', textAlign: 'right', color: 'grey' }}>Your audio may be sent to a web service for recognition processing on certain browsers, such as Chrome</Typography>
         </Box>
       </Stack>
       <Snackbar

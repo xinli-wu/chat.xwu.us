@@ -1,6 +1,10 @@
 import MicIcon from '@mui/icons-material/Mic';
+import { Collapse } from '@mui/material';
 import { IconButton } from '@mui/material';
+import { Box } from '@mui/system';
 import React, { useEffect, useMemo } from 'react';
+import Siriwave from 'react-siriwave';
+import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
 
 const hasGetUserMedia = () => {
   return !!(navigator.mediaDevices.getUserMedia);
@@ -109,8 +113,29 @@ export default function VoiceInputIconBtn({ setQ, setInterimTranscript, voiceInp
   }, [voiceInput, recognition]);
 
   return (
-    <IconButton aria-label="voice" size='small' onClick={toggleRecording} sx={{ alignSelf: 'flex-end', bottom: 5 }}>
-      <MicIcon />
-    </IconButton>
+    <>
+      <IconButton aria-label="voice" size='small' onClick={toggleRecording} sx={{ alignSelf: 'flex-end', bottom: 5, ml: .5, mr: .5 }}>
+        {voiceInput
+          ? <RecordVoiceOverIcon htmlColor='rgb(46,149,118)' />
+          : <MicIcon />
+        }
+      </IconButton>
+      <Collapse orientation="horizontal" in={voiceInput}>
+        <Box sx={{
+          width: 70, height: 30,
+          visibility: voiceInput ? 'unset' : 'hidden'
+        }}>
+          <Box sx={{ position: 'absolute', left: 35, top: 10 }}>
+            <Siriwave
+              width={70}
+              height={30}
+              style={'ios9'}
+              amplitude={4}
+            />
+          </Box>
+        </Box>
+      </Collapse>
+
+    </>
   );
 };

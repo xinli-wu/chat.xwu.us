@@ -10,7 +10,7 @@ export default function LoadingProgress({ show, variant = 'linear' }) {
           {show && <LinearProgress />}
         </Box>
       )}
-      {variant === 'circular' && show && <CircularProgress size={30} />}
+      {variant === 'circular' && show && <CircularProgress size={24} />}
     </>
   );
 }

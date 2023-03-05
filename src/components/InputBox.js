@@ -120,17 +120,24 @@ export default function InputBox({ onMessagesSubmit, showLoading }) {
       }
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <VoiceInput setQ={setQ} setInterimTranscript={setInterimTranscript} voiceInput={voiceInput} setVoiceInput={setVoiceInput} />
-        <Box sx={{ width: 80, height: 24, bgcolor: 'red' }}>
-          <div></div>
-        </Box>
+        {/* <Box sx={{ width: 80, height: 30, }}>
+          <Box sx={{ position: 'absolute', left: 30, top: 10 }}>
+            <Siriwave
+              width={80}
+              height={30}
+              style={'ios9'}
+              amplitude={5}
+            />
+          </Box>
+        </Box> */}
         <InputBase
           ref={inputElement}
-          sx={{ ml: 1 }}
+          // sx={{ ml: 1 }}
           disabled={voiceInput}
           fullWidth
           multiline={false}
           // maxRows={10}
-          placeholder="Start typing..."
+          placeholder={`Start ${voiceInput ? 'speaking' : 'typing'}...`}
           inputProps={{ 'aria-label': 'start typing' }}
           value={voiceInput ? interimTranscript : q}
           onChange={onInputChange}
