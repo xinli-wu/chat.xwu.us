@@ -45,6 +45,7 @@ export default function InputBox({ onMessagesSubmit, showLoading }) {
   const onInputChange = (e) => {
     e.preventDefault();
     setQ(e.target.value);
+    if (e.target.value) setSuggestOpen(true);
   };
 
   const onSuggestionClick = (e, q) => {
