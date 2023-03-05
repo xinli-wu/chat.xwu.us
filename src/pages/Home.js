@@ -16,7 +16,7 @@ export default function Home() {
 
   const [showLoading, setShowLoading] = React.useState(false);
   const [chats, setChats] = React.useState([]);
-  const [noti, setNoti] = React.useState({ open: false, message: '' });
+  const [noti, setNoti] = React.useState('');
   const [lastMsgHeight, setLastMsgHeight] = React.useState();
 
   const onMessagesSubmit = async (newMsg) => {
@@ -34,6 +34,7 @@ export default function Home() {
       throw new Error(await raw.text());
     };
 
+    setNoti('');
     const reader = raw.body.getReader();
 
     let finalMsg = '';
@@ -156,7 +157,7 @@ export default function Home() {
         </Box>
       </Stack>
       <Snackbar
-        open={noti.open}
+        open={noti !== ''}
         autoHideDuration={6000}
         // onClose={(event, reason) => }
         message={noti.message}
