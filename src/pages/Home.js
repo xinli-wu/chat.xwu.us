@@ -1,5 +1,4 @@
-import { Alert, Button } from '@mui/material';
-import { Box, Paper, Snackbar, Stack, Typography } from '@mui/material';
+import { Alert, Box, Paper, Snackbar, Stack, Typography } from '@mui/material';
 import InputBox from 'components/InputBox';
 import dayjs from 'dayjs';
 import React, { useEffect, useRef } from 'react';
@@ -7,6 +6,7 @@ import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import TopBar from '../components/TopBar';
+import './Home.css';
 // import { Avatar } from '@mui/material';
 
 export default function Home() {
@@ -89,7 +89,7 @@ export default function Home() {
   return (
     <>
       <TopBar />
-      <Stack sx={{
+      <Stack className='no-scrollbar' sx={{
         pt: 2,
         pb: 2,
         display: 'flex',
@@ -97,7 +97,7 @@ export default function Home() {
         alignItems: 'center',
         height: 'calc(100vh - 120px)',
         // maxHeight: 'calc(100vh - 120px)',
-        overflow: 'scroll'
+        overflowY: 'scroll'
       }}>
         <Stack spacing={2} sx={{ width: '90%', maxWidth: 1280 }}>
           {chats.map((chat, index) => {
