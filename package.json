@@ -19,6 +19,7 @@
     "dotenv": "^16.0.3",
     "html-entities": "^2.3.3",
     "react": "^18.2.0",
+    "react-device-detect": "^2.2.3",
     "react-dom": "^18.2.0",
     "react-markdown": "^8.0.5",
     "react-player": "^2.11.2",

@@ -5,7 +5,7 @@ import { Box } from '@mui/system';
 import React, { useEffect, useMemo } from 'react';
 import Siriwave from 'react-siriwave';
 import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
-
+import { isMobile } from 'react-device-detect';
 const hasGetUserMedia = () => {
   return !!(navigator.mediaDevices.getUserMedia);
 };
@@ -106,8 +106,6 @@ export default function VoiceInputIconBtn({ setQ, setInterimTranscript, voiceInp
     }
   };
 
-
-
   useEffect(() => {
     if (!voiceInput) recognition.stop();
   }, [voiceInput, recognition]);
@@ -122,21 +120,22 @@ export default function VoiceInputIconBtn({ setQ, setInterimTranscript, voiceInp
       </IconButton>
       <Collapse orientation="horizontal" in={voiceInput}>
         <Box sx={{
-          width: 70, height: 30,
-          visibility: voiceInput ? 'unset' : 'hidden'
+          width: 70,
+          height: 30,
+          ...(isMobile && { paddingRight: 10 }),
+          visibility: voiceInput ? 'unset' : 'hidden',
         }}>
-          <Box sx={{ position: 'absolute', left: 35, top: 10 }}>
-            <Siriwave
+          <Box sx={{ position: 'absolute', left: 30, top: 9 }}>
+            {voiceInput && <Siriwave
               width={70}
               height={30}
               // eslint-disable-next-line
               style={'ios9'}
               amplitude={4}
-            />
+            />}
           </Box>
         </Box>
       </Collapse>
-
     </>
   );
 };

@@ -1,3 +1,4 @@
+import { Alert, Button } from '@mui/material';
 import { Box, Paper, Snackbar, Stack, Typography } from '@mui/material';
 import InputBox from 'components/InputBox';
 import dayjs from 'dayjs';
@@ -16,7 +17,7 @@ export default function Home() {
 
   const [showLoading, setShowLoading] = React.useState(false);
   const [chats, setChats] = React.useState([]);
-  const [noti, setNoti] = React.useState('');
+  const [noti, setNoti] = React.useState(null);
   const [lastMsgHeight, setLastMsgHeight] = React.useState();
 
   const onMessagesSubmit = async (newMsg) => {
@@ -24,60 +25,66 @@ export default function Home() {
     setChats(prev => [...prev, newChat]);
     setShowLoading(true);
 
-    const raw = await fetch(`${REACT_APP_CHAT_API_URL}/openai/chat/completion`, {
-      method: 'POST', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: [...chats.map(x => x.message), newChat.message] })
-    });
+    try {
+      const raw = await fetch(`${REACT_APP_CHAT_API_URL}/openai/chat/completion`, {
+        method: 'POST',
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: [...chats.map(x => x.message), newChat.message] })
+      });
 
-    if (!raw.ok) {
-      setNoti('API error');
-      throw new Error(await raw.text());
-    };
+      if (!raw.ok) {
+        console.log(await raw.text());
+        throw new Error(await raw.text() || '');
+      };
 
-    setNoti('');
-    const reader = raw.body.getReader();
+      const reader = raw.body.getReader();
 
-    let finalMsg = '';
+      let finalMsg = '';
+      const read = () => reader.read().then(({ done, value }) => {
+        if (done) return;
+        const decoder = new TextDecoder();
+        const lines = decoder.decode(value).toString().split('\n').filter(line => line.trim() !== '');
+        lines.forEach(l => {
 
-    const read = () => reader.read().then(({ done, value }) => {
-      if (done) return;
-      const decoder = new TextDecoder();
-      const line = decoder.decode(value).toString().split('\n').filter(line => line.trim() !== '');
-      line.forEach(l => {
+          const msg = l.replace(/^data: /, '');
+          if (msg !== '[DONE]' && JSON.parse(msg).choices[0].delta.content) {
+            const msgObj = JSON.parse(msg);
 
-        const msg = l.replace(/^data: /, '');
-        if (msg !== '[DONE]' && JSON.parse(msg).choices[0].delta.content) {
-          const msgObj = JSON.parse(msg);
+            const { content } = msgObj.choices[0].delta;
+            finalMsg += content;
+            setChats(prev => [
+              ...prev.filter(x => x.metadata.id !== msgObj.id),
+              {
+                metadata: { id: msgObj.id, ts: dayjs().format('h:mm a') },
+                message: {
+                  role: 'assistant',
+                  content: finalMsg
+                }
+              }]
+            );
 
-          const { content } = msgObj.choices[0].delta;
-          finalMsg += content;
-          setChats(prev => [
-            ...prev.filter(x => x.metadata.id !== msgObj.id),
-            {
-              metadata: { id: msgObj.id, ts: dayjs().format('h:mm a') },
-              message: {
-                role: 'assistant',
-                content: finalMsg
-              }
-            }]
-          );
-
-          if (lastMsgRef.current) {
-            const boundingRect = lastMsgRef.current.getBoundingClientRect();
-            const { height } = boundingRect;
-            setLastMsgHeight(height);
+            if (lastMsgRef.current) {
+              const boundingRect = lastMsgRef.current.getBoundingClientRect();
+              const { height } = boundingRect;
+              setLastMsgHeight(height);
+            }
           }
-        }
+        });
+        read();
       });
       read();
-    });
-    read();
-    setShowLoading(false);
+    } catch (error) {
+      console.log(error.message);
+      setNoti(`API error: ${error.message}`);
+    } finally {
+      setShowLoading(false);
+    }
+
   };
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [lastMsgHeight]);
+  }, [chats.length, lastMsgHeight]);
 
   return (
     <>
@@ -104,36 +111,39 @@ export default function Home() {
                     p: 1,
                     borderRadius: 3,
                     textAlign: isAssistant ? 'left' : 'right',
-                    maxWidth: 1200
+                    maxWidth: 1200,
+                    // backgroundColor: 'rgb(52,52,52)'
                     // ...(isAssistant && { backgroundColor: 'rgb(46,149,118)' })
                   }}>
                     {isAssistant
                       ? <div ref={index === chats.length - 1 ? lastMsgRef : undefined}>
                         <ReactMarkdown
-                          components={{
-                            code({ node, inline, className, children, ...props }) {
-                              // console.log({ node, inline, className, children, ...props });
-                              const match = /language-(\w+)/.exec(className || '') || ['language-javascript', 'javascript'];
-                              // console.log(match);
-                              return !inline && match ? (
-                                <SyntaxHighlighter
-                                  showLineNumbers
-                                  wrapLines
-                                  wrapLongLines
-                                  style={vscDarkPlus}
-                                  language={match[1]}
-                                  PreTag="div"
-                                  {...props}
-                                >
-                                  {String(children).replace(/\n$/, '')}
-                                </SyntaxHighlighter>
-                              ) : (
-                                <code className={className} {...props}>
-                                  {children}
-                                </code>
-                              );
+                          components={(
+                            {
+                              code({ node, inline, className, children, ...props }) {
+                                const match = /language-(\w+)/.exec(className || '') || ['language-javascript', 'javascript'];
+                                return !inline && match ? (
+                                  <Stack>
+                                    <SyntaxHighlighter
+                                      showLineNumbers
+                                      wrapLines
+                                      wrapLongLines
+                                      style={vscDarkPlus}
+                                      language={match[1]}
+                                      PreTag="div"
+                                      {...props}
+                                    >
+                                      {String(children).replace(/\n$/, '')}
+                                    </SyntaxHighlighter>
+                                  </Stack>
+                                ) : (
+                                  <code className={className} {...props}>
+                                    {children}
+                                  </code>
+                                );
+                              }
                             }
-                          }}
+                          )}
                         >
                           {chat.message.content}
                         </ReactMarkdown></div>
@@ -157,12 +167,14 @@ export default function Home() {
         </Box>
       </Stack>
       <Snackbar
-        open={noti !== ''}
-        autoHideDuration={6000}
-        // onClose={(event, reason) => }
-        message={noti.message}
-      // action={action}
-      />
+        open={noti}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        autoHideDuration={3000}
+        onClose={() => setNoti(undefined)}
+      // message={noti}
+      >
+        <Alert severity='error' sx={{ width: '100%' }}>{noti}</Alert>
+      </Snackbar>
     </>
   );
 }
