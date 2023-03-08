@@ -8,6 +8,7 @@ import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import TopBar from '../components/TopBar';
 import './Home.css';
 // import { Avatar } from '@mui/material';
+import { isMobile } from 'react-device-detect';
 
 export default function Home() {
   document.title = 'chat';
@@ -88,84 +89,94 @@ export default function Home() {
 
   return (
     <>
-      <TopBar />
-      <Stack className='no-scrollbar' sx={{
-        pt: 2,
-        pb: 2,
+      <Box sx={{
+        zIndex: -10,
+        width: '100%',
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
-        height: 'calc(100vh - 120px)',
-        // maxHeight: 'calc(100vh - 120px)',
-        overflowY: 'scroll'
+        justifyContent: 'center',
       }}>
-        <Stack spacing={2} sx={{ width: '90%', maxWidth: 1280 }}>
-          {chats.map((chat, index) => {
-            const isAssistant = chat.message.role === 'assistant';
-            // console.log(chat.message.content);
-            return (
-              <Stack key={index} sx={{ width: '100%', alignItems: isAssistant ? 'start' : 'end' }}>
-                <Stack direction='row' spacing={1} sx={{ alignItems: 'end' }}>
-                  {/* {isAI && <Avatar sx={{ bgcolor: 'rgb(46,149,118)' }}>AI</Avatar>} */}
-                  <Paper elevation={12} sx={{
-                    p: 1,
-                    borderRadius: 3,
-                    textAlign: isAssistant ? 'left' : 'right',
-                    maxWidth: 1200,
-                    // backgroundColor: 'rgb(52,52,52)'
-                    // ...(isAssistant && { backgroundColor: 'rgb(46,149,118)' })
-                  }}>
-                    {isAssistant
-                      ? <div ref={index === chats.length - 1 ? lastMsgRef : undefined}>
-                        <ReactMarkdown
-                          components={(
-                            {
-                              code({ node, inline, className, children, ...props }) {
-                                const match = /language-(\w+)/.exec(className || '') || ['language-javascript', 'javascript'];
-                                return !inline && match ? (
-                                  <Stack>
-                                    <SyntaxHighlighter
-                                      showLineNumbers
-                                      wrapLines
-                                      wrapLongLines
-                                      style={vscDarkPlus}
-                                      language={match[1]}
-                                      PreTag="div"
-                                      {...props}
-                                    >
-                                      {String(children).replace(/\n$/, '')}
-                                    </SyntaxHighlighter>
-                                  </Stack>
-                                ) : (
-                                  <code className={className} {...props}>
-                                    {children}
-                                  </code>
-                                );
+        <TopBar />
+        <Stack className='no-scrollbar' sx={{
+          pt: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          width: '100%',
+          height: 'calc(100vh - 110px)',
+          overflowY: 'scroll',
+        }}>
+          <Stack spacing={2} sx={{ width: '90%', maxWidth: 1280 }}>
+            {chats.map((chat, index) => {
+              const isAssistant = chat.message.role === 'assistant';
+              return (
+                <Stack key={index} sx={{ width: '100%', alignItems: isAssistant ? 'start' : 'end' }}>
+                  <Stack direction='row' spacing={1} sx={{ alignItems: 'end' }}>
+                    {/* {isAI && <Avatar sx={{ bgcolor: 'rgb(46,149,118)' }}>AI</Avatar>} */}
+                    <Paper elevation={12} sx={{
+                      p: 1,
+                      borderRadius: 3,
+                      textAlign: isAssistant ? 'left' : 'right',
+                      maxWidth: 1200,
+                      overflowX: 'scroll'
+                      // backgroundColor: 'rgb(52,52,52)'
+                      // ...(isAssistant && { backgroundColor: 'rgb(46,149,118)' })
+                    }}>
+                      {isAssistant
+                        ? <div ref={index === chats.length - 1 ? lastMsgRef : undefined}>
+                          <ReactMarkdown
+                            components={(
+                              {
+                                code({ node, inline, className, children, ...props }) {
+                                  const match = /language-(\w+)/.exec(className || '') || ['language-javascript', 'javascript'];
+                                  return !inline && match ? (
+                                    <Stack>
+                                      <SyntaxHighlighter
+                                        showLineNumbers
+                                        wrapLines
+                                        wrapLongLines
+                                        style={vscDarkPlus}
+                                        language={match[1]}
+                                        PreTag="div"
+                                        {...props}
+                                      >
+                                        {String(children).replace(/\n$/, '')}
+                                      </SyntaxHighlighter>
+                                    </Stack>
+                                  ) : (
+                                    <code className={className} {...props}>
+                                      {children}
+                                    </code>
+                                  );
+                                }
                               }
-                            }
-                          )}
-                        >
-                          {chat.message.content}
-                        </ReactMarkdown></div>
-                      // ? <pre style={{ whiteSpace: 'pre-wrap', margin: 0 }}>{chat.message.content}</pre>
-                      : <Typography>{chat.message.content}</Typography>
-                    }
-                  </Paper>
-                  {/* {!isAI && <Avatar />} */}
+                            )}
+                          >
+                            {chat.message.content}
+                          </ReactMarkdown></div>
+                        // ? <pre style={{ whiteSpace: 'pre-wrap', margin: 0 }}>{chat.message.content}</pre>
+                        : <Typography>{chat.message.content}</Typography>
+                      }
+                    </Paper>
+                    {/* {!isAI && <Avatar />} */}
+                  </Stack>
+                  <Typography sx={{ fontSize: '0.6rem', textAlign: 'end', color: 'grey' }}>{chat.metadata.ts}</Typography>
+                  {/* {index === chats.length - 1 && <Box sx={{ p: 2 }} ref={bottomRef} />} */}
                 </Stack>
-                <Typography sx={{ fontSize: '0.6rem', textAlign: 'end', color: 'grey' }}>{chat.metadata.ts}</Typography>
-                {/* {index === chats.length - 1 && <Box sx={{ p: 2 }} ref={bottomRef} />} */}
-              </Stack>
-            );
-          })}
+              );
+            })}
+          </Stack>
+          <div ref={bottomRef} />
+          <Stack spacing={1} sx={{ width: '90%', maxWidth: 1280, position: 'absolute', bottom: isMobile ? 10 : 20 }}>
+            <InputBox onMessagesSubmit={onMessagesSubmit} showLoading={showLoading} />
+            <Stack spacing={0}>
+              <Typography variant='body2' sx={{ fontSize: '0.65rem', textAlign: 'right', color: 'grey' }}>Powered by gpt-3.5-turbo</Typography>
+              <Typography variant='body2' sx={{ fontSize: '0.65rem', textAlign: 'right', color: 'grey' }}>Your audio may be sent to a web service for recognition processing on certain browsers, such as Chrome</Typography>
+            </Stack>
+          </Stack>
         </Stack>
-        <div ref={bottomRef} />
-        <Box sx={{ width: '90%', maxWidth: 1280, position: 'absolute', bottom: 20 }}>
-          <InputBox onMessagesSubmit={onMessagesSubmit} showLoading={showLoading} />
-          <Typography variant='body2' sx={{ fontSize: '0.65rem', textAlign: 'right', color: 'grey' }}>Powered by gpt-3.5-turbo</Typography>
-          <Typography variant='body2' sx={{ fontSize: '0.65rem', textAlign: 'right', color: 'grey' }}>Your audio may be sent to a web service for recognition processing on certain browsers, such as Chrome</Typography>
-        </Box>
-      </Stack>
+      </Box>
+
       <Snackbar
         open={noti}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}

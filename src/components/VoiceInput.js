@@ -11,7 +11,6 @@ const hasGetUserMedia = () => {
 };
 
 
-
 export default function VoiceInputIconBtn({ setQ, setInterimTranscript, voiceInput, setVoiceInput }) {
   const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
   // const recognition = new SpeechRecognition();

@@ -13,8 +13,9 @@ export default function TopBar() {
         width: '100%',
         height: 40,
         justifyContent: 'space-between',
-        bgcolor: 'background.default',
-        color: 'text.primary'
+        color: 'text.primary',
+        position: 'fixed',
+        top: 0
       }}
     >
       <BackBtn />
