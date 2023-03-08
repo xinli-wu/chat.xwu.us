@@ -16,7 +16,8 @@ export default function Home() {
   const bottomRef = useRef(null);
   const lastMsgRef = useRef(null);
 
-  const [showLoading, setShowLoading] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [isReading, setIsReading] = React.useState(false);
   const [chats, setChats] = React.useState([]);
   const [noti, setNoti] = React.useState(null);
   const [lastMsgHeight, setLastMsgHeight] = React.useState();
@@ -24,7 +25,7 @@ export default function Home() {
   const onMessagesSubmit = async (newMsg) => {
     const newChat = { metadata: { id: 'user' + chats.length, ts: dayjs().format('h:mm a') }, message: { role: 'user', content: newMsg } };
     setChats(prev => [...prev, newChat]);
-    setShowLoading(true);
+    setIsLoading(true);
 
     try {
       const raw = await fetch(`${REACT_APP_CHAT_API_URL}/openai/chat/completion`, {
@@ -37,16 +38,18 @@ export default function Home() {
         console.log(await raw.text());
         throw new Error(await raw.text() || '');
       };
-
       const reader = raw.body.getReader();
 
+      setIsReading(true);
       let finalMsg = '';
       const read = () => reader.read().then(({ done, value }) => {
-        if (done) return;
+        if (done) {
+          setIsReading(false);
+          return;
+        };
         const decoder = new TextDecoder();
         const lines = decoder.decode(value).toString().split('\n').filter(line => line.trim() !== '');
         lines.forEach(l => {
-
           const msg = l.replace(/^data: /, '');
           if (msg !== '[DONE]' && JSON.parse(msg).choices[0].delta.content) {
             const msgObj = JSON.parse(msg);
@@ -78,7 +81,7 @@ export default function Home() {
       console.log(error.message);
       setNoti(`API error: ${error.message}`);
     } finally {
-      setShowLoading(false);
+      setIsLoading(false);
     }
 
   };
@@ -168,7 +171,7 @@ export default function Home() {
           </Stack>
           <div ref={bottomRef} />
           <Stack spacing={1} sx={{ width: '90%', maxWidth: 1280, position: 'absolute', bottom: isMobile ? 10 : 20 }}>
-            <InputBox onMessagesSubmit={onMessagesSubmit} showLoading={showLoading} />
+            <InputBox onMessagesSubmit={onMessagesSubmit} isLoading={isLoading} isReading={isReading} />
             <Stack spacing={0}>
               <Typography variant='body2' sx={{ fontSize: '0.65rem', textAlign: 'right', color: 'grey' }}>Powered by gpt-3.5-turbo</Typography>
               <Typography variant='body2' sx={{ fontSize: '0.65rem', textAlign: 'right', color: 'grey' }}>Your audio may be sent to a web service for recognition processing on certain browsers, such as Chrome</Typography>

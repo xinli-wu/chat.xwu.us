@@ -9,7 +9,7 @@ import { TransitionGroup } from 'react-transition-group';
 import LoadingProgress from './LoadingProgress';
 import VoiceInput from './VoiceInput';
 
-export default function InputBox({ onMessagesSubmit, showLoading }) {
+export default function InputBox({ onMessagesSubmit, isLoading, isReading }) {
   const theme = useTheme();
   const [q, setQ] = useState('');
   const [interimTranscript, setInterimTranscript] = useState('');
@@ -43,7 +43,7 @@ export default function InputBox({ onMessagesSubmit, showLoading }) {
   };
 
   const onInputChange = (e) => {
-    e.preventDefault();
+    e?.preventDefault();
     setQ(e.target.value);
     if (e.target.value) setSuggestOpen(true);
   };
@@ -58,7 +58,7 @@ export default function InputBox({ onMessagesSubmit, showLoading }) {
   };
 
   const onSearchBoxBlur = (e) => {
-    e.preventDefault();
+    e?.preventDefault();
     setSuggestOpen(false);
   };
 
@@ -133,8 +133,7 @@ export default function InputBox({ onMessagesSubmit, showLoading }) {
         </Box> */}
         <InputBase
           ref={inputElement}
-          // sx={{ ml: 1 }}
-          disabled={voiceInput}
+          disabled={voiceInput || isReading || isLoading}
           fullWidth
           multiline={false}
           // maxRows={10}
@@ -143,7 +142,7 @@ export default function InputBox({ onMessagesSubmit, showLoading }) {
           value={voiceInput ? interimTranscript : q}
           onChange={onInputChange}
           onBlur={onSearchBoxBlur}
-          onClick={() => !voiceInput ? setSuggestOpen(true) : null}
+          onClick={() => (!voiceInput && !isReading && !isLoading) ? setSuggestOpen(true) : null}
           componentsProps={{
             input: {
               style: { fontStyle: voiceInput ? 'italic' : 'normal', color: voiceInput ? theme.palette.grey[400] : theme.palette.text.primary },
@@ -158,11 +157,11 @@ export default function InputBox({ onMessagesSubmit, showLoading }) {
         />
         <Box sx={{ alignSelf: 'flex-end', bottom: 5, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           {/* <Box sx={{ display: 'flex', position: 'absolute' }}>
-            <LoadingProgress variant='circular' show={showLoading} />
+            <LoadingProgress variant='circular' show={isLoading} />
           </Box> */}
           <IconButton type="submit" sx={{ p: '10px' }} aria-label="search" disabled={q.trim().length === 0}>
-            {showLoading ?
-              <LoadingProgress variant='circular' show={showLoading} />
+            {isLoading ?
+              <LoadingProgress variant='circular' show={isLoading} />
               : <SearchIcon />}
           </IconButton>
         </Box>
