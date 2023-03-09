@@ -18,28 +18,7 @@ export default function Home() {
 
   const [isLoading, setIsLoading] = React.useState(false);
   const [isReading, setIsReading] = React.useState(false);
-  const [chats, setChats] = React.useState([
-    {
-      "metadata": {
-        "id": "user0",
-        "ts": "5:46 am"
-      },
-      "message": {
-        "role": "user",
-        "content": "quick sort in c"
-      }
-    },
-    {
-      "metadata": {
-        "id": "chatcmpl-6rt5iOHfNQ1nE1cIdxx3rWMc4aIx2",
-        "ts": "5:46 am"
-      },
-      "message": {
-        "role": "assistant",
-        "content": "\n\nHere is an implementation of quick sort in C:\n\n```\n#include <stdio.h>\n\nvoid swap(int *a, int *b) {\n    int temp = *a;\n    *a = *b;\n    *b = temp;\n}\n\nint partition(int arr[], int low, int high) {\n    int pivot = arr[high];\n    int i = low - 1;\n    for (int j = low; j < high; j++) {\n        if (arr[j] <= pivot) {\n            i++;\n            swap(&arr[i], &arr[j]);\n        }\n    }\n    swap(&arr[i + 1], &arr[high]);\n    return i + 1;\n}\n\nvoid quickSort(int arr[], int low, int high) {\n    if (low < high) {\n        int pi = partition(arr, low, high);\n        quickSort(arr, low, pi - 1);\n        quickSort(arr, pi + 1, high);\n    }\n}\n\nvoid printArray(int arr[], int size) {\n    for (int i = 0; i < size; i++) {\n        printf(\"%d \", arr[i]);\n    }\n    printf(\"\\n\");\n}\n\nint main() {\n    int arr[] = {10, 7, 8, 9, 1, 5};\n    int n = sizeof(arr) / sizeof(arr[0]);\n    quickSort(arr, 0, n - 1);\n    printf(\"Sorted array: \");\n    printArray(arr, n);\n    return 0;\n}\n```\n\nThe `swap` function is a helper function that swaps two integers. The `partition` function takes an array, `arr`, and two indices, `low` and `high`, and partitions the array around a pivot element such that all elements smaller than the pivot are on the left and all elements larger than the pivot are on the right. The `quickSort` function recursively sorts the array by partitioning it and sorting the left and right partitions. The `printArray` function is a helper function that prints an array. Finally, the `main` function initializes an array, sorts it using quick sort, and prints the sorted array."
-      }
-    }
-  ]);
+  const [chats, setChats] = React.useState([]);
   const [noti, setNoti] = React.useState(null);
   const [lastMsgHeight, setLastMsgHeight] = React.useState();
 
