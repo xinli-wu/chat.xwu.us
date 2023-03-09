@@ -14,7 +14,7 @@ export default function InputBox({ onMessagesSubmit, isLoading, isReading }) {
   const [q, setQ] = useState('');
   const [interimTranscript, setInterimTranscript] = useState('');
   const [suggestions, setSuggestions] = useState(JSON.parse(localStorage.qHistory || '[]'));
-  const [suggestOpen, setSuggestOpen] = useState(false);
+  const [suggestOpen, setSuggestOpen] = React.useState(false);
   const [voiceInput, setVoiceInput] = useState(false);
   const inputElement = useRef(null);
   // let keyPressed = {};
@@ -30,6 +30,8 @@ export default function InputBox({ onMessagesSubmit, isLoading, isReading }) {
   }, [suggestions]);
 
   const updateSuggestions = (q) => {
+    // close virtual keyboard
+    inputElement?.current?.children[0]?.blur();
     setSuggestions(prev => ([...prev.filter(x => x.q !== q), { q, t: dayjs().unix() }].sort((a, b) => b.t - a.t).slice(0, 7)));
     onMessagesSubmit(q);
     setQ('');
@@ -89,8 +91,6 @@ export default function InputBox({ onMessagesSubmit, isLoading, isReading }) {
       </span>
     );
   };
-
-
 
   return (
     <Paper elevation={suggestOpen ? 24 : 6} component='form' onSubmit={onQSubmit}>

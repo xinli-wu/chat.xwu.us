@@ -15,7 +15,8 @@ export default function TopBar() {
         justifyContent: 'space-between',
         color: 'text.primary',
         position: 'fixed',
-        top: 0
+        top: 0,
+        backdropFilter: 'blur(.2rem)',
       }}
     >
       <BackBtn />

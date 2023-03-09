@@ -8,19 +8,51 @@ import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import TopBar from '../components/TopBar';
 import './Home.css';
 // import { Avatar } from '@mui/material';
-import { isMobile } from 'react-device-detect';
 
 export default function Home() {
   document.title = 'chat';
   const { REACT_APP_CHAT_API_URL } = process.env;
   const bottomRef = useRef(null);
   const lastMsgRef = useRef(null);
+  const footerRef = useRef(null);
 
   const [isLoading, setIsLoading] = React.useState(false);
   const [isReading, setIsReading] = React.useState(false);
-  const [chats, setChats] = React.useState([]);
+  const [chats, setChats] = React.useState([
+    {
+      "metadata": {
+        "id": "user0",
+        "ts": "5:46 am"
+      },
+      "message": {
+        "role": "user",
+        "content": "quick sort in c"
+      }
+    },
+    {
+      "metadata": {
+        "id": "chatcmpl-6rt5iOHfNQ1nE1cIdxx3rWMc4aIx2",
+        "ts": "5:46 am"
+      },
+      "message": {
+        "role": "assistant",
+        "content": "\n\nHere is an implementation of quick sort in C:\n\n```\n#include <stdio.h>\n\nvoid swap(int *a, int *b) {\n    int temp = *a;\n    *a = *b;\n    *b = temp;\n}\n\nint partition(int arr[], int low, int high) {\n    int pivot = arr[high];\n    int i = low - 1;\n    for (int j = low; j < high; j++) {\n        if (arr[j] <= pivot) {\n            i++;\n            swap(&arr[i], &arr[j]);\n        }\n    }\n    swap(&arr[i + 1], &arr[high]);\n    return i + 1;\n}\n\nvoid quickSort(int arr[], int low, int high) {\n    if (low < high) {\n        int pi = partition(arr, low, high);\n        quickSort(arr, low, pi - 1);\n        quickSort(arr, pi + 1, high);\n    }\n}\n\nvoid printArray(int arr[], int size) {\n    for (int i = 0; i < size; i++) {\n        printf(\"%d \", arr[i]);\n    }\n    printf(\"\\n\");\n}\n\nint main() {\n    int arr[] = {10, 7, 8, 9, 1, 5};\n    int n = sizeof(arr) / sizeof(arr[0]);\n    quickSort(arr, 0, n - 1);\n    printf(\"Sorted array: \");\n    printArray(arr, n);\n    return 0;\n}\n```\n\nThe `swap` function is a helper function that swaps two integers. The `partition` function takes an array, `arr`, and two indices, `low` and `high`, and partitions the array around a pivot element such that all elements smaller than the pivot are on the left and all elements larger than the pivot are on the right. The `quickSort` function recursively sorts the array by partitioning it and sorting the left and right partitions. The `printArray` function is a helper function that prints an array. Finally, the `main` function initializes an array, sorts it using quick sort, and prints the sorted array."
+      }
+    }
+  ]);
   const [noti, setNoti] = React.useState(null);
   const [lastMsgHeight, setLastMsgHeight] = React.useState();
+
+
+  // useEffect(() => {
+  //   if (footerRef.current) {
+  //     const boundingRect = footerRef.current.getBoundingClientRect();
+  //     const { height } = boundingRect;
+  //     console.log(height);
+  //     setFooterHeight(prev => prev === height ? prev : height);
+  //   }
+  // }, [suggestOpen, footerRef.current]);
+
 
   const onMessagesSubmit = async (newMsg) => {
     const newChat = { metadata: { id: 'user' + chats.length, ts: dayjs().format('h:mm a') }, message: { role: 'user', content: newMsg } };
@@ -98,6 +130,9 @@ export default function Home() {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
+        alignItems: 'stretch',
+        flexFlow: 'column nowrap',
+        height: '100vh'
       }}>
         <TopBar />
         <Stack className='no-scrollbar' sx={{
@@ -106,10 +141,11 @@ export default function Home() {
           flexDirection: 'column',
           alignItems: 'center',
           width: '100%',
-          height: 'calc(100vh - 110px)',
+          height: `500px`,
           overflowY: 'scroll',
+          flexGrow: 1,
         }}>
-          <Stack spacing={2} sx={{ width: '90%', maxWidth: 1280 }}>
+          <Stack spacing={2} sx={{ width: '90%', maxWidth: 1280, }}>
             {chats.map((chat, index) => {
               const isAssistant = chat.message.role === 'assistant';
               return (
@@ -168,9 +204,16 @@ export default function Home() {
                 </Stack>
               );
             })}
+            <div ref={bottomRef} />
           </Stack>
-          <div ref={bottomRef} />
-          <Stack spacing={1} sx={{ width: '90%', maxWidth: 1280, position: 'absolute', bottom: isMobile ? 10 : 20 }}>
+        </Stack>
+        <Stack className='no-scrollbar' sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          width: '100%',
+        }}>
+          <Stack ref={footerRef} spacing={1} sx={{ width: '90%', maxWidth: 1280 }}>
             <InputBox onMessagesSubmit={onMessagesSubmit} isLoading={isLoading} isReading={isReading} />
             <Stack spacing={0}>
               <Typography variant='body2' sx={{ fontSize: '0.65rem', textAlign: 'right', color: 'grey' }}>Powered by gpt-3.5-turbo</Typography>
@@ -181,7 +224,7 @@ export default function Home() {
       </Box>
 
       <Snackbar
-        open={noti}
+        open={noti !== null}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         autoHideDuration={3000}
         onClose={() => setNoti(undefined)}
