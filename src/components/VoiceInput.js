@@ -117,15 +117,15 @@ export default function VoiceInputIconBtn({ setQ, setInterimTranscript, voiceInp
           : <MicIcon />
         }
       </IconButton>
-      <Collapse orientation="horizontal" in={voiceInput || true}>
+      <Collapse orientation="horizontal" in={voiceInput}>
         <Box sx={{
           width: 70,
           height: 30,
           ...(isMobile && { paddingRight: 12 }),
-          visibility: voiceInput || true ? 'unset' : 'hidden',
+          visibility: voiceInput ? 'unset' : 'hidden',
         }}>
           <Box sx={{ position: 'relative', left: -10, top: isMobile ? 2 : 5 }}>
-            {voiceInput || true && <Siriwave
+            {voiceInput && <Siriwave
               width={70}
               height={30}
               // eslint-disable-next-line
