@@ -25,7 +25,7 @@ export const CopyCode = ({ code }) => {
           <IconButton color="primary" aria-label="Copy to clipboard">
             {copied
               ? <DoneIcon color='success' />
-              : <ContentCopyIcon color='warning' />
+              : <ContentCopyIcon />
             }
           </IconButton>
         </span>
