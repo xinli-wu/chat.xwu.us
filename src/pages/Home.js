@@ -20,28 +20,7 @@ export default function Home() {
 
   const [isLoading, setIsLoading] = React.useState(false);
   const [isReading, setIsReading] = React.useState(false);
-  const [chats, setChats] = React.useState([
-    {
-      "metadata": {
-        "id": "user0",
-        "ts": "12:00 am"
-      },
-      "message": {
-        "role": "user",
-        "content": "quick sort in java"
-      }
-    },
-    {
-      "metadata": {
-        "id": "chatcmpl-6sAAFmpIQxmNEQwkADg1KGcM9nluW",
-        "ts": "12:00 am"
-      },
-      "message": {
-        "role": "assistant",
-        "content": "\n\nHere is an implementation of Quick Sort in Java:\n\n```\npublic class QuickSort {\n    \n    public static void main(String[] args) {\n        int[] arr = {5, 2, 9, 3, 7, 6, 1, 8, 4};\n        quickSort(arr, 0, arr.length - 1);\n        System.out.println(Arrays.toString(arr));\n    }\n    \n    public static void quickSort(int[] arr, int left, int right) {\n        if (left < right) {\n            int pivotIndex = partition(arr, left, right);\n            quickSort(arr, left, pivotIndex - 1);\n            quickSort(arr, pivotIndex + 1, right);\n        }\n    }\n    \n    public static int partition(int[] arr, int left, int right) {\n        int pivot = arr[right];\n        int i = left - 1;\n        for (int j = left; j < right; j++) {\n            if (arr[j] < pivot) {\n                i++;\n                int temp = arr[i];\n                arr[i] = arr[j];\n                arr[j] = temp;\n            }\n        }\n        int temp = arr[i + 1];\n        arr[i + 1] = arr[right];\n        arr[right] = temp;\n        return i + 1;\n    }\n    \n}\n```\n\nIn this implementation, the `quickSort` method takes the array to be sorted, the left and right indices of the subarray to be sorted. It first checks if the subarray has more than one element (i.e. `left < right`). If it does, it selects a pivot element (in this case, the rightmost element of the subarray) and partitions the subarray into two subarrays: one containing all elements less than the pivot and another containing all elements greater than or equal to the pivot. It then recursively sorts these two subarrays using the same `quickSort` method.\n\nThe `partition` method takes the same subarray indices and the array to be sorted. It selects the pivot element (in this case, the rightmost element of the subarray) and iterates through the subarray from the left index to the second-to-last index. For each element that is less than the pivot, it swaps it with the element at the current index `i` (which starts at `left - 1`) and increments `i`. This effectively moves all elements less than the pivot to the left of `i` and all elements greater than or equal to the pivot to the right of `i`. Finally, it swaps the pivot element with the element at index `i + 1`, which places the pivot in its final sorted position. It then returns the index of the pivot element."
-      }
-    }
-  ]);
+  const [chats, setChats] = React.useState([]);
   const [noti, setNoti] = React.useState({ text: null, severity: undefined });
   const [lastMsgHeight, setLastMsgHeight] = React.useState();
 
