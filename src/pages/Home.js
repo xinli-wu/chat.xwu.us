@@ -22,17 +22,6 @@ export default function Home() {
   const [noti, setNoti] = React.useState(null);
   const [lastMsgHeight, setLastMsgHeight] = React.useState();
 
-
-  // useEffect(() => {
-  //   if (footerRef.current) {
-  //     const boundingRect = footerRef.current.getBoundingClientRect();
-  //     const { height } = boundingRect;
-  //     console.log(height);
-  //     setFooterHeight(prev => prev === height ? prev : height);
-  //   }
-  // }, [suggestOpen, footerRef.current]);
-
-
   const onMessagesSubmit = async (newMsg) => {
     const newChat = { metadata: { id: 'user' + chats.length, ts: dayjs().format('h:mm a') }, message: { role: 'user', content: newMsg } };
     setChats(prev => [...prev, newChat]);
@@ -53,6 +42,8 @@ export default function Home() {
 
       setIsReading(true);
       let finalMsg = '';
+      let msgId = null;
+      const ts = dayjs().format('h:mm a');
       const read = () => reader.read().then(({ done, value }) => {
         if (done) {
           setIsReading(false);
@@ -64,16 +55,16 @@ export default function Home() {
           const msg = l.replace(/^data: /, '');
           if (msg !== '[DONE]' && JSON.parse(msg).choices[0].delta.content) {
             const msgObj = JSON.parse(msg);
-
+            if (!msgId) msgId = msgObj.id;
             const { content } = msgObj.choices[0].delta;
             finalMsg += content;
             setChats(prev => [
               ...prev.filter(x => x.metadata.id !== msgObj.id),
               {
-                metadata: { id: msgObj.id, ts: dayjs().format('h:mm a') },
+                metadata: { id: msgObj.id, ts },
                 message: {
                   role: 'assistant',
-                  content: finalMsg
+                  content: finalMsg + ' ▉'
                 }
               }]
             );
@@ -83,6 +74,17 @@ export default function Home() {
               const { height } = boundingRect;
               setLastMsgHeight(height);
             }
+          } else {
+            if (finalMsg) setChats(prev => [
+              ...prev.filter(x => x.metadata.id !== msgId),
+              {
+                metadata: { id: msgId, ts },
+                message: {
+                  role: 'assistant',
+                  content: finalMsg
+                }
+              }]
+            );
           }
         });
         read();
@@ -108,7 +110,7 @@ export default function Home() {
         width: '100%',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'center',
+        justifyContent: 'space-between',
         alignItems: 'stretch',
         flexFlow: 'column nowrap',
         height: '100vh'
@@ -120,7 +122,7 @@ export default function Home() {
           flexDirection: 'column',
           alignItems: 'center',
           width: '100%',
-          height: `500px`,
+          // maxHeight: `500px`,
           overflowY: 'scroll',
           flexGrow: 1,
         }}>
@@ -153,6 +155,7 @@ export default function Home() {
                                         showLineNumbers
                                         wrapLines
                                         wrapLongLines
+                                        // @ts-ignore
                                         style={vscDarkPlus}
                                         language={match[1]}
                                         PreTag="div"
