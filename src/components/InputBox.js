@@ -121,16 +121,6 @@ export default function InputBox({ onMessagesSubmit, isLoading, isReading }) {
       }
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <VoiceInput setQ={setQ} setInterimTranscript={setInterimTranscript} voiceInput={voiceInput} setVoiceInput={setVoiceInput} />
-        {/* <Box sx={{ width: 80, height: 30, }}>
-          <Box sx={{ position: 'absolute', left: 30, top: 10 }}>
-            <Siriwave
-              width={80}
-              height={30}
-              style={'ios9'}
-              amplitude={5}
-            />
-          </Box>
-        </Box> */}
         <InputBase
           ref={inputElement}
           disabled={voiceInput || isReading || isLoading}
