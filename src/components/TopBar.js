@@ -16,7 +16,7 @@ export default function TopBar() {
         color: 'text.primary',
         position: 'fixed',
         top: 0,
-        backdropFilter: 'blur(.2rem)',
+        backdropFilter: 'blur(.2rem) brightness(0.85)',
       }}
     >
       <BackBtn />
