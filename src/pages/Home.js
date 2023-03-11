@@ -39,7 +39,7 @@ export default function Home() {
     );
   };
 
-  const throttledSetCurAssistantMsg = throttle(setCurAssistantMsg, 70, { 'trailing': true });
+  const throttledSetCurAssistantMsg = throttle(setCurAssistantMsg, 70);
 
   const onMessagesSubmit = async (newMsg) => {
     const newChat = { metadata: { id: 'user' + chats.length, ts: dayjs().format('h:mm a') }, message: { role: 'user', content: newMsg } };

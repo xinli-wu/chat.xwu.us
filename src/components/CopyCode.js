@@ -14,7 +14,7 @@ export const CopyCode = ({ language, code }) => {
     setCopied(true);
     setNoti({ text: 'Success', severity: 'success' });
 
-    setTimeout(() => { setCopied(false); }, 3000);
+    setTimeout(() => setCopied(false), 3000);
   };
 
   return (
