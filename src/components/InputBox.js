@@ -1,5 +1,6 @@
 import ClearIcon from '@mui/icons-material/Clear';
 import SearchIcon from '@mui/icons-material/Search';
+import { ListItemButton } from '@mui/material';
 import { Box, Collapse, Divider, List, ListItem, ListItemText, Paper, Stack, useTheme } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import InputBase from '@mui/material/InputBase';
@@ -71,20 +72,19 @@ export default function InputBox({ onMessagesSubmit, isLoading, isReading }) {
   };
 
   const BoldedText = ({ text, shouldBeBold }) => {
-    const textArray = text.split(shouldBeBold);
+    const textArray = text.split(new RegExp(shouldBeBold, 'i'));
+
     return (
       <span>
-        {textArray.map((item, index) => (
-          <span key={index}>
+        {textArray.map((item, idx) => (
+          <span key={idx}>
             {item}
-            {index !== textArray.length - 1 && (
-              <b><span
-                style={{
-                  backgroundColor: theme.palette.mode === 'light' ? 'rgb(150,200,100)' : 'rgb(46,149,118)',
-                  // ...(theme.palette.mode === 'light' && { color: 'white' }),
-                }}>
-                {shouldBeBold}
-              </span></b>
+            {idx !== textArray.length - 1 && (
+              <b>
+                <span style={{ backgroundColor: theme.palette.mode === 'light' ? 'rgb(150,200,100)' : 'rgb(46,149,118)', }}>
+                  {shouldBeBold}
+                </span>
+              </b>
             )}
           </span>
         ))}
@@ -92,20 +92,24 @@ export default function InputBox({ onMessagesSubmit, isLoading, isReading }) {
     );
   };
 
+  const filteredSuggestions = suggestions.filter(x => x.q.toLocaleLowerCase().includes(q.toLocaleLowerCase()));
+
   return (
     <Paper elevation={suggestOpen ? 24 : 6} component='form' onSubmit={onQSubmit}>
       {suggestions.length > 0 &&
         <Collapse in={suggestOpen} timeout={150}>
-          <Stack sx={{ m: 0.25, textAlign: 'start' }}>
-            <List>
+          <Stack sx={{ m: filteredSuggestions.length ? 0.25 : 0, textAlign: 'start' }}>
+            <List sx={{ ...(filteredSuggestions.length === 0 && { p: 0 }) }}>
               <TransitionGroup>
-                {suggestions?.filter(x => x.q.includes(q)).map(x => {
+                {filteredSuggestions.map(x => {
                   return (
                     <Collapse key={x.q} >
                       <Stack direction={'row'} >
-                        <ListItem button dense onMouseDown={(e) => onSuggestionClick(e, x.q)}>
-                          <ListItemText><BoldedText text={x.q} shouldBeBold={q} /></ListItemText>
-                        </ListItem>
+                        <ListItemButton dense onMouseDown={(e) => onSuggestionClick(e, x.q)}>
+                          <ListItemText>
+                            <BoldedText text={x.q} shouldBeBold={q} />
+                          </ListItemText>
+                        </ListItemButton>
                         <IconButton aria-label="delete" size='small' onMouseDown={(e) => onSuggestionDeleteClick(e, x.q)}>
                           <ClearIcon />
                         </IconButton>
@@ -115,7 +119,7 @@ export default function InputBox({ onMessagesSubmit, isLoading, isReading }) {
                 })}
               </TransitionGroup>
             </List>
-            <Divider />
+            <Divider sx={{ ...(filteredSuggestions.length === 0 && { display: 'none' }) }} />
           </Stack>
         </Collapse>
       }
