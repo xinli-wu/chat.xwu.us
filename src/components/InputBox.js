@@ -1,5 +1,5 @@
 import ClearIcon from '@mui/icons-material/Clear';
-import SearchIcon from '@mui/icons-material/Search';
+import SendIcon from '@mui/icons-material/Send';
 import { Box, Collapse, Divider, List, ListItemButton, ListItemText, Paper, Stack, useTheme } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import InputBase from '@mui/material/InputBase';
@@ -109,7 +109,7 @@ export default function InputBox({ onMessagesSubmit, isLoading, isReading }) {
                             <BoldedText text={x.q} shouldBeBold={q} />
                           </ListItemText>
                         </ListItemButton>
-                        <IconButton aria-label="delete" size='small' onMouseDown={(e) => onSuggestionDeleteClick(e, x.q)}>
+                        <IconButton aria-label='delete' size='small' onMouseDown={(e) => onSuggestionDeleteClick(e, x.q)}>
                           <ClearIcon />
                         </IconButton>
                       </Stack>
@@ -122,7 +122,7 @@ export default function InputBox({ onMessagesSubmit, isLoading, isReading }) {
           </Stack>
         </Collapse>
       }
-      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 44 }}>
         <VoiceInput setQ={setQ} setInterimTranscript={setInterimTranscript} voiceInput={voiceInput} setVoiceInput={setVoiceInput} />
         <InputBase
           ref={inputElement}
@@ -141,23 +141,13 @@ export default function InputBox({ onMessagesSubmit, isLoading, isReading }) {
               style: { fontStyle: voiceInput ? 'italic' : 'normal', color: voiceInput ? theme.palette.grey[400] : theme.palette.text.primary },
             }
           }}
-        // onKeyDown={(e) => {
-        //   keyPressed[e.key] = true;
-        //   console.log(q.length, keyPressed);
-        //   if (keyPressed.Enter && !keyPressed.Control && !keyPressed.Alt && q.trim().length !== 0) onQSubmit(e);
-        // }}
-        // onKeyUp={() => keyPressed = {}}
         />
-        <Box sx={{ alignSelf: 'flex-end', bottom: 5, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          {/* <Box sx={{ display: 'flex', position: 'absolute' }}>
-            <LoadingProgress variant='circular' show={isLoading} />
-          </Box> */}
-          <IconButton type="submit" sx={{ p: '10px' }} aria-label="search" disabled={q.trim().length === 0}>
-            {isLoading ?
-              <LoadingProgress variant='circular' show={isLoading} />
-              : <SearchIcon />}
-          </IconButton>
-        </Box>
+        <IconButton type='submit' size='small' sx={{ ml: .5, mr: .5 }} aria-label='send' disabled={q.trim().length === 0}>
+          {isLoading
+            ? <LoadingProgress variant='circular' show={isLoading} />
+            : <SendIcon />
+          }
+        </IconButton>
       </Box>
     </Paper >
   );

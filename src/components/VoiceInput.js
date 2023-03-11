@@ -16,7 +16,7 @@ export default function VoiceInputIconBtn({ setQ, setInterimTranscript, voiceInp
   // const recognition = new SpeechRecognition();
   let recognition = useMemo(() => new SpeechRecognition() || null, [SpeechRecognition]);
 
-  if (!SpeechRecognition) console.log("Speech Recognition Not Available");
+  if (!SpeechRecognition) console.log('Speech Recognition Not Available');
 
   recognition.continuous = true;
   recognition.interimResults = true;
@@ -111,13 +111,13 @@ export default function VoiceInputIconBtn({ setQ, setInterimTranscript, voiceInp
 
   return (
     <>
-      <IconButton aria-label="voice" size='small' onClick={toggleRecording} sx={{ alignSelf: 'flex-end', bottom: 5, ml: .5, mr: .5 }}>
+      <IconButton aria-label='voice' size='small' onClick={toggleRecording} sx={{ ml: .5, mr: .5 }}>
         {voiceInput
           ? <RecordVoiceOverIcon htmlColor='rgb(46,149,118)' />
           : <MicIcon />
         }
       </IconButton>
-      <Collapse orientation="horizontal" in={voiceInput}>
+      <Collapse orientation='horizontal' in={voiceInput}>
         <Box sx={{
           width: 70,
           height: 30,
