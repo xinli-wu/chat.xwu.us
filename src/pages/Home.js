@@ -9,7 +9,6 @@ import { CopyCode } from '../components/CopyCode';
 import { Noti } from '../components/Noti';
 import TopBar from '../components/TopBar';
 import './Home.css';
-// import { Avatar } from '@mui/material';
 
 export default function Home() {
   document.title = 'chat';
@@ -141,9 +140,9 @@ export default function Home() {
                       borderRadius: 3,
                       textAlign: isAssistant ? 'left' : 'right',
                       maxWidth: 1200,
-                      overflowX: 'scroll'
+                      overflowX: 'scroll',
                       // backgroundColor: 'rgb(52,52,52)'
-                      // ...(isAssistant && { backgroundColor: 'rgb(46,149,118)' })
+                      ...(isAssistant && { backgroundColor: 'rgb(46,149,118)' })
                     }}>
                       {isAssistant
                         ? <div ref={index === chats.length - 1 ? lastMsgRef : undefined}>
@@ -154,7 +153,7 @@ export default function Home() {
                                   const match = /language-(\w+)/.exec(className || '') || ['language-javascript', 'javascript'];
                                   return !inline && match ? (
                                     <Stack>
-                                      <CopyCode code={String(children)} setNoti={setNoti} />
+                                      <CopyCode code={String(children)} />
                                       <SyntaxHighlighter
                                         showLineNumbers
                                         wrapLines
@@ -179,14 +178,11 @@ export default function Home() {
                           >
                             {chat.message.content}
                           </ReactMarkdown></div>
-                        // ? <pre style={{ whiteSpace: 'pre-wrap', margin: 0 }}>{chat.message.content}</pre>
                         : <Typography>{chat.message.content}</Typography>
                       }
                     </Paper>
-                    {/* {!isAI && <Avatar />} */}
                   </Stack>
                   <Typography sx={{ fontSize: '0.6rem', textAlign: 'end', color: 'grey' }}>{chat.metadata.ts}</Typography>
-                  {/* {index === chats.length - 1 && <Box sx={{ p: 2 }} ref={bottomRef} />} */}
                 </Stack>
               );
             })}
