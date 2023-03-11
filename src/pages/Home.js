@@ -8,6 +8,7 @@ import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { CopyCode } from '../components/CopyCode';
 import { Noti } from '../components/Noti';
 import TopBar from '../components/TopBar';
+import throttle from 'lodash.throttle';
 import './Home.css';
 
 export default function Home() {
@@ -23,6 +24,21 @@ export default function Home() {
   const [noti, setNoti] = React.useState({ text: null, severity: undefined });
   const [lastMsgHeight, setLastMsgHeight] = React.useState();
 
+  const setCurAssistantMsg = (id, ts, msg) => {
+    setChats(prev => [
+      ...prev.filter(x => x.metadata.id !== id),
+      {
+        metadata: { id: id, ts },
+        message: {
+          role: 'assistant',
+          content: msg
+        }
+      }]
+    );
+  };
+
+  const throttledSetCurAssistantMsg = throttle(setCurAssistantMsg, 70, { 'trailing': false });
+
   const onMessagesSubmit = async (newMsg) => {
     const newChat = { metadata: { id: 'user' + chats.length, ts: dayjs().format('h:mm a') }, message: { role: 'user', content: newMsg } };
     setChats(prev => [...prev, newChat]);
@@ -36,7 +52,6 @@ export default function Home() {
       });
 
       if (!raw.ok) {
-        console.log(await raw.text());
         throw new Error(await raw.text() || '');
       };
       const reader = raw.body.getReader();
@@ -45,6 +60,7 @@ export default function Home() {
       let finalMsg = '';
       let msgId = null;
       const ts = dayjs().format('h:mm a');
+
       const read = () => reader.read().then(({ done, value }) => {
         if (done) {
           setIsReading(false);
@@ -59,16 +75,21 @@ export default function Home() {
             if (!msgId) msgId = msgObj.id;
             const { content } = msgObj.choices[0].delta;
             finalMsg += content;
-            setChats(prev => [
-              ...prev.filter(x => x.metadata.id !== msgObj.id),
-              {
-                metadata: { id: msgObj.id, ts },
-                message: {
-                  role: 'assistant',
-                  content: finalMsg + ' ▉'
-                }
-              }]
-            );
+
+            throttledSetCurAssistantMsg(msgObj.id, ts, finalMsg + ' ▉');
+            // if (shouldSetState) {
+            // setChats(prev => [
+            //   ...prev.filter(x => x.metadata.id !== msgObj.id),
+            //   {
+            //     metadata: { id: msgObj.id, ts },
+            //     message: {
+            //       role: 'assistant',
+            //       content: finalMsg + ' ▉'
+            //     }
+            //   }]
+            // );
+            // }
+
 
             if (lastMsgRef.current) {
               const boundingRect = lastMsgRef.current.getBoundingClientRect();
@@ -153,7 +174,7 @@ export default function Home() {
                                   const match = /language-(\w+)/.exec(className || '') || ['language-javascript', 'javascript'];
                                   return !inline && match ? (
                                     <Stack>
-                                      <CopyCode code={String(children)} />
+                                      <CopyCode language={match[1]} code={String(children)} />
                                       <SyntaxHighlighter
                                         showLineNumbers
                                         wrapLines

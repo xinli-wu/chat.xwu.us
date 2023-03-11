@@ -1,7 +1,6 @@
 import ClearIcon from '@mui/icons-material/Clear';
 import SearchIcon from '@mui/icons-material/Search';
-import { ListItemButton } from '@mui/material';
-import { Box, Collapse, Divider, List, ListItem, ListItemText, Paper, Stack, useTheme } from '@mui/material';
+import { Box, Collapse, Divider, List, ListItemButton, ListItemText, Paper, Stack, useTheme } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import InputBase from '@mui/material/InputBase';
 import dayjs from 'dayjs';

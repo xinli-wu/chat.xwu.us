@@ -5,7 +5,7 @@ import DoneIcon from '@mui/icons-material/Done';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { Noti } from './Noti';
 
-export const CopyCode = ({ code }) => {
+export const CopyCode = ({ language, code }) => {
   const [copied, setCopied] = React.useState(false);
   const [noti, setNoti] = React.useState({ text: null, severity: undefined });
 
@@ -20,6 +20,7 @@ export const CopyCode = ({ code }) => {
   return (
     <>
       <Noti noti={noti} setNoti={setNoti} />
+      {/* <span>{language}</span> */}
       <CopyToClipboard text={String(code)} onCopy={() => onCopyClick()}>
         <span style={{ display: 'flex', justifyContent: 'end', marginBottom: -47 }}>
           <IconButton color="primary" aria-label="Copy to clipboard">

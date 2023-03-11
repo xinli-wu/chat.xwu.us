@@ -19,6 +19,7 @@ specifiers:
   dayjs: ^1.11.7
   dotenv: ^16.0.3
   html-entities: ^2.3.3
+  lodash.throttle: ^4.1.1
   react: ^18.2.0
   react-copy-to-clipboard: ^5.1.0
   react-device-detect: ^2.2.3
@@ -47,6 +48,7 @@ dependencies:
   dayjs: 1.11.7
   dotenv: 16.0.3
   html-entities: 2.3.3
+  lodash.throttle: 4.1.1
   react: 18.2.0
   react-copy-to-clipboard: 5.1.0_react@18.2.0
   react-device-detect: 2.2.3_biqbaboplfbrettd7655fr4n2y
@@ -7351,6 +7353,10 @@ packages:
 
   /lodash.sortby/4.7.0:
     resolution: {integrity: sha512-HDWXG8isMntAyRF5vZ7xKuEvOhT4AhlRt/3czTSjvGUxjYCBVRQY48ViDHyfYz9VIoBkW4TMGQNapx+l3RUwdA==}
+    dev: false
+
+  /lodash.throttle/4.1.1:
+    resolution: {integrity: sha512-wIkUCfVKpVsWo3JSZlc+8MB5it+2AN5W8J7YVMST30UrvcQNZ1Okbj+rbVniijTWE6FGYy4XJq/rHkas8qJMLQ==}
     dev: false
 
   /lodash.uniq/4.5.0:
