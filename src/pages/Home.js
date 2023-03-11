@@ -10,6 +10,7 @@ import { Noti } from '../components/Noti';
 import TopBar from '../components/TopBar';
 import throttle from 'lodash.throttle';
 import './Home.css';
+import { useTheme } from '@mui/material';
 
 export default function Home() {
   document.title = 'chat';
@@ -17,6 +18,7 @@ export default function Home() {
   const bottomRef = useRef(null);
   const lastMsgRef = useRef(null);
   const footerRef = useRef(null);
+  const theme = useTheme();
 
   const [isLoading, setIsLoading] = React.useState(false);
   const [isReading, setIsReading] = React.useState(false);
@@ -37,7 +39,7 @@ export default function Home() {
     );
   };
 
-  const throttledSetCurAssistantMsg = throttle(setCurAssistantMsg, 70, { 'trailing': false });
+  const throttledSetCurAssistantMsg = throttle(setCurAssistantMsg, 70, { 'trailing': true });
 
   const onMessagesSubmit = async (newMsg) => {
     const newChat = { metadata: { id: 'user' + chats.length, ts: dayjs().format('h:mm a') }, message: { role: 'user', content: newMsg } };
@@ -77,19 +79,6 @@ export default function Home() {
             finalMsg += content;
 
             throttledSetCurAssistantMsg(msgObj.id, ts, finalMsg + ' ▉');
-            // if (shouldSetState) {
-            // setChats(prev => [
-            //   ...prev.filter(x => x.metadata.id !== msgObj.id),
-            //   {
-            //     metadata: { id: msgObj.id, ts },
-            //     message: {
-            //       role: 'assistant',
-            //       content: finalMsg + ' ▉'
-            //     }
-            //   }]
-            // );
-            // }
-
 
             if (lastMsgRef.current) {
               const boundingRect = lastMsgRef.current.getBoundingClientRect();
@@ -162,8 +151,7 @@ export default function Home() {
                       textAlign: isAssistant ? 'left' : 'right',
                       maxWidth: 1200,
                       overflowX: 'scroll',
-                      // backgroundColor: 'rgb(52,52,52)'
-                      ...(isAssistant && { backgroundColor: 'rgb(46,149,118)' })
+                      ...(isAssistant && { backgroundColor: theme.palette.mode === 'dark' ? 'rgb(46,149,118)' : 'rgb(130, 200, 180)' })
                     }}>
                       {isAssistant
                         ? <div ref={index === chats.length - 1 ? lastMsgRef : undefined}>
