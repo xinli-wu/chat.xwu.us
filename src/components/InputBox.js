@@ -19,12 +19,6 @@ export default function InputBox({ onMessagesSubmit, isLoading, isReading = fals
   const inputElement = useRef(null);
 
   useEffect(() => {
-    if (inputElement.current) {
-      inputElement.current.children[0].focus();
-    }
-  }, []);
-
-  useEffect(() => {
     localStorage.qHistory = JSON.stringify(suggestions);
   }, [suggestions]);
 
