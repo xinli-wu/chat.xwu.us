@@ -48,7 +48,11 @@ export default function Image() {
   };
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const id = setTimeout(() => {
+      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+
+    return () => clearTimeout(id);
   }, [chats.length]);
 
   console.log(chats);
@@ -78,7 +82,7 @@ export default function Image() {
             {chats.map((chat, idx) => {
               const isAssistant = chat.message.role === 'assistant';
               return (
-                <Stack key={idx} sx={{ width: '100%', maxWidth: '100%', alignItems: isAssistant ? 'start' : 'end', ...(isAssistant && { maxHeight: 200 }) }}>
+                <Stack key={idx} sx={{ width: '100%', maxWidth: '100%', alignItems: isAssistant ? 'start' : 'end' }}>
                   <Stack direction='row' spacing={1} sx={{ alignItems: 'end' }}>
                     <Paper elevation={12} sx={{
                       p: 1,
