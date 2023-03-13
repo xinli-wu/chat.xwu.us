@@ -65,7 +65,19 @@ export default function Home() {
 
       const read = () => reader.read().then(({ done, value }) => {
         if (done) {
+          if (finalMsg) setChats(prev => [
+            ...prev.filter(x => x.metadata.id !== msgId),
+            {
+              metadata: { id: msgId, ts },
+              message: {
+                role: 'assistant',
+                content: finalMsg
+              }
+            }]
+          );
+
           setIsReading(false);
+
           return;
         };
         const decoder = new TextDecoder();
@@ -78,26 +90,18 @@ export default function Home() {
             const { content } = msgObj.choices[0].delta;
             finalMsg += content;
 
-            throttledSetCurAssistantMsg(msgObj.id, ts, finalMsg + ' ▉');
+            throttledSetCurAssistantMsg(msgObj.id, ts, finalMsg + ' ▊');
 
             if (lastMsgRef.current) {
               const boundingRect = lastMsgRef.current.getBoundingClientRect();
               const { height } = boundingRect;
               setLastMsgHeight(height);
             }
-          } else {
-            if (finalMsg) setChats(prev => [
-              ...prev.filter(x => x.metadata.id !== msgId),
-              {
-                metadata: { id: msgId, ts },
-                message: {
-                  role: 'assistant',
-                  content: finalMsg
-                }
-              }]
-            );
           }
+
         });
+
+
         read();
       });
       read();
@@ -107,7 +111,6 @@ export default function Home() {
     } finally {
       setIsLoading(false);
     }
-
   };
 
   useEffect(() => {
