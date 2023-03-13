@@ -9,7 +9,7 @@ import { TransitionGroup } from 'react-transition-group';
 import LoadingProgress from './LoadingProgress';
 import VoiceInput from './VoiceInput';
 
-export default function InputBox({ onMessagesSubmit, isLoading, isReading }) {
+export default function InputBox({ onMessagesSubmit, isLoading, isReading = false }) {
   const theme = useTheme();
   const [q, setQ] = useState('');
   const [interimTranscript, setInterimTranscript] = useState('');

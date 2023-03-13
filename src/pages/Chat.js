@@ -7,13 +7,13 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { CopyCode } from '../components/CopyCode';
 import { Noti } from '../components/Noti';
-import TopBar from '../components/TopBar';
 import throttle from 'lodash.throttle';
-import './Home.css';
+import './Chat.css';
 import { useTheme } from '@mui/material';
 
-export default function Home() {
+export default function Chat() {
   document.title = 'chat';
+
   const { REACT_APP_CHAT_API_URL } = process.env;
   const bottomRef = useRef(null);
   const lastMsgRef = useRef(null);
@@ -130,7 +130,6 @@ export default function Home() {
         flexFlow: 'column nowrap',
         height: '100vh'
       }}>
-        <TopBar />
         <Stack className='no-scrollbar' sx={{
           pt: 8,
           display: 'flex',
@@ -145,15 +144,15 @@ export default function Home() {
             {chats.map((chat, index) => {
               const isAssistant = chat.message.role === 'assistant';
               return (
-                <Stack key={index} sx={{ width: '100%', alignItems: isAssistant ? 'start' : 'end' }}>
+                <Stack key={index} sx={{ width: '100%', maxWidth: 1200, alignItems: isAssistant ? 'start' : 'end' }}>
                   <Stack direction='row' spacing={1} sx={{ alignItems: 'end' }}>
                     {/* {isAI && <Avatar sx={{ bgcolor: 'rgb(46,149,118)' }}>AI</Avatar>} */}
                     <Paper elevation={12} sx={{
                       p: 1,
                       borderRadius: 3,
                       textAlign: isAssistant ? 'left' : 'right',
+                      width: '100%',
                       maxWidth: 1200,
-                      overflowX: 'scroll',
                       ...(isAssistant && { backgroundColor: theme.palette.mode === 'dark' ? 'rgb(46,149,118)' : 'rgb(130, 200, 180)' })
                     }}>
                       {isAssistant

@@ -2,12 +2,15 @@ import { useMediaQuery } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { ColorModeContext } from 'contexts/utilContext';
-import Home from 'pages/Home';
 import React from 'react';
 import { Route, Routes } from "react-router-dom";
 import './App.css';
+import TopBar from './components/TopBar';
+import Chat from './pages/Chat';
+import Image from './pages/Image';
 
 function App() {
+  document.body.style.transition = 'background-color 0.1s ease-in-out';
 
   const preferedMode = useMediaQuery('(prefers-color-scheme: dark)') ? 'dark' : 'light';
   const [mode, setMode] = React.useState(preferedMode);
@@ -22,6 +25,7 @@ function App() {
     }),
     [],
   );
+
   const theme = React.useMemo(
     () =>
       createTheme({
@@ -38,8 +42,11 @@ function App() {
       <ThemeProvider theme={theme}>
         <ColorModeContext.Provider value={colorMode}>
           <CssBaseline />
+          <TopBar />
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path='/' element={<Chat />} />
+            <Route path='/chat' element={<Chat />} />
+            <Route path='/image' element={<Image />} />
           </Routes>
         </ColorModeContext.Provider>
       </ThemeProvider>
