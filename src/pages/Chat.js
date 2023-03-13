@@ -140,12 +140,12 @@ export default function Chat() {
           overflowY: 'scroll',
           flexGrow: 1,
         }}>
-          <Stack spacing={2} sx={{ width: '90%', maxWidth: 1280, }}>
+          <Stack spacing={2} sx={{ width: '100%' }}>
             {chats.map((chat, idx) => {
               const isAssistant = chat.message.role === 'assistant';
               return (
                 <Stack key={idx} sx={{ width: '100%', alignItems: isAssistant ? 'start' : 'end' }}>
-                  <Stack direction='row' spacing={1} sx={{ alignItems: 'end' }}>
+                  <Stack direction='row' spacing={1} sx={{ alignItems: 'end', maxWidth: '100%' }}>
                     <Paper elevation={12} sx={{
                       p: 1,
                       borderRadius: 3,
@@ -161,12 +161,10 @@ export default function Chat() {
                                 code({ node, inline, className, children, ...props }) {
                                   const match = /language-(\w+)/.exec(className || '') || ['language-javascript', 'javascript'];
                                   return !inline && match ? (
-                                    <Stack>
+                                    <Stack sx={{ overflowX: 'scroll' }}>
                                       <CopyCode language={match[1]} code={String(children)} />
                                       <SyntaxHighlighter
                                         showLineNumbers
-                                        wrapLines
-                                        wrapLongLines
                                         // @ts-ignore
                                         style={vscDarkPlus}
                                         language={match[1]}

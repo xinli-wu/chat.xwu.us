@@ -78,7 +78,7 @@ export default function Image() {
           overflowY: 'scroll',
           flexGrow: 1,
         }}>
-          <Stack spacing={2} sx={{ width: '90%', maxWidth: 1280, }}>
+          <Stack spacing={2} sx={{ width: '100%' }}>
             {chats.map((chat, idx) => {
               const isAssistant = chat.message.role === 'assistant';
               return (
