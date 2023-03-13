@@ -17,13 +17,12 @@ export default function InputBox({ onMessagesSubmit, isLoading, isReading = fals
   const [suggestOpen, setSuggestOpen] = React.useState(false);
   const [voiceInput, setVoiceInput] = useState(false);
   const inputElement = useRef(null);
-  // let keyPressed = {};
 
   useEffect(() => {
     if (inputElement.current) {
       inputElement.current.children[0].focus();
     }
-  });
+  }, []);
 
   useEffect(() => {
     localStorage.qHistory = JSON.stringify(suggestions);
@@ -39,7 +38,6 @@ export default function InputBox({ onMessagesSubmit, isLoading, isReading = fals
 
   const onQSubmit = (e) => {
     e.preventDefault();
-    // keyPressed = {};
     updateSuggestions(q);
     setSuggestOpen(false);
   };
