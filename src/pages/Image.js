@@ -64,7 +64,7 @@ export default function Image() {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        alignItems: 'stretch',
+        alignItems: 'center',
         flexFlow: 'column nowrap',
         height: '100vh'
       }}>
@@ -73,8 +73,8 @@ export default function Image() {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          width: '100%',
-          // maxHeight: `500px`,
+          width: '90vw',
+          maxWidth: 1280,
           overflowY: 'scroll',
           flexGrow: 1,
         }}>
@@ -82,14 +82,13 @@ export default function Image() {
             {chats.map((chat, idx) => {
               const isAssistant = chat.message.role === 'assistant';
               return (
-                <Stack key={idx} sx={{ width: '100%', maxWidth: '100%', alignItems: isAssistant ? 'start' : 'end' }}>
+                <Stack key={idx} sx={{ width: '100%', alignItems: isAssistant ? 'start' : 'end' }}>
                   <Stack direction='row' spacing={1} sx={{ alignItems: 'end' }}>
                     <Paper elevation={12} sx={{
                       p: 1,
                       borderRadius: 3,
                       textAlign: isAssistant ? 'left' : 'right',
                       width: '100%',
-                      maxWidth: '100%',
                     }}>
                       {isAssistant
                         ? <div ref={idx === chats.length - 1 ? lastMsgRef : undefined}>

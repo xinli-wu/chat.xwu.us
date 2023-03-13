@@ -3,8 +3,11 @@ import React from 'react';
 import Menu from './Menu';
 import ColorModeSwitch from './ColorModeSwitch';
 import Logo from './Logo';
+import { useTheme } from '@mui/material';
 
 export default function TopBar() {
+
+  const theme = useTheme();
 
   return (
     <Box
@@ -14,7 +17,7 @@ export default function TopBar() {
         height: 40,
         position: 'fixed',
         top: 0,
-        backdropFilter: 'blur(.2rem) brightness(0.85)',
+        backdropFilter: `blur(.2rem) brightness(${theme.palette.mode === 'dark' ? 0.85 : 0.95})`,
         zIndex: 1,
       }}
     >

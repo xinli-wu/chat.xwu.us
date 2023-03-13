@@ -126,7 +126,7 @@ export default function Chat() {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        alignItems: 'stretch',
+        alignItems: 'center',
         flexFlow: 'column nowrap',
         height: '100vh'
       }}>
@@ -135,28 +135,26 @@ export default function Chat() {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          width: '100%',
-          // maxHeight: `500px`,
+          width: '90vw',
+          maxWidth: 1280,
           overflowY: 'scroll',
           flexGrow: 1,
         }}>
           <Stack spacing={2} sx={{ width: '90%', maxWidth: 1280, }}>
-            {chats.map((chat, index) => {
+            {chats.map((chat, idx) => {
               const isAssistant = chat.message.role === 'assistant';
               return (
-                <Stack key={index} sx={{ width: '100%', maxWidth: 1200, alignItems: isAssistant ? 'start' : 'end' }}>
+                <Stack key={idx} sx={{ width: '100%', alignItems: isAssistant ? 'start' : 'end' }}>
                   <Stack direction='row' spacing={1} sx={{ alignItems: 'end' }}>
-                    {/* {isAI && <Avatar sx={{ bgcolor: 'rgb(46,149,118)' }}>AI</Avatar>} */}
                     <Paper elevation={12} sx={{
                       p: 1,
                       borderRadius: 3,
                       textAlign: isAssistant ? 'left' : 'right',
                       width: '100%',
-                      maxWidth: 1200,
                       ...(isAssistant && { backgroundColor: theme.palette.mode === 'dark' ? 'rgb(46,149,118)' : 'rgb(130, 200, 180)' })
                     }}>
                       {isAssistant
-                        ? <div ref={index === chats.length - 1 ? lastMsgRef : undefined}>
+                        ? <div ref={idx === chats.length - 1 ? lastMsgRef : undefined}>
                           <ReactMarkdown
                             components={(
                               {
