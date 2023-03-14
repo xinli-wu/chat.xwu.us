@@ -8,7 +8,6 @@ import './ImageRenderer.css';
 export const ImageRenderer = ({ b64_json }) => {
 
   const theme = useTheme();
-  console.log(theme);
 
   const [open, setOpen] = React.useState(false);
 

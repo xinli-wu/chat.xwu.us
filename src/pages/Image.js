@@ -56,7 +56,7 @@ export default function Image() {
     return () => clearTimeout(id);
   }, [chats.length]);
 
-  console.log(chats);
+
   return (
     <>
       <ChatsArea>
