@@ -1,8 +1,11 @@
-import { Box, Grid, Paper, Stack, Typography } from '@mui/material';
+import { Box } from '@mui/material';
+import { Grid, Paper, Stack, Typography } from '@mui/material';
 import axios from 'axios';
 import InputBox from 'components/InputBox';
 import dayjs from 'dayjs';
 import React, { useEffect, useRef } from 'react';
+import { ChatsArea } from '../components/ChatsArea';
+import { ImageRenderer } from '../components/ImageRenderer';
 import { Noti } from '../components/Noti';
 import './Image.css';
 
@@ -18,26 +21,24 @@ export default function Image() {
   const [chats, setChats] = React.useState([]);
   const [noti, setNoti] = React.useState({ text: null, severity: undefined });
 
-
-  const onMessagesSubmit = async (newMsg) => {
+  const onMessagesSubmit = async (prompt) => {
     const newChat = {
       metadata: { id: 'user' + chats.length, ts: dayjs().format('h:mm a') },
-      message: { role: 'user', content: newMsg }
+      message: { role: 'user', content: prompt }
     };
-    setChats(prev => [...prev, newChat]);
+    setChats(prev => ([...prev, newChat]));
     setIsLoading(true);
 
     try {
-      const res = await axios.post(`${REACT_APP_CHAT_API_URL}/openai/image/create`, {
-        prompt: newMsg
-      });
+      const res = await axios.post(`${REACT_APP_CHAT_API_URL}/openai/image/create`, { prompt });
 
-      console.log({ res });
-
-      setChats(prev => [...prev, {
-        metadata: { id: res.data.created, ts: dayjs().format('h:mm a') },
-        message: { role: 'assistant', content: res.data.data }
-      }]);
+      setChats(prev => ([
+        ...prev,
+        {
+          metadata: { id: res.data.created, ts: dayjs().format('h:mm a') },
+          message: { role: 'assistant', content: res.data.data }
+        }
+      ]));
 
     } catch (error) {
       console.log(error.message);
@@ -58,16 +59,7 @@ export default function Image() {
   console.log(chats);
   return (
     <>
-      <Box sx={{
-        zIndex: -10,
-        width: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexFlow: 'column nowrap',
-        height: '100vh'
-      }}>
+      <ChatsArea>
         <Stack className='no-scrollbar' sx={{
           pt: 8,
           display: 'flex',
@@ -91,15 +83,15 @@ export default function Image() {
                       width: '100%',
                     }}>
                       {isAssistant
-                        ? <div ref={idx === chats.length - 1 ? lastMsgRef : undefined}>
+                        ? <Box ref={idx === chats.length - 1 ? lastMsgRef : undefined}>
                           <Grid container spacing={1}>
                             {chat.message.content.map(({ b64_json }, idx) => (
                               <Grid key={idx} item xs={6} sm={3}>
-                                <img src={`data:image/jpeg;base64,${b64_json}`} alt='' style={{ width: '100%' }} />
+                                <ImageRenderer b64_json={b64_json} />
                               </Grid>
                             ))}
                           </Grid>
-                        </div>
+                        </Box>
                         : <Typography>{chat.message.content}</Typography>
                       }
                     </Paper>
@@ -125,9 +117,8 @@ export default function Image() {
             </Stack>
           </Stack>
         </Stack>
-      </Box>
+      </ChatsArea>
       <Noti noti={noti} setNoti={setNoti} />
     </>
   );
 }
-

@@ -1,15 +1,16 @@
-import { Box, Paper, Stack, Typography } from '@mui/material';
+import { Box } from '@mui/material';
+import { Paper, Stack, Typography, useTheme } from '@mui/material';
 import InputBox from 'components/InputBox';
 import dayjs from 'dayjs';
+import throttle from 'lodash.throttle';
 import React, { useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { ChatsArea } from '../components/ChatsArea';
 import { CopyCode } from '../components/CopyCode';
 import { Noti } from '../components/Noti';
-import throttle from 'lodash.throttle';
 import './Chat.css';
-import { useTheme } from '@mui/material';
 
 export default function Chat() {
   document.title = 'chat';
@@ -64,8 +65,9 @@ export default function Chat() {
       const ts = dayjs().format('h:mm a');
 
       const read = () => reader.read().then(({ done, value }) => {
+
         if (done) {
-          if (finalMsg) setChats(prev => [
+          setChats(prev => [
             ...prev.filter(x => x.metadata.id !== msgId),
             {
               metadata: { id: msgId, ts },
@@ -73,13 +75,13 @@ export default function Chat() {
                 role: 'assistant',
                 content: finalMsg
               }
-            }]
-          );
+            }
+          ]);
 
           setIsReading(false);
-
           return;
-        };
+        }
+
         const decoder = new TextDecoder();
         const lines = decoder.decode(value).toString().split('\n').filter(line => line.trim() !== '');
         lines.forEach(l => {
@@ -101,9 +103,9 @@ export default function Chat() {
 
         });
 
-
         read();
       });
+
       read();
     } catch (error) {
       console.log(error.message);
@@ -120,16 +122,7 @@ export default function Chat() {
 
   return (
     <>
-      <Box sx={{
-        zIndex: -10,
-        width: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexFlow: 'column nowrap',
-        height: '100vh'
-      }}>
+      <ChatsArea>
         <Stack className='no-scrollbar' sx={{
           pt: 8,
           display: 'flex',
@@ -154,7 +147,7 @@ export default function Chat() {
                       ...(isAssistant && { backgroundColor: theme.palette.mode === 'dark' ? 'rgb(46,149,118)' : 'rgb(130, 200, 180)' })
                     }}>
                       {isAssistant
-                        ? <div ref={idx === chats.length - 1 ? lastMsgRef : undefined}>
+                        ? <Box ref={idx === chats.length - 1 ? lastMsgRef : undefined}>
                           <ReactMarkdown
                             components={(
                               {
@@ -168,7 +161,7 @@ export default function Chat() {
                                         // @ts-ignore
                                         style={vscDarkPlus}
                                         language={match[1]}
-                                        PreTag="div"
+                                        PreTag='div'
                                         {...props}
                                       >
                                         {String(children).replace(/\n$/, '')}
@@ -184,7 +177,8 @@ export default function Chat() {
                             )}
                           >
                             {chat.message.content}
-                          </ReactMarkdown></div>
+                          </ReactMarkdown>
+                        </Box>
                         : <Typography>{chat.message.content}</Typography>
                       }
                     </Paper>
@@ -210,7 +204,7 @@ export default function Chat() {
             </Stack>
           </Stack>
         </Stack>
-      </Box>
+      </ChatsArea>
 
       <Noti noti={noti} setNoti={setNoti} />
     </>
