@@ -54,7 +54,7 @@ export default function Chat() {
     );
   };
 
-  const throttledSetCurAssistantMsg = throttle(setCurAssistantMsg, 70);
+  const throttledSetCurAssistantMsg = throttle(setCurAssistantMsg, 70, { trailing: true });
 
   const onMessagesSubmit = async (newMsg) => {
     lastUserMessage.current = newMsg;
@@ -80,40 +80,34 @@ export default function Chat() {
       const ts = dayjs().format('h:mm a');
 
       const read = () => reader.read().then(({ done, value }) => {
-
-        if (done) {
-          setChats(prev => [
-            ...prev.filter(x => x.metadata.id !== msgId),
-            {
-              metadata: { id: msgId, ts },
-              message: {
-                role: 'assistant',
-                content: finalMsg
-              }
-            }
-          ]);
-
-          setIsReading(false);
-          return;
-        }
+        if (done) return;
 
         const decoder = new TextDecoder();
         const lines = decoder.decode(value).toString().split('\n').filter(line => line.trim() !== '');
         lines.forEach(l => {
           const msg = l.replace(/^data: /, '');
-          if (msg !== '[DONE]' && JSON.parse(msg).choices[0].delta.content) {
+
+          if (msg !== '[DONE]') {
             const msgObj = JSON.parse(msg);
             if (!msgId) msgId = msgObj.id;
             const { content } = msgObj.choices[0].delta;
-            finalMsg += content;
+            if (content) {
 
-            throttledSetCurAssistantMsg(msgObj.id, ts, finalMsg + ' ▊');
+              finalMsg += content;
 
-            if (lastMsgRef.current) {
-              const boundingRect = lastMsgRef.current.getBoundingClientRect();
-              const { height } = boundingRect;
-              setLastMsgHeight(height);
+              throttledSetCurAssistantMsg(msgObj.id, ts, finalMsg + ' ▊');
+
+              if (lastMsgRef.current) {
+                const boundingRect = lastMsgRef.current.getBoundingClientRect();
+                const { height } = boundingRect;
+                setLastMsgHeight(height);
+              }
             }
+
+          } else {
+            throttledSetCurAssistantMsg(msgId, ts, finalMsg.slice(0, -1));
+
+            setIsReading(false);
           }
 
         });
@@ -134,6 +128,7 @@ export default function Chat() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chats.length, lastMsgHeight]);
 
+  console.log(chats[chats.length - 1]?.message?.content);
 
   return (
     <>
