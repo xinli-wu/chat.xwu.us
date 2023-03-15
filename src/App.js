@@ -7,7 +7,6 @@ import { Route, Routes } from "react-router-dom";
 import './App.css';
 import TopBar from './components/TopBar';
 import Chat from './pages/Chat';
-import Image from './pages/Image';
 
 function App() {
   document.body.style.transition = 'background-color 0.1s ease-in-out';

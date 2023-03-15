@@ -4,8 +4,8 @@ import { matchPath, useLocation, useNavigate } from 'react-router-dom';
 
 function Menu() {
   const navigate = useNavigate();
-  const { pathname } = useLocation();
   const menu = ['Chat', 'Image'];
+  const { pathname } = useLocation();
 
   React.useEffect(() => {
     if (matchPath(pathname, '/')) navigate('/chat');

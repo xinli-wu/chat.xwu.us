@@ -5,6 +5,9 @@ import dayjs from 'dayjs';
 import throttle from 'lodash.throttle';
 import React, { useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
+import { useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import { matchPath } from 'react-router-dom';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { ChatsArea } from '../components/ChatsArea';
@@ -13,7 +16,6 @@ import { Noti } from '../components/Noti';
 import './Chat.css';
 
 export default function Chat() {
-  document.title = 'chat';
 
   const { REACT_APP_CHAT_API_URL } = process.env;
   const bottomRef = useRef(null);
@@ -26,6 +28,18 @@ export default function Chat() {
   const [chats, setChats] = React.useState([]);
   const [noti, setNoti] = React.useState({ text: null, severity: undefined });
   const [lastMsgHeight, setLastMsgHeight] = React.useState();
+  const lastUserMessage = useRef('');
+
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    if (matchPath(pathname, '/')) navigate('/chat');
+  }, [pathname, navigate]);
+
+  useEffect(() => {
+    document.title = lastUserMessage.current || 'chat';
+  }, [chats.length]);
 
   const setCurAssistantMsg = (id, ts, msg) => {
     setChats(prev => [
@@ -43,6 +57,7 @@ export default function Chat() {
   const throttledSetCurAssistantMsg = throttle(setCurAssistantMsg, 70);
 
   const onMessagesSubmit = async (newMsg) => {
+    lastUserMessage.current = newMsg;
     const newChat = { metadata: { id: 'user' + chats.length, ts: dayjs().format('h:mm a') }, message: { role: 'user', content: newMsg } };
     setChats(prev => [...prev, newChat]);
     setIsLoading(true);
