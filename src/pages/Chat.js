@@ -128,8 +128,6 @@ export default function Chat() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chats.length, lastMsgHeight]);
 
-  console.log(chats[chats.length - 1]?.message?.content);
-
   return (
     <>
       <ChatsArea>
