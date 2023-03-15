@@ -46,7 +46,8 @@ function App() {
           <Routes>
             <Route path='/' element={<Chat />} />
             <Route path='/chat' element={<Chat />} />
-            <Route path='/image' element={<Image />} />
+            {/* disbale image creation, too expensive :( */}
+            {/* <Route path='/image' element={<Image />} /> */}
           </Routes>
         </ColorModeContext.Provider>
       </ThemeProvider>
