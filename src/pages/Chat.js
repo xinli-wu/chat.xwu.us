@@ -103,9 +103,8 @@ export default function Chat() {
                 setLastMsgHeight(height);
               }
             }
-
           } else {
-            throttledSetCurAssistantMsg(msgId, ts, finalMsg.slice(0, -1));
+            throttledSetCurAssistantMsg(msgId, ts, finalMsg);
 
             setIsReading(false);
           }
