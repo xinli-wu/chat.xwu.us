@@ -1,9 +1,11 @@
-import { Button, FormGroup } from '@mui/material';
-import { Box, FormControl, Paper, TextField } from '@mui/material';
+import LoginIcon from '@mui/icons-material/Login';
+import { LoadingButton } from '@mui/lab';
+import { Box, FormControl, FormGroup, Paper, TextField } from '@mui/material';
+import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import React, { useContext } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { Noti } from '../components/Noti';
 import { UserContext } from '../contexts/UserContext';
 import './Chat.css';
 
@@ -13,60 +15,68 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const [email, setEmail] = React.useState('ryan7gm@gmail.com');
+  const [form, setForm] = React.useState({ email: searchParams.get('email') || 'ryan7gm@gmail.com' });
+  const [noti, setNoti] = React.useState({ text: null, severity: undefined });
+
+  const otp = searchParams.get('otp');
+
+  const me = useQuery(['me'], () => axios(`${process.env.REACT_APP_CHAT_API_URL}/me`), {
+    enabled: !!localStorage['token']
+  });
+
+  const login = useQuery(['login'], () => axios.post(`${process.env.REACT_APP_CHAT_API_URL}/login`, { email: form.email, otp }), {
+    enabled: !!form.email && !!otp,
+    onError: (error) => error
+  });
 
   React.useEffect(() => {
-    const controller = new AbortController();
-    const email = searchParams.get('email');
-    const otp = searchParams.get('otp');
-
-
-    (async () => {
-      if (email && otp) {
-        //login
-        const res = await axios.post(`${process.env.REACT_APP_CHAT_API_URL}/email-login`, { email, otp });
-        localStorage['token'] = res.data.token;
-        console.log(res.data);
-      }
-
-    })();
-
-    return () => controller.abort();
-  }, [searchParams]);
-
-  React.useEffect(() => {
-    if (location.pathname !== '/email-login') navigate('/email-login');
+    if (location.pathname !== '/login') navigate('/login');
   }, [location.pathname, navigate]);
 
-  const onSendLoginClick = async (_e) => {
-    const res = await axios.post(`${process.env.REACT_APP_CHAT_API_URL}/email-login`, { email });
-    console.log(res.data);
-  };
+  React.useEffect(() => {
+    if (login.isSuccess && login.data?.data?.status === 'success') {
+      if (login.data?.data?.data?.user) {
+        localStorage['token'] = login.data.data.data.user.token;
+        setUser(login.data.data.data.user);
+      }
+      setNoti({ text: login.data.data.message, severity: 'success' });
+    }
+
+    if (login.isError) {
+      setNoti({ text: login.error?.response?.data.message, severity: 'error' });
+    }
+
+  }, [login.data, login.isError, login.isSuccess, login.error, setUser]);
 
   React.useEffect(() => {
-    (async () => {
-      const { data } = await axios(`${process.env.REACT_APP_CHAT_API_URL}/me`) || {};
-      if (data.status === 'success') {
-        setUser({ user: data.data.user, token: localStorage['token'] });
-        navigate('/chat');
-      }
-    })();
-  }, [navigate, setUser]);
+    if (me.isSuccess && me.data?.data?.status === 'success') {
+      setUser(me.data.data.data.user);
+    }
+
+  }, [me.isFetched, me.data, me.isSuccess, setUser]);
 
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center', mt: 30 }}>
       <Paper>
         <FormGroup>
-          <FormControl sx={{ p: 2, width: 500 }} margin="dense">
-            <TextField label="Email" variant="standard" fullWidth onChange={(e) => setEmail(e.target.value)} value={email} />
+          <FormControl sx={{ p: 2, width: 500 }} margin='dense'>
+            <TextField disabled={me.isFetching} label='Email' variant='standard' fullWidth
+              onChange={(e) => setForm({ email: e.target.value })} value={form.email}
+            />
           </FormControl>
-          <FormControl sx={{ p: 2, width: 500 }} margin="dense">
-            <Button variant="contained" onClick={onSendLoginClick}>Send Login Link</Button>
+          <FormControl sx={{ p: 2, width: 500 }} margin='dense'>
+            <LoadingButton
+              variant='contained'
+              onClick={() => login.refetch()}
+              loading={!!localStorage['token'] ? me.isFetching : login.isFetching}
+              loadingPosition='end'
+              endIcon={<LoginIcon />}>
+              Send Login Link
+            </LoadingButton>
           </FormControl>
         </FormGroup>
       </Paper>
-      {/* <Noti noti={noti} setNoti={setNoti} /> */}
+      <Noti noti={noti} setNoti={setNoti} />
     </Box>
   );
 }
-

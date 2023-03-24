@@ -1,11 +1,15 @@
 import { useMediaQuery } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import {
+  QueryClient,
+  QueryClientProvider
+} from '@tanstack/react-query';
 import axios from 'axios';
 import { UserContext } from 'contexts/UserContext';
 import { ColorModeContext } from 'contexts/utilContext';
 import React from 'react';
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import './App.css';
 import TopBar from './components/TopBar';
 import Chat from './pages/Chat';
@@ -26,10 +30,14 @@ axios.interceptors.request.use(
   }
 );
 
+const queryClient = new QueryClient();
+
+
 function App() {
   document.body.style.transition = 'background-color 0.1s ease-in-out';
 
   const [user, setUser] = React.useState(null);
+  const navigate = useNavigate();
 
   const preferedMode = useMediaQuery('(prefers-color-scheme: dark)') ? 'dark' : 'light';
   const [mode, setMode] = React.useState(preferedMode);
@@ -57,29 +65,33 @@ function App() {
   );
 
   React.useEffect(() => {
-    console.log(user);
-  }, [user]);
+    if (!user) navigate('/login');
+    if (user) navigate('/chat');
+
+  }, [user, navigate]);
 
   return (
     <div className='App'>
       <ThemeProvider theme={theme}>
         <ColorModeContext.Provider value={colorMode}>
           <CssBaseline />
-          <UserContext.Provider value={{ user, setUser }}>
-            <TopBar />
-            <Routes>
-              {user ?
-                <>
-                  <Route path='/' element={<Chat />} />
-                  <Route path='/chat' element={<Chat />} />
-                  <Route path='*' element={<Chat />} />
-                  {/* disbale image creation, too expensive :( */}
-                  {/* <Route path='/image' element={<Image />} /> */}
-                </>
-                : <Route path='*' element={<Login />} />
-              }
-            </Routes>
-          </UserContext.Provider>
+          <QueryClientProvider client={queryClient}>
+            <UserContext.Provider value={{ user, setUser }}>
+              <TopBar />
+              <Routes>
+                {user ?
+                  <>
+                    <Route path='/' element={<Chat />} />
+                    <Route path='/chat' element={<Chat />} />
+                    <Route path='*' element={<Chat />} />
+                    {/* disbale image creation, too expensive :( */}
+                    {/* <Route path='/image' element={<Image />} /> */}
+                  </>
+                  : <Route path='*' element={<Login />} />
+                }
+              </Routes>
+            </UserContext.Provider>
+          </QueryClientProvider>
         </ColorModeContext.Provider>
       </ThemeProvider>
     </div>
