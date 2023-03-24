@@ -15,18 +15,20 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const [form, setForm] = React.useState({ email: searchParams.get('email') || 'ryan7gm@gmail.com' });
+  const [form, setForm] = React.useState({ email: searchParams.get('email') || '' });
   const [noti, setNoti] = React.useState({ text: null, severity: undefined });
 
   const otp = searchParams.get('otp');
 
   const me = useQuery(['me'], () => axios(`${process.env.REACT_APP_CHAT_API_URL}/me`), {
-    enabled: !!localStorage['token']
+    enabled: !!localStorage['token'],
+    cacheTime: 0
   });
 
   const login = useQuery(['login'], () => axios.post(`${process.env.REACT_APP_CHAT_API_URL}/login`, { email: form.email, otp }), {
     enabled: !!form.email && !!otp,
-    onError: (error) => error
+    onError: (error) => error,
+    retry: false
   });
 
   React.useEffect(() => {
@@ -58,7 +60,7 @@ export default function Login() {
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center', mt: 30 }}>
       <Paper>
-        <FormGroup>
+        <FormGroup onSubmit={() => login.refetch()}>
           <FormControl sx={{ p: 2, width: 500 }} margin='dense'>
             <TextField disabled={me.isFetching} label='Email' variant='standard' fullWidth
               onChange={(e) => setForm({ email: e.target.value })} value={form.email}
@@ -66,6 +68,7 @@ export default function Login() {
           </FormControl>
           <FormControl sx={{ p: 2, width: 500 }} margin='dense'>
             <LoadingButton
+              type='submit'
               variant='contained'
               onClick={() => login.refetch()}
               loading={!!localStorage['token'] ? me.isFetching : login.isFetching}

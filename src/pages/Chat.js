@@ -63,7 +63,6 @@ export default function Chat() {
     setIsLoading(true);
 
     try {
-      console.log(user.token);
       const raw = await fetch(`${REACT_APP_CHAT_API_URL}/openai/chat/completion`, {
         method: 'POST',
         headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'Authorization': `Bearer ${user.token}` },
