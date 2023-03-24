@@ -9,9 +9,7 @@ import './Chat.css';
 
 export default function Login() {
 
-  const { user, setUser } = useContext(UserContext);
-  console.log({ user });
-
+  const { setUser } = useContext(UserContext);
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();

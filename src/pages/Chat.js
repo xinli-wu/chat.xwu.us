@@ -68,11 +68,7 @@ export default function Chat() {
     try {
       const raw = await fetch(`${REACT_APP_CHAT_API_URL}/openai/chat/completion`, {
         method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.token}`
-        },
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'Authorization': `Bearer ${user.token}` },
         body: JSON.stringify({ messages: [...chats.map(x => x.message), newChat.message] })
       });
 
