@@ -1,15 +1,35 @@
 import { useMediaQuery } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import axios from 'axios';
+import { UserContext } from 'contexts/UserContext';
 import { ColorModeContext } from 'contexts/utilContext';
 import React from 'react';
 import { Route, Routes } from "react-router-dom";
 import './App.css';
 import TopBar from './components/TopBar';
 import Chat from './pages/Chat';
+import Login from './pages/Login';
+
+axios.interceptors.request.use(
+  config => {
+    const { origin } = new URL(config.url);
+    const allowedOrigins = [process.env.REACT_APP_CHAT_API_URL];
+    const token = localStorage.getItem('token');
+    if (allowedOrigins.includes(origin)) {
+      config.headers.authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  error => {
+    return Promise.reject(error);
+  }
+);
 
 function App() {
   document.body.style.transition = 'background-color 0.1s ease-in-out';
+
+  const [user, setUser] = React.useState(null);
 
   const preferedMode = useMediaQuery('(prefers-color-scheme: dark)') ? 'dark' : 'light';
   const [mode, setMode] = React.useState(preferedMode);
@@ -36,18 +56,30 @@ function App() {
     [mode],
   );
 
+  React.useEffect(() => {
+    console.log(user);
+  }, [user]);
+
   return (
     <div className='App'>
       <ThemeProvider theme={theme}>
         <ColorModeContext.Provider value={colorMode}>
           <CssBaseline />
-          <TopBar />
-          <Routes>
-            <Route path='/' element={<Chat />} />
-            <Route path='/chat' element={<Chat />} />
-            {/* disbale image creation, too expensive :( */}
-            {/* <Route path='/image' element={<Image />} /> */}
-          </Routes>
+          <UserContext.Provider value={{ user, setUser }}>
+            <TopBar />
+            <Routes>
+              {user ?
+                <>
+                  <Route path='/' element={<Chat />} />
+                  <Route path='/chat' element={<Chat />} />
+                  <Route path='*' element={<Chat />} />
+                  {/* disbale image creation, too expensive :( */}
+                  {/* <Route path='/image' element={<Image />} /> */}
+                </>
+                : <Route path='*' element={<Login />} />
+              }
+            </Routes>
+          </UserContext.Provider>
         </ColorModeContext.Provider>
       </ThemeProvider>
     </div>
