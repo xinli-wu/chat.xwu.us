@@ -1,23 +1,23 @@
-import { Box } from '@mui/material';
-import { Paper, Stack, Typography, useTheme } from '@mui/material';
+import { Box, Paper, Stack, Typography, useTheme } from '@mui/material';
 import InputBox from 'components/InputBox';
 import dayjs from 'dayjs';
 import throttle from 'lodash.throttle';
-import React, { useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { useNavigate } from 'react-router-dom';
-import { useLocation } from 'react-router-dom';
-import { matchPath } from 'react-router-dom';
+import { matchPath, useLocation, useNavigate } from 'react-router-dom';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { ChatsArea } from '../components/ChatsArea';
 import { CopyCode } from '../components/CopyCode';
 import { Noti } from '../components/Noti';
+import { UserContext } from '../contexts/UserContext';
 import './Chat.css';
 
 export default function Chat() {
 
   const { REACT_APP_CHAT_API_URL } = process.env;
+  const { user } = useContext(UserContext);
+
   const bottomRef = useRef(null);
   const lastMsgRef = useRef(null);
   const footerRef = useRef(null);
@@ -65,7 +65,7 @@ export default function Chat() {
     try {
       const raw = await fetch(`${REACT_APP_CHAT_API_URL}/openai/chat/completion`, {
         method: 'POST',
-        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'Authorization': `Bearer ${user.token}` },
         body: JSON.stringify({ messages: [...chats.map(x => x.message), newChat.message] })
       });
 
