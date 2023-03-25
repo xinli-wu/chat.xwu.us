@@ -1,26 +1,14 @@
-import { Box, Button, useTheme } from '@mui/material';
+import { Box, Stack, useTheme } from '@mui/material';
 import React, { useContext } from 'react';
-import { useLocation } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../contexts/UserContext';
-import BackBtn from './BackBtn';
-import ColorModeSwitch from './ColorModeSwitch';
 import Logo from './Logo';
+import NavMenu from './NavMenu';
+import ProfileMenu from './ProfileMenu';
 
 export default function TopBar() {
 
   const theme = useTheme();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { user, setUser } = useContext(UserContext);
-
-  const onLogoutClick = (e) => {
-    localStorage.removeItem('token');
-    setUser(null);
-
-    if (location.pathname !== '/login') navigate('/login');
-  };
-
+  const { user } = useContext(UserContext);
 
   return (
     <Box
@@ -35,15 +23,16 @@ export default function TopBar() {
         zIndex: 1,
       }}
     >
-      <Box sx={{ alignItems: 'start' }}>
-        <BackBtn />
-      </Box>
-      <Box sx={{ alignItems: 'center' }}>
+      <Box>
         <Logo />
       </Box>
-      <Box sx={{ alignItems: 'end' }}>
-        {user && <Button onClick={onLogoutClick}>Logout</Button>}
-        <ColorModeSwitch />
+      <Box>
+        {user &&
+          <Stack direction={'row'} sx={{ height: '100%', display: 'flex', justifyContent: 'center', p: .5 }}>
+            <NavMenu />
+            <ProfileMenu />
+          </Stack>
+        }
       </Box>
     </Box>
   );

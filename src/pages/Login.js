@@ -4,7 +4,7 @@ import { Box, FormControl, FormGroup, Paper, TextField } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import React, { useContext } from 'react';
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { Noti } from '../components/Noti';
 import { UserContext } from '../contexts/UserContext';
 import './Chat.css';
@@ -12,8 +12,6 @@ import './Chat.css';
 export default function Login() {
 
   const { setUser } = useContext(UserContext);
-  const navigate = useNavigate();
-  const location = useLocation();
   const [searchParams] = useSearchParams();
   const [form, setForm] = React.useState({ email: searchParams.get('email') || '' });
   const [noti, setNoti] = React.useState({ text: null, severity: undefined });
@@ -22,7 +20,8 @@ export default function Login() {
 
   const me = useQuery(['me'], () => axios(`${process.env.REACT_APP_CHAT_API_URL}/me`), {
     enabled: !!localStorage['token'],
-    cacheTime: 0
+    cacheTime: 0,
+    retry: false
   });
 
   const login = useQuery(['login'], () => axios.post(`${process.env.REACT_APP_CHAT_API_URL}/login`, { email: form.email, otp }), {
@@ -30,10 +29,6 @@ export default function Login() {
     onError: (error) => error,
     retry: false
   });
-
-  React.useEffect(() => {
-    if (location.pathname !== '/login') navigate('/login');
-  }, [location.pathname, navigate]);
 
   React.useEffect(() => {
     if (login.isSuccess && login.data?.data?.status === 'success') {

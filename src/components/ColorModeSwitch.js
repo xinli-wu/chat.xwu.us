@@ -9,7 +9,6 @@ function ColorModeSwitch() {
   const colorMode = React.useContext(ColorModeContext);
   return (
     <IconButton
-      // sx={{ position: 'absolute', right: 0 }}
       onClick={colorMode.toggleColorMode} color='inherit'>
       {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
     </IconButton>
