@@ -72,13 +72,6 @@ function App() {
 
   }, [user, location.pathname, setApp, navigate]);
 
-  // useEffect(() => {
-  //   console.log(app);
-  //   if (location.pathname !== app.page) {
-  //     navigate(app.page);
-  //   }
-  // }, [app, location.pathname, navigate]);
-
   return (
     <div className='App'>
       <ThemeProvider theme={theme}>
