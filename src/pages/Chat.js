@@ -4,7 +4,6 @@ import dayjs from 'dayjs';
 import throttle from 'lodash.throttle';
 import React, { useContext, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { matchPath, useLocation, useNavigate } from 'react-router-dom';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { ChatsArea } from '../components/ChatsArea';
@@ -29,13 +28,6 @@ export default function Chat() {
   const [noti, setNoti] = React.useState({ text: null, severity: undefined });
   const [lastMsgHeight, setLastMsgHeight] = React.useState();
   const lastUserMessage = useRef('');
-
-  const { pathname } = useLocation();
-  const navigate = useNavigate();
-
-  React.useEffect(() => {
-    if (matchPath(pathname, '/')) navigate('/chat');
-  }, [pathname, navigate]);
 
   useEffect(() => {
     document.title = lastUserMessage.current || 'chat';

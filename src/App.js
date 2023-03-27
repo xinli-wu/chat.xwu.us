@@ -5,12 +5,17 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import axios from 'axios';
 import { UserContext } from 'contexts/UserContext';
 import { ColorModeContext } from 'contexts/utilContext';
-import React from 'react';
-import { Route, Routes } from 'react-router-dom';
+import jwtDecode from "jwt-decode";
+import React, { useEffect } from 'react';
+import { Navigate, Route, Routes, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import './App.css';
+import Footer from './components/Footer';
+import { Noti } from './components/Noti';
 import TopBar from './components/TopBar';
+import { AppContext } from './contexts/AppContext';
 import Chat from './pages/Chat';
 import Login from './pages/Login';
+import Profile from './pages/Profile';
 
 axios.interceptors.request.use(
   config => {
@@ -32,11 +37,41 @@ const queryClient = new QueryClient();
 
 function App() {
   document.body.style.transition = 'background-color 0.1s ease-in-out';
-
-  const [user, setUser] = React.useState(null);
-
   const preferedMode = useMediaQuery('(prefers-color-scheme: dark)') ? 'dark' : 'light';
   const [mode, setMode] = React.useState(preferedMode);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const assumedUser = localStorage['token'] ? { email: jwtDecode(localStorage['token'])?.email, token: localStorage['token'] } : null;
+
+  const [user, setUser] = React.useState(assumedUser);
+  const [app, setApp] = React.useState({ page: '/' });
+  const [noti, setNoti] = React.useState({ text: null, severity: undefined });
+  const [searchParams] = useSearchParams();
+
+  const email = searchParams.get('email');
+  const otp = searchParams.get('otp');
+
+  React.useEffect(() => {
+    (async () => {
+      if (!email || !otp) {
+        await axios(`${process.env.REACT_APP_CHAT_API_URL}/me`).catch(_e => setUser(null));
+      } else {
+        const res = await axios.post(`${process.env.REACT_APP_CHAT_API_URL}/login`, { email, otp });
+
+        if (res.data?.status === 'success') {
+          if (res.data?.data?.user) {
+            localStorage['token'] = res.data.data.user.token;
+            setUser(res.data.data.user);
+          }
+          setNoti({ text: res.data.message, severity: 'success' });
+        } else {
+          setNoti({ text: res.data.message, severity: 'error' });
+        }
+      }
+    })();
+
+  }, [email, otp]);
+
 
   React.useEffect(() => setMode(preferedMode), [preferedMode]);
 
@@ -52,13 +87,18 @@ function App() {
   const theme = React.useMemo(
     () =>
       createTheme({
-        palette: {
-          // @ts-ignore
-          mode
-        },
+        // @ts-ignore
+        palette: { mode },
       }),
     [mode],
   );
+
+  useEffect(() => {
+
+    if (!user) navigate('/login');
+    if (user && ['/', '/login'].includes(location.pathname)) navigate('/chat');
+
+  }, [user, location.pathname, setApp, navigate]);
 
   return (
     <div className='App'>
@@ -66,21 +106,27 @@ function App() {
         <ColorModeContext.Provider value={colorMode}>
           <CssBaseline />
           <QueryClientProvider client={queryClient}>
-            <UserContext.Provider value={{ user, setUser }}>
-              <TopBar />
-              <Routes>
-                {user ?
-                  <>
-                    <Route path='/' element={<Chat />} />
-                    <Route path='/chat' element={<Chat />} />
-                    <Route path='*' element={<Chat />} />
-                    {/* disbale image creation, too expensive :( */}
-                    {/* <Route path='/image' element={<Image />} /> */}
-                  </>
-                  : <Route path='*' element={<Login />} />
-                }
-              </Routes>
-            </UserContext.Provider>
+            <AppContext.Provider value={{ app, setApp }}>
+              <UserContext.Provider value={{ user, setUser }}>
+                <TopBar />
+                <Routes>
+                  {user ?
+                    <>
+                      <Route path='/' element={<Chat />} />
+                      <Route path='/chat' element={<Chat />} />
+                      <Route path='/account' element={<Profile />} />
+                      <Route path='/account/:section' element={<Profile />} />
+                      {/* disbale image creation, too expensive :( */}
+                      {/* <Route path='/image' element={<Image />} /> */}
+                      <Route path='*' element={<Navigate replace to="/chat" />} />
+                    </>
+                    : <Route path='*' element={<Login />} />
+                  }
+                </Routes>
+                <Footer />
+                <Noti noti={noti} setNoti={setNoti} />
+              </UserContext.Provider>
+            </AppContext.Provider>
           </QueryClientProvider>
         </ColorModeContext.Provider>
       </ThemeProvider>
