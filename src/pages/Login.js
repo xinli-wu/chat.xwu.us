@@ -9,6 +9,8 @@ import { Noti } from '../components/Noti';
 import { UserContext } from '../contexts/UserContext';
 import './Chat.css';
 
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export default function Login() {
 
   const { setUser } = useContext(UserContext);
@@ -18,25 +20,30 @@ export default function Login() {
 
   const otp = searchParams.get('otp');
 
-  const me = useQuery(['me'], () => axios(`${process.env.REACT_APP_CHAT_API_URL}/me`), {
-    enabled: !!localStorage['token'],
-    cacheTime: 0,
-    retry: false
-  });
+  // const me = useQuery(['me'], () => axios(`${process.env.REACT_APP_CHAT_API_URL}/me`), {
+  //   enabled: !!localStorage['token'],
+  //   cacheTime: 0,
+  //   retry: false
+  // });
 
   const login = useQuery(['login'], () => axios.post(`${process.env.REACT_APP_CHAT_API_URL}/login`, { email: form.email, otp }), {
     enabled: !!form.email && !!otp,
-    onError: (error) => error,
-    retry: false
+    retry: false,
+    cacheTime: 0,
+    // onError: (error) => error,
   });
 
   React.useEffect(() => {
-    if (login.isSuccess && login.data?.data?.status === 'success') {
-      if (login.data?.data?.data?.user) {
-        localStorage['token'] = login.data.data.data.user.token;
-        setUser(login.data.data.data.user);
+    if (login.isSuccess) {
+      if (login.data?.data?.status === 'success') {
+        if (login.data?.data?.data?.user) {
+          localStorage['token'] = login.data.data.data.user.token;
+          setUser(login.data.data.data.user);
+        }
+        setNoti({ text: login.data.data.message, severity: 'success' });
+      } else {
+        setNoti({ text: login.data.data.message, severity: 'error' });
       }
-      setNoti({ text: login.data.data.message, severity: 'success' });
     }
 
     if (login.isError) {
@@ -45,19 +52,24 @@ export default function Login() {
 
   }, [login.data, login.isError, login.isSuccess, login.error, setUser]);
 
-  React.useEffect(() => {
-    if (me.isSuccess && me.data?.data?.status === 'success') {
-      setUser(me.data.data.data.user);
-    }
+  // React.useEffect(() => {
+  //   if (me.isSuccess && me.data?.data?.status === 'success') {
+  //     setUser(me.data.data.data.user);
+  //   }
 
-  }, [me.isFetched, me.data, me.isSuccess, setUser]);
+  //   if (me.isError) {
+  //     setUser(null);
+  //     setNoti({ text: 'Please login again.', severity: 'error' });
+  //   }
+
+  // }, [me.isFetched, me.data, me.isSuccess, me.isError, setUser]);
 
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center', mt: 30 }}>
       <Paper>
         <FormGroup onSubmit={() => login.refetch()}>
           <FormControl sx={{ p: 2, width: 500 }} margin='dense'>
-            <TextField disabled={me.isFetching} label='Email' variant='standard' fullWidth
+            <TextField disabled={login.isFetching} label='Email' variant='standard' fullWidth
               onChange={(e) => setForm({ email: e.target.value })} value={form.email}
             />
           </FormControl>
@@ -65,8 +77,9 @@ export default function Login() {
             <LoadingButton
               type='submit'
               variant='contained'
+              disabled={!emailRegex.test(form.email)}
               onClick={() => login.refetch()}
-              loading={!!localStorage['token'] ? me.isFetching : login.isFetching}
+              loading={(login.isFetching || login.isRefetching)}
               loadingPosition='end'
               endIcon={<LoginIcon />}>
               Send Login Link

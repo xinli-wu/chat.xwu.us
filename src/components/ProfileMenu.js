@@ -27,8 +27,7 @@ export default function ProfileMenu() {
 
   const onProfileClick = (_e) => {
     handleClose();
-    navigate('profile');
-    // setApp(prev => ({ ...prev, page: `/profile` }));
+    navigate('/account');
   };
 
   return (
