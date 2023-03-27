@@ -65,15 +65,15 @@ export default function Login() {
   // }, [me.isFetched, me.data, me.isSuccess, me.isError, setUser]);
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 30 }}>
-      <Paper sx={{ width: '30%', minWidth: 300, maxWidth: 720 }}>
-        <FormGroup onSubmit={() => login.refetch()}>
-          <FormControl sx={{ p: 2, width: 500 }} margin='dense'>
+    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 30 }}>
+      <Paper sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '70%', minWidth: 300, maxWidth: 600 }}>
+        <FormGroup onSubmit={() => login.refetch()} sx={{ p: 2, width: '100%' }}>
+          <FormControl sx={{ p: 1 }} margin='dense'>
             <TextField disabled={login.isFetching} label='Email' variant='standard' fullWidth
               onChange={(e) => setForm({ email: e.target.value })} value={form.email}
             />
           </FormControl>
-          <FormControl sx={{ p: 2 }} margin='dense'>
+          <FormControl sx={{ p: 1 }} margin='dense'>
             <LoadingButton
               type='submit'
               variant='contained'
