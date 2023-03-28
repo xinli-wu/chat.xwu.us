@@ -28,11 +28,6 @@ export const Toast = () => {
     return () => clearTimeout(id);
   }, [toast]);
 
-  // useEffect(() => {
-  //   setOpen(true);
-  // }, [toast]);
-
-  console.log(toast);
   return (
     <>
       <Snackbar
