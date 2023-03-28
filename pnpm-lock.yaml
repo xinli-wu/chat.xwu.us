@@ -33,7 +33,7 @@ specifiers:
   react-player: ^2.12.0
   react-router-dom: ^6.9.0
   react-scripts: ^5.0.1
-  react-siriwave: ^3.1.0
+  react-siriwave: ^2.1.0
   react-syntax-highlighter: ^15.5.0
   react-transition-group: ^4.4.5
   typescript: ^4.9.5
@@ -64,7 +64,7 @@ dependencies:
   react-player: 2.12.0_react@18.2.0
   react-router-dom: 6.9.0_biqbaboplfbrettd7655fr4n2y
   react-scripts: 5.0.1_2c5defd7ngpxz5iugy7arqqahy
-  react-siriwave: 3.1.0_react@18.2.0
+  react-siriwave: 2.1.0
   react-syntax-highlighter: 15.5.0_react@18.2.0
   react-transition-group: 4.4.5_biqbaboplfbrettd7655fr4n2y
   web-vitals: 3.3.0
@@ -9385,12 +9385,9 @@ packages:
       - webpack-plugin-serve
     dev: false
 
-  /react-siriwave/3.1.0_react@18.2.0:
-    resolution: {integrity: sha512-oQhwJ6aWHdKja7kn5wjgnKkYBaa4B4aOZBUUyS5rXhlRDiNj7TKNVM+g76YsB+T0XoZNc3iQ7dpGyqL00k1eZg==}
-    peerDependencies:
-      react: '>=16'
+  /react-siriwave/2.1.0:
+    resolution: {integrity: sha512-TLbjzJ9Y9L5AulV3PMmKUw3VV9tuJ4pNWUtnGv382NyyLrIWTXDTLKEIL+H3HBtxZaiKWoHk4zKPTB8BbpdywQ==}
     dependencies:
-      react: 18.2.0
       siriwave: 2.3.0
     dev: false
 
