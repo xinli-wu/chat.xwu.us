@@ -10,7 +10,7 @@ import React, { useEffect } from 'react';
 import { Navigate, Route, Routes, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import './App.css';
 import Footer from './components/Footer';
-import { Noti } from './components/Noti';
+import { Toast } from './components/Toast';
 import TopBar from './components/TopBar';
 import { AppContext } from './contexts/AppContext';
 import Chat from './pages/Chat';
@@ -22,14 +22,13 @@ axios.interceptors.request.use(
     const { origin } = new URL(config.url);
     const allowedOrigins = [process.env.REACT_APP_CHAT_API_URL];
     const token = localStorage.getItem('token');
-    if (allowedOrigins.includes(origin)) {
+    if (allowedOrigins.includes(origin) && token) {
       config.headers.authorization = `Bearer ${token}`;
     }
+    config.withCredentials = true;
     return config;
   },
-  error => {
-    return Promise.reject(error);
-  }
+  error => Promise.reject(error)
 );
 
 const queryClient = new QueryClient();
@@ -41,21 +40,24 @@ function App() {
   const [mode, setMode] = React.useState(preferedMode);
   const navigate = useNavigate();
   const location = useLocation();
-  const assumedUser = localStorage['token'] ? { email: jwtDecode(localStorage['token'])?.email, token: localStorage['token'] } : null;
+  const assumedUser = React.useMemo(() => {
+    return localStorage['token'] ? { email: jwtDecode(localStorage['token'])?.email, token: localStorage['token'] } : null;
+  }, []);
 
   const [user, setUser] = React.useState(assumedUser);
   const [app, setApp] = React.useState({ page: '/' });
-  const [noti, setNoti] = React.useState({ text: null, severity: undefined });
+  const [toast, setToast] = React.useState({});
   const [searchParams] = useSearchParams();
-
   const email = searchParams.get('email');
   const otp = searchParams.get('otp');
 
   React.useEffect(() => {
     (async () => {
-      if (!email || !otp) {
+      if ((!email || !otp) && assumedUser) {
         await axios(`${process.env.REACT_APP_CHAT_API_URL}/me`).catch(_e => setUser(null));
-      } else {
+      }
+
+      if (email && otp) {
         const res = await axios.post(`${process.env.REACT_APP_CHAT_API_URL}/login`, { email, otp });
 
         if (res.data?.status === 'success') {
@@ -63,14 +65,14 @@ function App() {
             localStorage['token'] = res.data.data.user.token;
             setUser(res.data.data.user);
           }
-          setNoti({ text: res.data.message, severity: 'success' });
+          setToast({ text: res.data.message, severity: 'success' });
         } else {
-          setNoti({ text: res.data.message, severity: 'error' });
+          setToast({ text: res.data.message, severity: 'error' });
         }
       }
     })();
 
-  }, [email, otp]);
+  }, [email, otp, assumedUser]);
 
 
   React.useEffect(() => setMode(preferedMode), [preferedMode]);
@@ -100,15 +102,31 @@ function App() {
 
   }, [user, location.pathname, setApp, navigate]);
 
+  React.useEffect(() => {
+    (async () => {
+      const res = await axios.post(`${process.env.REACT_APP_CHAT_API_URL}/me/refresh`);
+      if (res.data?.status === 'success') {
+        if (res.data?.data?.user) {
+          localStorage['token'] = res.data.data.user.token;
+          setUser(res.data.data.user);
+        }
+        setToast({ text: res.data.message, severity: 'success' });
+      } else {
+        setToast({ text: res.data.message, severity: 'error' });
+      }
+    })();
+  }, []);
+
   return (
     <div className='App'>
       <ThemeProvider theme={theme}>
         <ColorModeContext.Provider value={colorMode}>
           <CssBaseline />
           <QueryClientProvider client={queryClient}>
-            <AppContext.Provider value={{ app, setApp }}>
+            <AppContext.Provider value={{ app, setApp, toast, setToast }}>
               <UserContext.Provider value={{ user, setUser }}>
                 <TopBar />
+                <Toast />
                 <Routes>
                   {user ?
                     <>
@@ -124,7 +142,6 @@ function App() {
                   }
                 </Routes>
                 <Footer />
-                <Noti noti={noti} setNoti={setNoti} />
               </UserContext.Provider>
             </AppContext.Provider>
           </QueryClientProvider>

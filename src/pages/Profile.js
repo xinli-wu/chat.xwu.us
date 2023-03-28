@@ -1,7 +1,6 @@
 import { Box, FormControl, FormGroup, Paper, Stack, TextField } from '@mui/material';
 import React, { useContext } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Noti } from '../components/Noti';
 import { UserContext } from '../contexts/UserContext';
 import './Chat.css';
 
@@ -11,7 +10,6 @@ export default function Profile() {
 
   const { user } = useContext(UserContext);
   const [form, setForm] = React.useState({ email: user.email });
-  const [noti, setNoti] = React.useState({ text: null, severity: undefined });
 
   const [searchParams] = useSearchParams();
   const success = isTrue(searchParams.get('success'));
@@ -35,8 +33,6 @@ export default function Profile() {
           </FormGroup>
         </Paper>
       </Box>
-
-      <Noti noti={noti} setNoti={setNoti} />
     </Stack>
   );
 }

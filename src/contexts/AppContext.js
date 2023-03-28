@@ -1,8 +1,10 @@
 import React from 'react';
 
 const initialState = {
-  app: null,
+  app: {},
   setApp: (_) => undefined,
+  toast: {},
+  setToast: (_) => undefined,
 };
 
 export const AppContext = React.createContext(initialState);

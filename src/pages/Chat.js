@@ -8,7 +8,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { ChatsArea } from '../components/ChatsArea';
 import { CopyCode } from '../components/CopyCode';
-import { Noti } from '../components/Noti';
+import { AppContext } from '../contexts/AppContext';
 import { UserContext } from '../contexts/UserContext';
 import './Chat.css';
 
@@ -21,11 +21,11 @@ export default function Chat() {
   const lastMsgRef = useRef(null);
   const footerRef = useRef(null);
   const theme = useTheme();
+  const { setToast } = useContext(AppContext);
 
   const [isLoading, setIsLoading] = React.useState(false);
   const [isReading, setIsReading] = React.useState(false);
   const [chats, setChats] = React.useState([]);
-  const [noti, setNoti] = React.useState({ text: null, severity: undefined });
   const [lastMsgHeight, setLastMsgHeight] = React.useState();
   const lastUserMessage = useRef('');
 
@@ -109,7 +109,7 @@ export default function Chat() {
       read();
     } catch (error) {
       console.log(error.message);
-      setNoti({ text: `API error: ${error.message}`, severity: 'error' });
+      setToast({ text: `API error: ${error.message}`, severity: 'error' });
     } finally {
       setIsLoading(false);
     }
@@ -205,7 +205,6 @@ export default function Chat() {
         </Stack>
       </ChatsArea>
 
-      <Noti noti={noti} setNoti={setNoti} />
     </>
   );
 }

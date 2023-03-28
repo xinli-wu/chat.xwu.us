@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 import React, { useEffect, useRef } from 'react';
 import { ChatsArea } from '../components/ChatsArea';
 import { ImageRenderer } from '../components/ImageRenderer';
-import { Noti } from '../components/Noti';
+import { Noti } from '../components/Toast';
 import './Image.css';
 
 export default function Image() {

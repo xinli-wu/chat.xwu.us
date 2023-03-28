@@ -1,8 +1,10 @@
 import { Avatar, IconButton } from '@mui/material';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import axios from 'axios';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AppContext } from '../contexts/AppContext';
 import { UserContext } from '../contexts/UserContext';
 
 export default function ProfileMenu() {
@@ -11,6 +13,7 @@ export default function ProfileMenu() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const { user, setUser } = React.useContext(UserContext);
+  const { setToast } = React.useContext(AppContext);
 
   const handleClick = (e) => {
     setAnchorEl(e.currentTarget);
@@ -20,9 +23,14 @@ export default function ProfileMenu() {
     setAnchorEl(null);
   };
 
-  const onLogoutClick = (_e) => {
+  const onLogoutClick = async (_e) => {
     localStorage.removeItem('token');
-    setUser(null);
+    const { data } = await axios.post(`${process.env.REACT_APP_CHAT_API_URL}/me/logout`);
+    console.log(data);
+    if (data.status === 'success') {
+      setUser(null);
+      setToast({ text: data.message, severity: data.status });
+    }
   };
 
   const onProfileClick = (_e) => {

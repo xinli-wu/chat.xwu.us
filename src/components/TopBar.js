@@ -11,29 +11,32 @@ export default function TopBar() {
   const { user } = useContext(UserContext);
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        width: '100%',
-        height: 40,
-        position: 'fixed',
-        justifyContent: 'space-between',
-        top: 0,
-        backdropFilter: `blur(.2rem) brightness(${theme.palette.mode === 'dark' ? 0.85 : 0.95})`,
-        zIndex: 1,
-      }}
-    >
-      <Box>
-        <Logo />
+    <>
+      <Box
+        sx={{
+          display: 'flex',
+          width: '100%',
+          height: 40,
+          position: 'fixed',
+          justifyContent: 'space-between',
+          top: 0,
+          backdropFilter: `blur(.2rem) brightness(${theme.palette.mode === 'dark' ? 0.85 : 0.95})`,
+          zIndex: 1,
+        }}
+      >
+        <Box>
+          <Logo />
+        </Box>
+        <Box>
+          {user &&
+            <Stack direction={'row'} sx={{ height: '100%', display: 'flex', justifyContent: 'center', p: .5 }}>
+              <NavMenu />
+              <ProfileMenu />
+            </Stack>
+          }
+        </Box>
       </Box>
-      <Box>
-        {user &&
-          <Stack direction={'row'} sx={{ height: '100%', display: 'flex', justifyContent: 'center', p: .5 }}>
-            <NavMenu />
-            <ProfileMenu />
-          </Stack>
-        }
-      </Box>
-    </Box>
+    </>
+
   );
 }

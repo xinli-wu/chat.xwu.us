@@ -1,25 +1,24 @@
-import React from 'react';
-import CopyToClipboard from 'react-copy-to-clipboard';
-import { IconButton } from '@mui/material';
-import DoneIcon from '@mui/icons-material/Done';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import { Noti } from './Noti';
+import DoneIcon from '@mui/icons-material/Done';
+import { IconButton } from '@mui/material';
+import React, { useContext } from 'react';
+import CopyToClipboard from 'react-copy-to-clipboard';
+import { AppContext } from '../contexts/AppContext';
 
 export const CopyCode = ({ language, code }) => {
   const [copied, setCopied] = React.useState(false);
-  const [noti, setNoti] = React.useState({ text: null, severity: undefined });
+  const { setToast } = useContext(AppContext);
 
 
   const onCopyClick = () => {
     setCopied(true);
-    setNoti({ text: 'Success', severity: 'success' });
+    setToast({ text: 'Success', severity: 'success' });
 
     setTimeout(() => setCopied(false), 3000);
   };
 
   return (
     <>
-      <Noti noti={noti} setNoti={setNoti} />
       {/* <span>{language}</span> */}
       <CopyToClipboard text={String(code)} onCopy={() => onCopyClick()}>
         <span style={{ display: 'flex', justifyContent: 'end', marginBottom: -47 }}>
