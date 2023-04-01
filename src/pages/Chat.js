@@ -123,16 +123,17 @@ export default function Chat() {
     <>
       <ChatsArea>
         <Stack className='no-scrollbar' sx={{
-          pt: 8,
+          pt: 6,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          width: '90vw',
+          width: '100%',
           maxWidth: 1280,
           overflowY: 'scroll',
           flexGrow: 1,
+          padding: '48px 5% 0px 5%',
         }}>
-          <Stack spacing={2} sx={{ width: '100%' }}>
+          <Stack spacing={2}>
             {chats.map((chat, idx) => {
               const isAssistant = chat.message.role === 'assistant';
               return (
@@ -143,7 +144,8 @@ export default function Chat() {
                       borderRadius: 3,
                       textAlign: isAssistant ? 'left' : 'right',
                       width: '100%',
-                      ...(isAssistant && { backgroundColor: theme.palette.mode === 'dark' ? 'rgb(46,149,118)' : 'rgb(130, 200, 180)' })
+                      ...(isAssistant && { backgroundColor: 'rgb(63, 147, 120)' }),
+                      ...((isAssistant && theme.palette.mode === 'light') && { filter: 'brightness(1.25)' })
                     }}>
                       {isAssistant
                         ? <Box ref={idx === chats.length - 1 ? lastMsgRef : undefined}>

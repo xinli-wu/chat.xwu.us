@@ -24,11 +24,9 @@ export default function ProfileMenu() {
   };
 
   const onLogoutClick = async (_e) => {
-    localStorage.removeItem('token');
+    setUser(null);
     const { data } = await axios.post(`${process.env.REACT_APP_CHAT_API_URL}/me/logout`);
-    console.log(data);
     if (data.status === 'success') {
-      setUser(null);
       setToast({ text: data.message, severity: data.status });
     }
   };

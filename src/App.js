@@ -102,20 +102,32 @@ function App() {
 
   }, [user, location.pathname, setApp, navigate]);
 
+  useEffect(() => {
+
+    if (!user) {
+      localStorage.removeItem('token');
+    };
+
+    if (user) {
+      localStorage.setItem('token', user.token);
+    }
+
+  }, [user]);
+
   React.useEffect(() => {
     (async () => {
-      const res = await axios.post(`${process.env.REACT_APP_CHAT_API_URL}/me/refresh`);
-      if (res.data?.status === 'success') {
-        if (res.data?.data?.user) {
-          localStorage['token'] = res.data.data.user.token;
-          setUser(res.data.data.user);
+      if ((!email || !otp) && assumedUser) {
+        const res = await axios.post(`${process.env.REACT_APP_CHAT_API_URL}/me/refresh`).catch(e => e);
+        if (res.data?.status === 'success') {
+          if (res.data?.data?.user) {
+            setUser(res.data.data.user);
+          }
+        } else {
+          setToast({ text: res.data.message, severity: 'error' });
         }
-        setToast({ text: res.data.message, severity: 'success' });
-      } else {
-        setToast({ text: res.data.message, severity: 'error' });
       }
     })();
-  }, []);
+  }, [email, otp, assumedUser]);
 
   return (
     <div className='App'>
