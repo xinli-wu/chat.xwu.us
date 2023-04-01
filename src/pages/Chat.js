@@ -133,7 +133,7 @@ export default function Chat() {
           flexGrow: 1,
           padding: '48px 5% 0px 5%',
         }}>
-          <Stack spacing={2}>
+          <Stack spacing={2} sx={{ width: '100%' }}>
             {chats.map((chat, idx) => {
               const isAssistant = chat.message.role === 'assistant';
               return (
