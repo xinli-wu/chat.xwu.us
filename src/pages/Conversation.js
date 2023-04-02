@@ -10,6 +10,7 @@ import { CopyCode } from '../components/CopyCode';
 import { AppContext } from '../contexts/AppContext';
 import { UserContext } from '../contexts/UserContext';
 import './Conversation.css';
+import { isMobile } from 'react-device-detect';
 
 export default function Conversation() {
 
@@ -124,10 +125,10 @@ export default function Conversation() {
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'space-between',
-      alignItems: 'center'
+      alignItems: 'center',
+      ...(isMobile && { pb: 6 })
     }}>
       <Stack className='no-scrollbar' sx={{
-        // pt: 6,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -136,8 +137,7 @@ export default function Conversation() {
         overflowY: 'scroll',
         overflowX: 'visible',
         flexGrow: 1,
-        // padding: '48px 5% 0px 5%',
-        height: '100%'
+        height: '100%',
       }}>
         <Stack spacing={2} sx={{ width: '100%' }}>
           {chats.map((chat, idx) => {
