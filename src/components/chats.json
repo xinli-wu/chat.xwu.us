@@ -1,0 +1,82 @@
+[
+  {
+    "metadata": {
+      "id": "user0",
+      "ts": "2023-04-02T17:10:42.984Z"
+    },
+    "message": {
+      "role": "user",
+      "content": "Where does the word \"Doctor\" in medical come from?"
+    }
+  },
+  {
+    "metadata": {
+      "id": "chatcmpl-70vVzaNnn73RS3ChHis93LSAqu0VB",
+      "ts": "2023-04-02T17:10:42.984Z"
+    },
+    "message": {
+      "role": "assistant",
+      "content": "The word \"Doctor\" in medical comes from the Latin word \"doctus,\" which means \"learned\" or \"teacher.\""
+    }
+  },
+  {
+    "metadata": {
+      "id": "user2",
+      "ts": "2023-04-02T17:10:46.759Z"
+    },
+    "message": {
+      "role": "user",
+      "content": "hi"
+    }
+  },
+  {
+    "metadata": {
+      "id": "chatcmpl-70vW2pewW2OYe7dKbxxN0FcMkPCdn",
+      "ts": "2023-04-02T17:10:46.759Z"
+    },
+    "message": {
+      "role": "assistant",
+      "content": "Hello! How can I assist you today?"
+    }
+  },
+  {
+    "metadata": {
+      "id": "user4",
+      "ts": "2023-04-02T17:10:49.857Z"
+    },
+    "message": {
+      "role": "user",
+      "content": "hello world in es6"
+    }
+  },
+  {
+    "metadata": {
+      "id": "chatcmpl-70vW6vPdvSyZcKcREFn0eoFOZG4yA",
+      "ts": "2023-04-02T17:10:49.857Z"
+    },
+    "message": {
+      "role": "assistant",
+      "content": "In ES6, you can print \"Hello World\" to the console using the following code:\n\n```\nconsole.log(\"Hello World\");\n```\n\nThis will display \"Hello World\" in the console of your web browser or Node.js environment."
+    }
+  },
+  {
+    "metadata": {
+      "id": "user6",
+      "ts": "2023-04-02T17:11:11.004Z"
+    },
+    "message": {
+      "role": "user",
+      "content": "What to ask in yearly review meeting with boss?"
+    }
+  },
+  {
+    "metadata": {
+      "id": "chatcmpl-70vWRzhQZkb0cAvG3IYCEJkrYheXc",
+      "ts": "2023-04-02T17:11:11.004Z"
+    },
+    "message": {
+      "role": "assistant",
+      "content": "Here are some questions you can ask during a yearly review meeting with your boss:\n\n1. What are my strengths and how can I continue to develop them?\n2. What areas do I need to improve, and how can I work on them?\n3. How can I better contribute to the team's goals?\n4. What opportunities do you see for me to take on new challenges or responsibilities?\n5. How can I better align my work with the company's overall mission and vision?\n6. How can I better communicate with you and the rest of the team?\n7. What training or support can I receive to help me grow in my role?\n8. What are the company's priorities for the coming year, and how can I help contribute to them?\n9. What feedback do you have for me on my performance over the past year?\n10. What are your expectations for my performance over the next year, and how can I meet or exceed them?"
+    }
+  }
+]

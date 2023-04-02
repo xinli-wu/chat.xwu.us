@@ -36,7 +36,7 @@ const queryClient = new QueryClient();
 
 function App() {
   document.body.style.transition = 'background-color 0.1s ease-in-out';
-  const preferedMode = useMediaQuery('(prefers-color-scheme: dark)') ? 'light' : 'light';
+  const preferedMode = useMediaQuery('(prefers-color-scheme: dark)') ? 'dark' : 'light';
   const [mode, setMode] = React.useState(preferedMode);
   const navigate = useNavigate();
   const location = useLocation();
@@ -144,6 +144,7 @@ function App() {
                     <>
                       <Route path='/' element={<Chat />} />
                       <Route path='/chat' element={<Chat />} />
+                      <Route path='/chat/:id' element={<Chat />} />
                       <Route path='/account' element={<Profile />} />
                       <Route path='/account/:section' element={<Profile />} />
                       {/* disbale image creation, too expensive :( */}

@@ -1,0 +1,250 @@
+import { Box, Grid, Paper, Stack, Typography, useTheme } from '@mui/material';
+import InputBox from 'components/InputBox';
+import dayjs from 'dayjs';
+import throttle from 'lodash.throttle';
+import React, { useContext, useEffect, useRef } from 'react';
+import ReactMarkdown from 'react-markdown';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { CopyCode } from '../components/CopyCode';
+import { AppContext } from '../contexts/AppContext';
+import { UserContext } from '../contexts/UserContext';
+import { isMobile } from 'react-device-detect';
+import { Fab } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import axios from 'axios';
+import './Conversation.css';
+
+export default function Conversation({ selectedConversation, setSelectedConversation, setCompletionHistory }) {
+  document.title = 'chat';
+  const { REACT_APP_CHAT_API_URL } = process.env;
+  const { user } = useContext(UserContext);
+
+  const bottomRef = useRef(null);
+  const lastMsgRef = useRef(null);
+  const footerRef = useRef(null);
+  const theme = useTheme();
+  const { setToast } = useContext(AppContext);
+
+  const chat = [];
+  const [chats, setChats] = React.useState(chat);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [isReading, setIsReading] = React.useState(false);
+  const [lastMsgHeight, setLastMsgHeight] = React.useState();
+  const lastUserMessage = useRef('');
+
+  useEffect(() => {
+    (async () => {
+      if (selectedConversation) {
+        const { data } = await axios.get(`${REACT_APP_CHAT_API_URL}/my/conversation/get/${selectedConversation}`) || {};
+        if (data.status === 'success') {
+          setChats(data.data.data.chats);
+          document.title = data.data.data.title;
+        }
+      } else {
+        setChats([]);
+      }
+    })();
+  }, [selectedConversation, REACT_APP_CHAT_API_URL]);
+
+  const setCurAssistantMsg = (id, ts, msg) => {
+    setChats(prev => [
+      ...prev.filter(x => x.metadata.id !== id),
+      {
+        metadata: { id, ts },
+        message: {
+          role: 'assistant',
+          content: msg
+        }
+      }]
+    );
+  };
+
+  const throttledSetCurAssistantMsg = throttle(setCurAssistantMsg, 70, { trailing: true });
+
+  const onMessagesSubmit = async (newMsg) => {
+    const ts = dayjs().toISOString();
+    lastUserMessage.current = newMsg;
+    const newChat = { metadata: { id: 'user' + chats.length, ts }, message: { role: 'user', content: newMsg } };
+    setChats(prev => [...prev, newChat]);
+    setIsLoading(true);
+
+    try {
+      const raw = await fetch(`${REACT_APP_CHAT_API_URL}/openai/chat/completion`, {
+        method: 'POST',
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'Authorization': `Bearer ${user.token}` },
+        body: JSON.stringify({ messages: [...chats.map(x => x.message), newChat.message] })
+      });
+
+      if (!raw.ok) {
+        throw new Error(await raw.text() || '');
+      };
+      const reader = raw.body.getReader();
+
+      setIsReading(true);
+      let finalMsg = '';
+      let msgId = null;
+
+      const read = () => reader.read().then(({ done, value }) => {
+        if (done) return;
+
+        const decoder = new TextDecoder();
+        const lines = decoder.decode(value).toString().split('\n').filter(line => line.trim() !== '');
+        lines.forEach(l => {
+          const msg = l.replace(/^data: /, '');
+
+          if (msg !== '[DONE]') {
+            const msgObj = JSON.parse(msg);
+            if (!msgId) msgId = msgObj.id;
+            const { content } = msgObj.choices[0].delta;
+            if (content) {
+
+              finalMsg += content;
+
+              throttledSetCurAssistantMsg(msgObj.id, ts, finalMsg + ' ▊');
+
+              if (lastMsgRef.current) {
+                const boundingRect = lastMsgRef.current.getBoundingClientRect();
+                const { height } = boundingRect;
+                setLastMsgHeight(height);
+              }
+            }
+          } else {
+            throttledSetCurAssistantMsg(msgId, ts, finalMsg);
+
+            setIsReading(false);
+          }
+
+        });
+
+        read();
+      });
+
+      read();
+    } catch (error) {
+      console.log(error.message);
+      setToast({ text: `API error: ${error.message}`, severity: 'error' });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chats.length, lastMsgHeight]);
+
+  const onAddConversationClick = async () => {
+    setSelectedConversation(null);
+    setChats([]);
+
+    await axios.post(`${REACT_APP_CHAT_API_URL}/my/conversation/add`, { chats });
+    const { data } = await axios(`${process.env.REACT_APP_CHAT_API_URL}/my/conversation-hitory`);
+    if (data.status === 'success') setCompletionHistory(data.data);
+  };
+
+  return (
+    <Grid item xs={12} sm={12} md={8} lg={9} xl={9} sx={{ height: '100%' }}>
+      <Paper sx={{
+        borderRadius: 3,
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        ...(isMobile && { pb: 6 })
+      }}>
+        <Stack className='no-scrollbar' sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          width: '100%',
+          maxWidth: 1280,
+          overflowY: 'scroll',
+          overflowX: 'visible',
+          flexGrow: 1,
+          height: '100%',
+          p: 1
+        }}>
+          <Stack spacing={2} sx={{ width: '100%', }} >
+            {chats.map((chat, idx) => {
+              const isAssistant = chat.message.role === 'assistant';
+              return (
+                <Stack key={idx} sx={{ width: '100%', alignItems: isAssistant ? 'start' : 'end' }}>
+                  <Stack direction='row' spacing={1} sx={{ alignItems: 'end', maxWidth: '100%' }}>
+                    <Paper elevation={0} sx={{
+                      p: 1,
+                      borderRadius: 3,
+                      textAlign: isAssistant ? 'left' : 'right',
+                      width: '100%',
+                      backgroundColor: theme.palette.mode === 'light' ? 'rgba(225, 232, 239)' : 'rgba(44, 44, 44)',
+                      ...(isAssistant && { backgroundColor: 'rgb(63, 147, 120)' }),
+                      ...((isAssistant && theme.palette.mode === 'light') && { filter: 'brightness(1.25)' })
+                    }}>
+                      {isAssistant
+                        ? <Box ref={idx === chats.length - 1 ? lastMsgRef : undefined}>
+                          <ReactMarkdown
+                            components={(
+                              {
+                                code({ node, inline, className, children, ...props }) {
+                                  const match = /language-(\w+)/.exec(className || '') || ['language-javascript', 'javascript'];
+                                  return !inline && match ? (
+                                    <Stack sx={{ overflowX: 'scroll' }}>
+                                      <CopyCode language={match[1]} code={String(children)} />
+                                      <SyntaxHighlighter
+                                        showLineNumbers
+                                        // @ts-ignore
+                                        style={vscDarkPlus}
+                                        language={match[1]}
+                                        PreTag='div'
+                                        {...props}
+                                      >
+                                        {String(children).replace(/\n$/, '')}
+                                      </SyntaxHighlighter>
+                                    </Stack>
+                                  ) : (
+                                    <code className={className} {...props}>
+                                      {children}
+                                    </code>
+                                  );
+                                }
+                              }
+                            )}
+                          >
+                            {chat.message.content}
+                          </ReactMarkdown>
+                        </Box>
+                        : <Typography>{chat.message.content}</Typography>
+                      }
+                    </Paper>
+                  </Stack>
+                  <Typography sx={{ fontSize: '0.6rem', textAlign: 'end', color: 'grey' }}>{dayjs(chat.metadata.ts).format('h:mm a')}</Typography>
+                </Stack>
+              );
+            })}
+          </Stack>
+        </Stack>
+        <Stack sx={{ position: 'absolute', bottom: 100, alignSelf: 'end' }}>
+          <Fab size='small' color='primary' aria-label='new conversation' onClick={onAddConversationClick}>
+            <AddIcon />
+          </Fab>
+          <div ref={bottomRef} />
+        </Stack>
+        <Stack className='no-scrollbar' sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          width: '100%',
+          maxWidth: 1280
+        }}>
+          <Stack ref={footerRef} spacing={1} sx={{ width: '100%' }}>
+            <InputBox onMessagesSubmit={onMessagesSubmit} isLoading={isLoading} isReading={isReading} />
+            {/* <Stack spacing={0}>
+            <Typography variant='body2' sx={{ fontSize: '0.65rem', textAlign: 'right', color: 'grey' }}>Powered by gpt-3.5-turbo</Typography>
+            <Typography variant='body2' sx={{ fontSize: '0.65rem', textAlign: 'right', color: 'grey' }}>Your audio may be sent to a web service for recognition processing on certain browsers, such as Chrome</Typography>
+          </Stack> */}
+          </Stack>
+        </Stack>
+      </Paper>
+    </Grid>
+  );
+}
