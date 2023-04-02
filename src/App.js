@@ -36,7 +36,7 @@ const queryClient = new QueryClient();
 
 function App() {
   document.body.style.transition = 'background-color 0.1s ease-in-out';
-  const preferedMode = useMediaQuery('(prefers-color-scheme: dark)') ? 'dark' : 'light';
+  const preferedMode = useMediaQuery('(prefers-color-scheme: dark)') ? 'light' : 'light';
   const [mode, setMode] = React.useState(preferedMode);
   const navigate = useNavigate();
   const location = useLocation();

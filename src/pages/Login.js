@@ -7,7 +7,7 @@ import React, { useContext } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { AppContext } from '../contexts/AppContext';
 import { UserContext } from '../contexts/UserContext';
-import './Chat.css';
+// import './Chat.css';
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

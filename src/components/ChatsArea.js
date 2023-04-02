@@ -3,7 +3,6 @@ import React from 'react';
 
 export const ChatsArea = ({ children }) => {
 
-
   return (
     <Box sx={{
       zIndex: -10,
@@ -13,7 +12,7 @@ export const ChatsArea = ({ children }) => {
       justifyContent: 'space-between',
       alignItems: 'center',
       flexFlow: 'column nowrap',
-      height: '100vh'
+      height: 'calc(100vh - 40px)'
     }}>
       {children}
     </Box>
