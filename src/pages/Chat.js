@@ -3,6 +3,7 @@ import React from 'react';
 import { ChatsArea } from '../components/ChatsArea';
 import CompletionHistory from './CompletionHistory';
 import Conversation from './Conversation';
+import { isMobile } from 'react-device-detect';
 
 export default function Chat() {
 
@@ -15,7 +16,7 @@ export default function Chat() {
         flexGrow: 1,
         height: 'calc(100vh - 120px)',
       }}>
-        <CompletionHistory />
+        {!isMobile && <CompletionHistory />}
         <Conversation />
       </Grid>
     </ChatsArea>

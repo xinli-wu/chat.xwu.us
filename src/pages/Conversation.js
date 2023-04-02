@@ -126,7 +126,7 @@ export default function Conversation() {
       flexDirection: 'column',
       justifyContent: 'space-between',
       alignItems: 'center',
-      ...(isMobile && { pb: 6 })
+      ...(isMobile && { pb: 2 })
     }}>
       <Stack className='no-scrollbar' sx={{
         display: 'flex',
