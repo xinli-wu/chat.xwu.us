@@ -115,18 +115,23 @@ function App() {
   }, [user]);
 
   React.useEffect(() => {
-    (async () => {
-      if ((!email || !otp) && assumedUser) {
-        const res = await axios.post(`${process.env.REACT_APP_CHAT_API_URL}/me/refresh`).catch(e => e);
-        if (res.data?.status === 'success') {
-          if (res.data?.data?.user) {
-            setUser(res.data.data.user);
+
+    const id = setInterval(() => {
+      (async () => {
+        if ((!email || !otp) && assumedUser) {
+          const res = await axios.post(`${process.env.REACT_APP_CHAT_API_URL}/me/refresh`).catch(e => e);
+          if (res.data?.status === 'success') {
+            if (res.data?.data?.user) {
+              setUser(res.data.data.user);
+            }
+          } else {
+            setToast({ text: res.data.message, severity: 'error' });
           }
-        } else {
-          setToast({ text: res.data.message, severity: 'error' });
         }
-      }
-    })();
+      })();
+    }, 1000 * 60 * 5); // get new access token every 5 mins
+
+    return () => clearInterval(id);
   }, [email, otp, assumedUser]);
 
   return (
