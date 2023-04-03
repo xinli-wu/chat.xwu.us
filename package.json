@@ -30,6 +30,7 @@
     "react-siriwave": "^2.1.0",
     "react-syntax-highlighter": "^15.5.0",
     "react-transition-group": "^4.4.5",
+    "swr": "^2.1.2",
     "web-vitals": "^3.3.0"
   },
   "scripts": {

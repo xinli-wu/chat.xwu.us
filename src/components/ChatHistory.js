@@ -1,7 +1,10 @@
 import { Grid, ListItemText, MenuItem, MenuList, Paper } from '@mui/material';
 import React from 'react';
+import LoadingProgress from './LoadingProgress';
+import { useNavigate } from 'react-router-dom';
 
-export default function CompletionHistory({ selectedConversation, setSelectedConversation, completionHistory }) {
+export default function ChatHistory({ isLoading, setSelectedChat, chats }) {
+  const navigate = useNavigate();
 
   return (
     <Grid item xs={12} sm={12} md={4} lg={3} xl={3} sx={{ height: '100%' }}>
@@ -10,9 +13,10 @@ export default function CompletionHistory({ selectedConversation, setSelectedCon
         overflow: 'scroll',
         height: '100%',
       }}>
-        <MenuList dense >
-          {completionHistory.map((x, i) => (
-            <MenuItem key={i} onClick={() => setSelectedConversation(x._id)}>
+        <LoadingProgress show={isLoading} />
+        <MenuList dense>
+          {chats.map((x, i) => (
+            <MenuItem key={i} onClick={() => navigate(`/chat/${x._id}`)}>
               <ListItemText sx={{
                 textAlign: 'left',
                 overflowX: 'hidden'

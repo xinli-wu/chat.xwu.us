@@ -13,9 +13,10 @@ import Footer from './components/Footer';
 import { Toast } from './components/Toast';
 import TopBar from './components/TopBar';
 import { AppContext } from './contexts/AppContext';
-import Chat from './pages/Chat';
+import Chats from './pages/Chats';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
+import { useRefresh } from './hooks/useAPI';
 
 axios.interceptors.request.use(
   config => {
@@ -41,7 +42,9 @@ function App() {
   const navigate = useNavigate();
   const location = useLocation();
   const assumedUser = React.useMemo(() => {
-    return localStorage['token'] ? { email: jwtDecode(localStorage['token'])?.email, token: localStorage['token'] } : null;
+    return localStorage['token']
+      ? { email: jwtDecode(localStorage['token'])?.email, token: localStorage['token'] }
+      : null;
   }, []);
 
   const [user, setUser] = React.useState(assumedUser);
@@ -50,6 +53,7 @@ function App() {
   const [searchParams] = useSearchParams();
   const email = searchParams.get('email');
   const otp = searchParams.get('otp');
+  const refresh = useRefresh();
 
   React.useEffect(() => {
     (async () => {
@@ -114,25 +118,20 @@ function App() {
 
   }, [user]);
 
-  React.useEffect(() => {
 
-    const id = setInterval(() => {
-      (async () => {
-        if ((!email || !otp) && assumedUser) {
-          const res = await axios.post(`${process.env.REACT_APP_CHAT_API_URL}/me/refresh`).catch(e => e);
-          if (res.data?.status === 'success') {
-            if (res.data?.data?.user) {
-              setUser(res.data.data.user);
-            }
-          } else {
-            setToast({ text: res.data.message, severity: 'error' });
-          }
-        }
-      })();
-    }, 1000 * 60 * 5); // get new access token every 5 mins
+  useEffect(() => {
+    const { data, error, isLoading } = refresh;
 
-    return () => clearInterval(id);
-  }, [email, otp, assumedUser]);
+    if (error) setUser(null);
+    if (error || isLoading) return;
+    if (data?.status === 'success') {
+      if (data?.data?.user) {
+        setUser(data.data.user);
+      }
+    } else {
+      setToast({ text: data.message, severity: 'error' });
+    }
+  }, [refresh]);
 
   return (
     <div className='App'>
@@ -147,9 +146,9 @@ function App() {
                 <Routes>
                   {user ?
                     <>
-                      <Route path='/' element={<Chat />} />
-                      <Route path='/chat' element={<Chat />} />
-                      <Route path='/chat/:id' element={<Chat />} />
+                      <Route path='/' element={<Chats />} />
+                      <Route path='/chat' element={<Chats />} />
+                      <Route path='/chat/:id' element={<Chats />} />
                       <Route path='/account' element={<Profile />} />
                       <Route path='/account/:section' element={<Profile />} />
                       {/* disbale image creation, too expensive :( */}

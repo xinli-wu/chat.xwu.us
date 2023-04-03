@@ -1,24 +1,27 @@
-import { Box, Grid, Paper, Stack, Typography, useTheme } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import { Box, Fab, Grid, Paper, Stack, Typography, useTheme } from '@mui/material';
+import axios from 'axios';
 import InputBox from 'components/InputBox';
 import dayjs from 'dayjs';
 import throttle from 'lodash.throttle';
 import React, { useContext, useEffect, useRef } from 'react';
+import { isMobile } from 'react-device-detect';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { CopyCode } from '../components/CopyCode';
 import { AppContext } from '../contexts/AppContext';
 import { UserContext } from '../contexts/UserContext';
-import { isMobile } from 'react-device-detect';
-import { Fab } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import axios from 'axios';
-import './Conversation.css';
+import { useChat } from '../hooks/useAPI';
+import './Chat.css';
+import { CopyCode } from './CopyCode';
+import LoadingProgress from './LoadingProgress';
+import { useNavigate } from 'react-router-dom';
 
-export default function Conversation({ selectedConversation, setSelectedConversation, setCompletionHistory }) {
+export default function Chat({ selectedChat, onChatSave }) {
   document.title = 'chat';
   const { REACT_APP_CHAT_API_URL } = process.env;
   const { user } = useContext(UserContext);
+  const navigate = useNavigate();
 
   const bottomRef = useRef(null);
   const lastMsgRef = useRef(null);
@@ -26,29 +29,27 @@ export default function Conversation({ selectedConversation, setSelectedConversa
   const theme = useTheme();
   const { setToast } = useContext(AppContext);
 
-  const chat = [];
-  const [chats, setChats] = React.useState(chat);
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [chat, setChat] = React.useState([]);
+  const [isCompletionLoading, setIsCompletionLoading] = React.useState(false);
   const [isReading, setIsReading] = React.useState(false);
   const [lastMsgHeight, setLastMsgHeight] = React.useState();
   const lastUserMessage = useRef('');
 
+  const { data, error, isLoading } = useChat(selectedChat);
+
   useEffect(() => {
-    (async () => {
-      if (selectedConversation) {
-        const { data } = await axios.get(`${REACT_APP_CHAT_API_URL}/my/conversation/get/${selectedConversation}`) || {};
-        if (data.status === 'success') {
-          setChats(data.data.data.chats);
-          document.title = data.data.data.title;
-        }
-      } else {
-        setChats([]);
-      }
-    })();
-  }, [selectedConversation, REACT_APP_CHAT_API_URL]);
+    if (error || isLoading) return;
+    if (data?.data?.status === 'success') {
+      setChat(data.data.data.data.chats);
+      document.title = data.data.data.data.title;
+    } else {
+      setChat([]);
+    }
+
+  }, [data, error, isLoading]);
 
   const setCurAssistantMsg = (id, ts, msg) => {
-    setChats(prev => [
+    setChat(prev => [
       ...prev.filter(x => x.metadata.id !== id),
       {
         metadata: { id, ts },
@@ -65,15 +66,15 @@ export default function Conversation({ selectedConversation, setSelectedConversa
   const onMessagesSubmit = async (newMsg) => {
     const ts = dayjs().toISOString();
     lastUserMessage.current = newMsg;
-    const newChat = { metadata: { id: 'user' + chats.length, ts }, message: { role: 'user', content: newMsg } };
-    setChats(prev => [...prev, newChat]);
-    setIsLoading(true);
+    const newChat = { metadata: { id: 'user' + chat.length, ts }, message: { role: 'user', content: newMsg } };
+    setChat(prev => [...prev, newChat]);
+    setIsCompletionLoading(true);
 
     try {
       const raw = await fetch(`${REACT_APP_CHAT_API_URL}/openai/chat/completion`, {
         method: 'POST',
         headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'Authorization': `Bearer ${user.token}` },
-        body: JSON.stringify({ messages: [...chats.map(x => x.message), newChat.message] })
+        body: JSON.stringify({ messages: [...chat.map(x => x.message), newChat.message] })
       });
 
       if (!raw.ok) {
@@ -125,21 +126,20 @@ export default function Conversation({ selectedConversation, setSelectedConversa
       console.log(error.message);
       setToast({ text: `API error: ${error.message}`, severity: 'error' });
     } finally {
-      setIsLoading(false);
+      setIsCompletionLoading(false);
     }
   };
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [chats.length, lastMsgHeight]);
+  }, [chat.length, lastMsgHeight]);
 
-  const onAddConversationClick = async () => {
-    setSelectedConversation(null);
-    setChats([]);
+  const onNewChatClick = async () => {
 
-    await axios.post(`${REACT_APP_CHAT_API_URL}/my/conversation/add`, { chats });
-    const { data } = await axios(`${process.env.REACT_APP_CHAT_API_URL}/my/conversation-hitory`);
-    if (data.status === 'success') setCompletionHistory(data.data);
+    await axios.post(`${REACT_APP_CHAT_API_URL}/my/chat/add`, { chats: chat });
+    onChatSave();
+    navigate('/chat');
+    setChat([]);
   };
 
   return (
@@ -149,10 +149,14 @@ export default function Conversation({ selectedConversation, setSelectedConversa
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
+        overflow: 'hidden',
         justifyContent: 'space-between',
-        alignItems: 'center',
+        // alignItems: 'center',
         ...(isMobile && { pb: 6 })
       }}>
+        <Stack>
+          <LoadingProgress show={isLoading || isCompletionLoading} />
+        </Stack>
         <Stack className='no-scrollbar' sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -166,7 +170,7 @@ export default function Conversation({ selectedConversation, setSelectedConversa
           p: 1
         }}>
           <Stack spacing={2} sx={{ width: '100%', }} >
-            {chats.map((chat, idx) => {
+            {chat.map((chat, idx) => {
               const isAssistant = chat.message.role === 'assistant';
               return (
                 <Stack key={idx} sx={{ width: '100%', alignItems: isAssistant ? 'start' : 'end' }}>
@@ -181,7 +185,7 @@ export default function Conversation({ selectedConversation, setSelectedConversa
                       ...((isAssistant && theme.palette.mode === 'light') && { filter: 'brightness(1.25)' })
                     }}>
                       {isAssistant
-                        ? <Box ref={idx === chats.length - 1 ? lastMsgRef : undefined}>
+                        ? <Box ref={idx === chat.length - 1 ? lastMsgRef : undefined}>
                           <ReactMarkdown
                             components={(
                               {
@@ -222,12 +226,19 @@ export default function Conversation({ selectedConversation, setSelectedConversa
               );
             })}
           </Stack>
+          <div ref={bottomRef} />
         </Stack>
-        <Stack sx={{ position: 'absolute', bottom: 100, alignSelf: 'end' }}>
-          <Fab size='small' color='primary' aria-label='new conversation' onClick={onAddConversationClick}>
+        <Stack sx={{ position: 'absolute', bottom: 90, alignSelf: 'end' }}>
+          <Fab
+            disabled={isCompletionLoading || isReading || chat.length === 0}
+            size='small'
+            color='primary'
+            aria-label='new conversation'
+            onClick={onNewChatClick}
+            sx={{ transform: 'scale(0.8)' }}
+          >
             <AddIcon />
           </Fab>
-          <div ref={bottomRef} />
         </Stack>
         <Stack className='no-scrollbar' sx={{
           display: 'flex',
@@ -237,11 +248,7 @@ export default function Conversation({ selectedConversation, setSelectedConversa
           maxWidth: 1280
         }}>
           <Stack ref={footerRef} spacing={1} sx={{ width: '100%' }}>
-            <InputBox onMessagesSubmit={onMessagesSubmit} isLoading={isLoading} isReading={isReading} />
-            {/* <Stack spacing={0}>
-            <Typography variant='body2' sx={{ fontSize: '0.65rem', textAlign: 'right', color: 'grey' }}>Powered by gpt-3.5-turbo</Typography>
-            <Typography variant='body2' sx={{ fontSize: '0.65rem', textAlign: 'right', color: 'grey' }}>Your audio may be sent to a web service for recognition processing on certain browsers, such as Chrome</Typography>
-          </Stack> */}
+            <InputBox onMessagesSubmit={onMessagesSubmit} isLoading={isCompletionLoading} isReading={isReading} />
           </Stack>
         </Stack>
       </Paper>
