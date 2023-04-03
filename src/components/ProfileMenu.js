@@ -39,6 +39,7 @@ export default function ProfileMenu() {
   return (
     <>
       <IconButton
+        sx={{ p: 0 }}
         id='profile-button'
         aria-controls={open ? 'profile-menu' : undefined}
         aria-haspopup='true'

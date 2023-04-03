@@ -5,13 +5,13 @@ import { Box, Modal } from '@mui/material';
 import React from 'react';
 import './ImageRenderer.css';
 
-export const ImageRenderer = ({ b64_json }) => {
+export const ImageRenderer = ({ b64_json, url }) => {
 
   const theme = useTheme();
 
   const [open, setOpen] = React.useState(false);
 
-  const Image = () => <img src={`data:image/jpeg;base64,${b64_json}`} alt='' style={{ width: '100%', height: '100%' }} />;
+  const Image = () => <img src={`${url ? url : `data:image/jpeg;base64,${b64_json}`}`} alt='' style={{ width: '100%', height: '100%' }} />;
 
   const style = {
     position: 'absolute',

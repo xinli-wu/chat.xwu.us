@@ -14,6 +14,7 @@ import { Toast } from './components/Toast';
 import TopBar from './components/TopBar';
 import { AppContext } from './contexts/AppContext';
 import Chats from './pages/Chats';
+import Image from './pages/Image';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
 import { useRefresh } from './hooks/useAPI';
@@ -152,7 +153,7 @@ function App() {
                       <Route path='/account' element={<Profile />} />
                       <Route path='/account/:section' element={<Profile />} />
                       {/* disbale image creation, too expensive :( */}
-                      {/* <Route path='/image' element={<Image />} /> */}
+                      <Route path='/image' element={<Image />} />
                       <Route path='*' element={<Navigate replace to="/chat" />} />
                     </>
                     : <Route path='*' element={<Login />} />

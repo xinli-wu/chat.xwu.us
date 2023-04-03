@@ -1,12 +1,14 @@
 import { MenuItem, MenuList } from '@mui/material';
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
 export default function NavMenu() {
   const navigate = useNavigate();
-  const [menuItem, setMenuItem] = React.useState('chat');
+  const location = useLocation();
+  const [menuItem, setMenuItem] = React.useState(location.pathname.split('/')[1]);
 
-  const menuItems = ['chat'];
+  const menuItems = ['chat', 'image'];
 
   const onMenuItemClick = (menuItem) => {
     menuItem = menuItems[menuItem];
