@@ -31,7 +31,7 @@ export default function Chat({ selectedChat, onChatSave }) {
   const [lastMsgHeight, setLastMsgHeight] = React.useState();
   const lastUserMessage = useRef('');
 
-  const { data, error, isLoading } = useChat(selectedChat);
+  const { data, error, isLoading, isValidating } = useChat(selectedChat);
 
   useEffect(() => {
     if (error || isLoading) return;
@@ -156,11 +156,11 @@ export default function Chat({ selectedChat, onChatSave }) {
         flexDirection: 'column',
         overflow: 'hidden',
         justifyContent: 'space-between',
-        alignItems: 'center',
+        // alignItems: 'center',
         ...(isMobile && { pb: 6 })
       }}>
         <Stack>
-          <LoadingProgress show={isLoading || isCompletionLoading} />
+          <LoadingProgress show={isLoading || isValidating || isCompletionLoading} />
         </Stack>
         <Stack className='no-scrollbar' sx={{
           display: 'flex',

@@ -23,7 +23,7 @@ export default function Image({ selectedChat, onChatSave }) {
 
   const [chat, setChat] = React.useState({ data: [], isLoading: false });
 
-  const { data, error, isLoading } = useImage(selectedChat);
+  const { data, error, isLoading, isValidating } = useImage(selectedChat);
 
   useEffect(() => {
     if (error) return;
@@ -101,7 +101,7 @@ export default function Image({ selectedChat, onChatSave }) {
         ...(isMobile && { pb: 6 })
       }}>
         <Stack>
-          <LoadingProgress show={isLoading || chat.isLoading} />
+          <LoadingProgress show={isLoading || isValidating || chat.isLoading} />
         </Stack>
         <Stack className='no-scrollbar' sx={{
           display: 'flex',
