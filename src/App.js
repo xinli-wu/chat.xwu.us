@@ -6,18 +6,17 @@ import axios from 'axios';
 import { UserContext } from 'contexts/UserContext';
 import { ColorModeContext } from 'contexts/utilContext';
 import jwtDecode from "jwt-decode";
-import React, { useEffect } from 'react';
-import { Navigate, Route, Routes, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import React, { useEffect, useMemo } from 'react';
+import { Route, Routes, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import './App.css';
 import Footer from './components/Footer';
 import { Toast } from './components/Toast';
 import TopBar from './components/TopBar';
 import { AppContext } from './contexts/AppContext';
 import Chats from './pages/Chats';
-import Image from './pages/Image';
+import Images from './pages/Images';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
-import { useRefresh } from './hooks/useAPI';
 
 axios.interceptors.request.use(
   config => {
@@ -35,6 +34,7 @@ axios.interceptors.request.use(
 
 const queryClient = new QueryClient();
 
+const { REACT_APP_CHAT_API_URL } = process.env;
 
 function App() {
   document.body.style.transition = 'background-color 0.1s ease-in-out';
@@ -42,7 +42,7 @@ function App() {
   const [mode, setMode] = React.useState(preferedMode);
   const navigate = useNavigate();
   const location = useLocation();
-  const assumedUser = React.useMemo(() => {
+  const assumedUser = useMemo(() => {
     return localStorage['token']
       ? { email: jwtDecode(localStorage['token'])?.email, token: localStorage['token'] }
       : null;
@@ -54,25 +54,20 @@ function App() {
   const [searchParams] = useSearchParams();
   const email = searchParams.get('email');
   const otp = searchParams.get('otp');
-  const refresh = useRefresh();
 
   React.useEffect(() => {
     (async () => {
-      if ((!email || !otp) && assumedUser) {
-        await axios(`${process.env.REACT_APP_CHAT_API_URL}/me`).catch(_e => setUser(null));
-      }
-
       if (email && otp) {
-        const res = await axios.post(`${process.env.REACT_APP_CHAT_API_URL}/login`, { email, otp });
+        const { data } = await axios.post(`${process.env.REACT_APP_CHAT_API_URL}/login`, { email, otp });
 
-        if (res.data?.status === 'success') {
-          if (res.data?.data?.user) {
-            localStorage['token'] = res.data.data.user.token;
-            setUser(res.data.data.user);
+        if (data?.status === 'success') {
+          if (data?.data?.user) {
+            console.log('setUser', data.data.user);
+            setUser(data.data.user);
           }
-          setToast({ text: res.data.message, severity: 'success' });
+          setToast({ text: data.message, severity: 'success' });
         } else {
-          setToast({ text: res.data.message, severity: 'error' });
+          setToast({ text: data.message, severity: 'error' });
         }
       }
     })();
@@ -101,38 +96,33 @@ function App() {
   );
 
   useEffect(() => {
-
-    if (!user) navigate('/login');
-    if (user && ['/', '/login'].includes(location.pathname)) navigate('/chat');
-
-  }, [user, location.pathname, setApp, navigate]);
-
-  useEffect(() => {
-
     if (!user) {
+      navigate('/login');
       localStorage.removeItem('token');
     };
-
-    if (user) {
+    if (user && ['/', '/login'].includes(location.pathname)) {
       localStorage.setItem('token', user.token);
-    }
+      window.location.replace('/chat');
+    };
 
-  }, [user]);
-
+  }, [user, location.pathname, navigate]);
 
   useEffect(() => {
-    const { data, error, isLoading } = refresh;
-
-    if (error) setUser(null);
-    if (error || isLoading) return;
-    if (data?.status === 'success') {
-      if (data?.data?.user) {
-        setUser(data.data.user);
+    const id = setInterval(() => {
+      if (user) {
+        (async () => {
+          const { data } = await axios.post(`${REACT_APP_CHAT_API_URL}/me/refresh`);
+          if (data.status === 'success') {
+            setUser(data.data.user);
+          } else {
+            setToast({ text: data.message, severity: 'error' });
+            setUser(null);
+          }
+        })();
       }
-    } else {
-      setToast({ text: data.message, severity: 'error' });
-    }
-  }, [refresh]);
+    }, 1000 * 60 * 5);
+    return () => clearInterval(id);
+  }, [user]);
 
   return (
     <div className='App'>
@@ -152,9 +142,9 @@ function App() {
                       <Route path='/chat/:id' element={<Chats />} />
                       <Route path='/account' element={<Profile />} />
                       <Route path='/account/:section' element={<Profile />} />
-                      {/* disbale image creation, too expensive :( */}
-                      <Route path='/image' element={<Image />} />
-                      <Route path='*' element={<Navigate replace to="/chat" />} />
+                      <Route path='/image' element={<Images />} />
+                      <Route path='/image/:id' element={<Images />} />
+                      <Route path='/*' element={<Chats />} />
                     </>
                     : <Route path='*' element={<Login />} />
                   }

@@ -7,11 +7,6 @@ function Menu() {
   const menu = ['Chat', 'Image'];
   const { pathname } = useLocation();
 
-  React.useEffect(() => {
-    if (matchPath(pathname, '/')) navigate('/chat');
-  }, [pathname, navigate]);
-
-
   return (
     <Stack spacing={2} direction='row' sx={{ pl: 0 }}>
       {menu.map((item) => {

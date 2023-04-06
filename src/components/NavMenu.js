@@ -1,21 +1,29 @@
 import { MenuItem, MenuList } from '@mui/material';
 import React from 'react';
-import { useLocation } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function NavMenu() {
   const navigate = useNavigate();
   const location = useLocation();
+
   const [menuItem, setMenuItem] = React.useState(location.pathname.split('/')[1]);
 
-  const menuItems = ['chat', 'image'];
+  const menuItems = React.useMemo(() => (['chat', 'image']), []);
 
   const onMenuItemClick = (menuItem) => {
     menuItem = menuItems[menuItem];
 
-    setMenuItem(prev => menuItem ? menuItem : prev);
     navigate(`/${menuItem}`);
+    setMenuItem(menuItem);
   };
+
+  React.useEffect(() => {
+    const page = location.pathname.split('/')[1];
+    const id = location.pathname.split('/')[2];
+    if (menuItems.includes(page) && !id) {
+      navigate(`/${menuItem}`);
+    }
+  }, [menuItems, menuItem, navigate, location.pathname]);
 
   return (
     <>

@@ -11,7 +11,7 @@ const hasGetUserMedia = () => {
 };
 
 
-export default function VoiceInputIconBtn({ setQ, setInterimTranscript, voiceInput, setVoiceInput }) {
+export default function VoiceInputIconBtn({ setQ, setInterimTranscript, voiceInput, setVoiceInput, disabled = false }) {
   const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
   // const recognition = new SpeechRecognition();
   let recognition = useMemo(() => new SpeechRecognition() || null, [SpeechRecognition]);
@@ -111,7 +111,7 @@ export default function VoiceInputIconBtn({ setQ, setInterimTranscript, voiceInp
 
   return (
     <>
-      <IconButton aria-label='voice' size='small' onClick={toggleRecording} sx={{ ml: .5, mr: .5 }}>
+      <IconButton disabled={disabled} aria-label='voice' size='small' onClick={toggleRecording} sx={{ ml: .5, mr: .5 }}>
         {voiceInput
           ? <RecordVoiceOverIcon htmlColor='rgb(46,149,118)' />
           : <MicIcon />

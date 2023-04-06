@@ -1,55 +1,75 @@
-import { Box } from '@mui/material';
-import { Grid, Paper, Stack, Typography } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import { Box, Fab, Grid, Paper, Stack, Typography } from '@mui/material';
 import axios from 'axios';
 import InputBox from 'components/InputBox';
 import dayjs from 'dayjs';
 import React, { useContext, useEffect, useRef } from 'react';
-import { ChatsArea } from '../components/ChatsArea';
+import { isMobile } from 'react-device-detect';
 import { ImageRenderer } from '../components/ImageRenderer';
-import './Image.css';
+import LoadingProgress from '../components/LoadingProgress';
 import { AppContext } from '../contexts/AppContext';
+import { useImage } from '../hooks/useAPI';
+import './Image.css';
+import { useParams } from 'react-router-dom';
 
-export default function Image() {
+export default function Image({ selectedChat, onChatSave }) {
   document.title = 'image';
-
+  const { id } = useParams();
   const { REACT_APP_CHAT_API_URL } = process.env;
   const bottomRef = useRef(null);
   const lastMsgRef = useRef(null);
   const footerRef = useRef(null);
   const { setToast } = useContext(AppContext);
 
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [chats, setChats] = React.useState([]);
+  const [chat, setChat] = React.useState({ data: [], isLoading: false });
+
+  const { data, error, isLoading } = useImage(selectedChat);
+
+  useEffect(() => {
+    if (error) return;
+    if (isLoading) setChat(prev => ({ ...prev, isLoading: true }));
+    if (data?.data?.status === 'success') {
+      setChat({ data: data.data.data.data.chats, isLoading: false });
+      document.title = data.data.data.data.title;
+    } else {
+      setChat({ data: [], isLoading: false });
+    }
+
+  }, [data, error, isLoading]);
+
 
   const onMessagesSubmit = async (prompt) => {
     const now = dayjs().toISOString();
     const newChat = {
-      metadata: { id: 'user' + chats.length, c: now },
+      metadata: { id: 'user' + chat.data.length, c: now },
       message: { role: 'user', content: prompt }
     };
-    setChats(prev => ([...prev, newChat]));
-    setIsLoading(true);
+
+    setChat(prev => ({ data: [...prev.data, newChat], isLoading: true }));
 
     try {
       const { data } = await axios.post(`${REACT_APP_CHAT_API_URL}/openai/image/create`, { prompt });
       if (data.status === 'error') {
         setToast({ text: data.message, severity: 'error' });
+        setChat(prev => ({
+          ...prev,
+          isLoading: false
+        }));
       }
       if (data.status === 'success') {
-        setChats(prev => ([
-          ...prev,
-          {
-            metadata: { id: data.created, c: now },
-            message: { role: 'assistant', content: data.data }
-          }
-        ]));
+        setChat(prev => ({
+          data: [...prev.data, { metadata: { id: data.created, c: now }, message: { role: 'assistant', content: data.data } }],
+          isLoading: false
+        }));
       }
 
     } catch (error) {
       console.log(error.message);
       setToast({ text: `API error: ${error.message}`, severity: 'error' });
-    } finally {
-      setIsLoading(false);
+      setChat(prev => ({
+        ...prev,
+        isLoading: false
+      }));
     }
   };
 
@@ -59,25 +79,45 @@ export default function Image() {
     }, 100);
 
     return () => clearTimeout(id);
-  }, [chats.length]);
+  }, [chat.data.length]);
 
+  const onNewChatClick = async () => {
+    setChat(prev => ({ ...prev, isLoading: true }));
+    await axios.post(`${REACT_APP_CHAT_API_URL}/my/image/add`, { chats: chat.data });
+    onChatSave();
+    setChat({ data: [], isLoading: false });
+  };
 
   return (
-    <>
-      <ChatsArea>
+    <Grid item xs={12} sm={12} md={8} lg={9} xl={9} sx={{ height: '100%' }}>
+      <Paper sx={{
+        borderRadius: 3,
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+        justifyContent: 'space-between',
+        // alignItems: 'center',
+        ...(isMobile && { pb: 6 })
+      }}>
+        <Stack>
+          <LoadingProgress show={isLoading || chat.isLoading} />
+        </Stack>
         <Stack className='no-scrollbar' sx={{
-          pt: 8,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          width: '90vw',
+          width: '100%',
           maxWidth: 1280,
           overflowY: 'scroll',
+          overflowX: 'visible',
           flexGrow: 1,
+          height: '100%',
+          p: 1
         }}>
-          <Stack spacing={2} sx={{ width: '100%' }}>
-            {chats.map((chat, idx) => {
-              const isAssistant = chat.message.role === 'assistant';
+          <Stack spacing={2} sx={{ width: '100%' }} >
+            {chat.data.map((x, idx) => {
+              const isAssistant = x.message.role === 'assistant';
               return (
                 <Stack key={idx} sx={{ width: '100%', alignItems: isAssistant ? 'start' : 'end' }}>
                   <Stack direction='row' spacing={1} sx={{ alignItems: 'end' }}>
@@ -88,37 +128,52 @@ export default function Image() {
                       width: '100%',
                     }}>
                       {isAssistant
-                        ? <Box ref={idx === chats.length - 1 ? lastMsgRef : undefined}>
+                        ? <Box ref={idx === chat.data.length - 1 ? lastMsgRef : undefined}>
                           <Grid container spacing={1}>
-                            {chat.message.content.map(({ b64_json, url }, idx) => (
+                            {x.message.content.map(({ b64_json, url }, idx) => (
                               <Grid key={idx} item xs={12} sm={12}>
                                 <ImageRenderer b64_json={b64_json} url={url} />
                               </Grid>
                             ))}
                           </Grid>
                         </Box>
-                        : <Typography>{chat.message.content}</Typography>
+                        : <Typography>{x.message.content}</Typography>
                       }
                     </Paper>
                   </Stack>
-                  <Typography sx={{ fontSize: '0.6rem', textAlign: 'end', color: 'grey' }}>{dayjs(chat.metadata.ts).format('h:mm a')}</Typography>
+                  <Typography sx={{ fontSize: '0.6rem', textAlign: 'end', color: 'grey' }}>{dayjs(x.metadata.ts).format('h:mm a')}</Typography>
                 </Stack>
               );
             })}
-            <div ref={bottomRef} />
           </Stack>
+          <div ref={bottomRef} />
         </Stack>
+        {!!chat.data.length &&
+          <Stack sx={{ position: 'absolute', bottom: 90, alignSelf: 'end' }}>
+            <Fab
+              disabled={!chat.data.length || !!id}
+              size='small'
+              color='primary'
+              aria-label='new conversation'
+              onClick={onNewChatClick}
+              sx={{ transform: 'scale(0.8)' }}
+            >
+              <AddIcon />
+            </Fab>
+          </Stack>
+        }
         <Stack className='no-scrollbar' sx={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           width: '100%',
+          maxWidth: 1280
         }}>
-          <Stack ref={footerRef} spacing={1} sx={{ width: '90%', maxWidth: 1280 }}>
-            <InputBox onMessagesSubmit={onMessagesSubmit} isLoading={isLoading} />
+          <Stack ref={footerRef} spacing={1} sx={{ width: '100%' }}>
+            <InputBox onMessagesSubmit={onMessagesSubmit} isLoading={isLoading} disabled={!!chat.data.length || !!id} />
           </Stack>
         </Stack>
-      </ChatsArea>
-    </>
+      </Paper >
+    </Grid >
   );
 }

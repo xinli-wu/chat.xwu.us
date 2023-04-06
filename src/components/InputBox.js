@@ -9,7 +9,7 @@ import { TransitionGroup } from 'react-transition-group';
 import LoadingProgress from './LoadingProgress';
 import VoiceInput from './VoiceInput';
 
-export default function InputBox({ onMessagesSubmit, isLoading, isReading = false }) {
+export default function InputBox({ onMessagesSubmit, isLoading, isReading = false, disabled = false }) {
   const theme = useTheme();
   const [q, setQ] = useState('');
   const [interimTranscript, setInterimTranscript] = useState('');
@@ -87,7 +87,7 @@ export default function InputBox({ onMessagesSubmit, isLoading, isReading = fals
 
   return (
     <Paper elevation={suggestOpen ? 24 : 6} component='form' onSubmit={onQSubmit}>
-      {suggestions.length > 0 &&
+      {!!suggestions.length && !disabled &&
         <Collapse in={suggestOpen} timeout={150}>
           <Stack sx={{ m: filteredSuggestions.length ? 0.25 : 0, textAlign: 'start' }}>
             <List sx={{ ...(filteredSuggestions.length === 0 && { p: 0 }) }}>
@@ -115,10 +115,10 @@ export default function InputBox({ onMessagesSubmit, isLoading, isReading = fals
         </Collapse>
       }
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 44 }}>
-        <VoiceInput setQ={setQ} setInterimTranscript={setInterimTranscript} voiceInput={voiceInput} setVoiceInput={setVoiceInput} />
+        <VoiceInput disabled={disabled} setQ={setQ} setInterimTranscript={setInterimTranscript} voiceInput={voiceInput} setVoiceInput={setVoiceInput} />
         <InputBase
           ref={inputElement}
-          disabled={voiceInput || isReading || isLoading}
+          disabled={voiceInput || isReading || isLoading || disabled}
           fullWidth
           multiline={false}
           // maxRows={10}

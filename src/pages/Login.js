@@ -7,7 +7,6 @@ import React, { useContext } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { AppContext } from '../contexts/AppContext';
 import { UserContext } from '../contexts/UserContext';
-// import './Chat.css';
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -28,12 +27,11 @@ export default function Login() {
 
   React.useEffect(() => {
     if (login.isSuccess) {
-      if (login.data?.data?.status === 'success') {
-        if (login.data?.data?.data?.user) {
-          localStorage['token'] = login.data.data.data.user.token;
-          setUser(login.data.data.data.user);
-        }
+      if (login.data?.data.status === 'success') {
         setToast({ text: login.data.data.message, severity: 'success' });
+        if (login.data?.data?.user) {
+          setUser(login.data.data.user);
+        }
       } else {
         setToast({ text: login.data.data.message, severity: 'error' });
       }
@@ -48,25 +46,27 @@ export default function Login() {
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 30 }}>
       <Paper sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '70%', minWidth: 300, maxWidth: 600 }}>
-        <FormGroup onSubmit={() => login.refetch()} sx={{ p: 2, width: '100%' }}>
-          <FormControl sx={{ p: 1 }} margin='dense'>
-            <TextField disabled={login.isFetching} label='Email' variant='standard' fullWidth
-              onChange={(e) => setForm({ email: e.target.value })} value={form.email}
-            />
-          </FormControl>
-          <FormControl sx={{ p: 1 }} margin='dense'>
-            <LoadingButton
-              type='submit'
-              variant='contained'
-              disabled={!emailRegex.test(form.email)}
-              onClick={() => login.refetch()}
-              loading={(login.isFetching || login.isRefetching)}
-              loadingPosition='end'
-              endIcon={<LoginIcon />}>
-              Send Login Link
-            </LoadingButton>
-          </FormControl>
-        </FormGroup>
+        <form onSubmit={(e) => { e.preventDefault(); login.refetch(); }} style={{ width: '100%' }}>
+          <FormGroup onSubmit={() => login.refetch()} sx={{ p: 2, width: '100%' }}>
+            <FormControl sx={{ p: 1 }} margin='dense'>
+              <TextField disabled={login.isFetching} label='Email' variant='standard' fullWidth
+                onChange={(e) => setForm({ email: e.target.value })} value={form.email}
+              />
+            </FormControl>
+            <FormControl sx={{ p: 1 }} margin='dense'>
+              <LoadingButton
+                type='submit'
+                variant='contained'
+                disabled={!emailRegex.test(form.email)}
+                onClick={() => login.refetch()}
+                loading={(login.isFetching || login.isRefetching)}
+                loadingPosition='end'
+                endIcon={<LoginIcon />}>
+                Send Login Link
+              </LoadingButton>
+            </FormControl>
+          </FormGroup>
+        </form>
       </Paper>
     </Box>
   );

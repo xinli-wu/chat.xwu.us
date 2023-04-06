@@ -4,7 +4,7 @@ export const useLocalStorage = () => {
   const [value, setValue] = useState(null);
 
   const setItem = (key, value) => {
-    localStorage.setItem(key, value);
+    // localStorage.setItem(key, value);
     setValue(value);
   };
 
@@ -16,7 +16,7 @@ export const useLocalStorage = () => {
   };
 
   const removeItem = (key) => {
-    localStorage.removeItem(key);
+    // localStorage.removeItem(key);
     setValue(null);
   };
 

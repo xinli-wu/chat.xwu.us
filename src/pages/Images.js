@@ -2,23 +2,20 @@ import { Grid } from '@mui/material';
 import React, { useEffect } from 'react';
 import { isMobile } from 'react-device-detect';
 import { useParams } from 'react-router-dom';
-import Chat from '../components/Chat';
 import ChatHistory from '../components/ChatHistory';
 import { ChatsArea } from '../components/ChatsArea';
-import { useChats } from '../hooks/useAPI';
+import { useImages } from '../hooks/useAPI';
+import Image from './Image';
 import { useNavigate } from 'react-router-dom';
 
-export default function Chats() {
+export default function Images() {
   const params = useParams();
   const navigate = useNavigate();
-  const [selectedChat, setSelectedChat] = React.useState(params.id);
+
+  const [selectedChat, setSelectedChat] = React.useState(params.id || undefined);
   const [chats, setChats] = React.useState([]);
 
-  const { data, error, isLoading, mutate, isValidating } = useChats();
-
-  useEffect(() => {
-    setSelectedChat(selectedChat);
-  }, [params.id, selectedChat]);
+  const { data, error, isLoading, mutate, isValidating } = useImages();
 
   useEffect(() => {
     if (error || isLoading || isValidating) return;
@@ -28,9 +25,10 @@ export default function Chats() {
   }, [data, error, isLoading, isValidating]);
 
   const onChatSelect = (id) => {
-    navigate(`/chat/${id}`);
+    navigate(`/image/${id}`);
     setSelectedChat(id);
   };
+
 
   return (
     <ChatsArea>
@@ -48,7 +46,7 @@ export default function Chats() {
             chats={chats}
           />
         )}
-        <Chat
+        <Image
           selectedChat={selectedChat}
           onChatSave={mutate}
         />

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import useSWR from 'swr';
+import useSWRImmutable from 'swr/immutable';
 
 const { REACT_APP_CHAT_API_URL } = process.env;
 
@@ -8,11 +9,20 @@ export const useChats = () => {
 };
 
 export const useChat = (objectId) => {
-  return useSWR(objectId ? `${REACT_APP_CHAT_API_URL}/my/chat/${objectId}` : null, axios);
+  return useSWRImmutable(objectId ? `${REACT_APP_CHAT_API_URL}/my/chat/${objectId}` : null, axios);
 };
 
 export const useRefresh = () => {
-  const { data, error, isLoading } = useSWR(`${REACT_APP_CHAT_API_URL}/me/refresh`, axios.post, { refreshInterval: 1000 * 60 * 5 });
+  return useSWR(`${REACT_APP_CHAT_API_URL}/me/refresh`, axios.post, {
+    refreshInterval: 1000 * 60 * 5,
+  });
+};
 
-  return { data: data?.data, error, isLoading };
+
+export const useImages = () => {
+  return useSWRImmutable(`${REACT_APP_CHAT_API_URL}/my/image`, axios);
+};
+
+export const useImage = (objectId) => {
+  return useSWR(objectId ? `${REACT_APP_CHAT_API_URL}/my/image/${objectId}` : null, axios);
 };

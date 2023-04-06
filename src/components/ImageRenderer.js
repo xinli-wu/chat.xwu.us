@@ -28,8 +28,8 @@ export const ImageRenderer = ({ b64_json, url }) => {
   return (
     <>
       <Box className='root' onClick={() => setOpen(true)} sx={{
-        width: '100%',
-        height: '100%',
+        width: 256,
+        height: 256,
         borderRadius: 2,
         overflow: 'hidden',
         cursor: 'pointer',

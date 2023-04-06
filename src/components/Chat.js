@@ -6,22 +6,18 @@ import dayjs from 'dayjs';
 import throttle from 'lodash.throttle';
 import React, { useContext, useEffect, useRef } from 'react';
 import { isMobile } from 'react-device-detect';
-import ReactMarkdown from 'react-markdown';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { AppContext } from '../contexts/AppContext';
 import { UserContext } from '../contexts/UserContext';
 import { useChat } from '../hooks/useAPI';
+import { AssistantMsgMarkdown } from './AssistantMsgMarkdown';
 import './Chat.css';
-import { CopyCode } from './CopyCode';
 import LoadingProgress from './LoadingProgress';
-import { useNavigate } from 'react-router-dom';
 
 export default function Chat({ selectedChat, onChatSave }) {
   document.title = 'chat';
+
   const { REACT_APP_CHAT_API_URL } = process.env;
   const { user } = useContext(UserContext);
-  const navigate = useNavigate();
 
   const bottomRef = useRef(null);
   const lastMsgRef = useRef(null);
@@ -61,7 +57,7 @@ export default function Chat({ selectedChat, onChatSave }) {
     );
   };
 
-  const throttledSetCurAssistantMsg = throttle(setCurAssistantMsg, 70, { trailing: true });
+  const throttledSetCurAssistantMsg = throttle(setCurAssistantMsg, 70, { leading: true, trailing: true });
 
   const onMessagesSubmit = async (newMsg) => {
     const ts = dayjs().toISOString();
@@ -102,15 +98,24 @@ export default function Chat({ selectedChat, onChatSave }) {
 
               finalMsg += content;
 
+              //setState once to push a new chat, content can be anything
+              // if (finalMsg === '') throttledSetCurAssistantMsg(msgObj.id, ts, ' ▊');
               throttledSetCurAssistantMsg(msgObj.id, ts, finalMsg + ' ▊');
-
+              // finalMsg += content;
               if (lastMsgRef.current) {
                 const boundingRect = lastMsgRef.current.getBoundingClientRect();
                 const { height } = boundingRect;
                 setLastMsgHeight(height);
+                // lastMsgRef.current.innerHTML = renderToString(<AssistantMsgMarkdown content={finalMsg + ' ▊'} />);
               }
             }
           } else {
+            // if (lastMsgRef.current) {
+            //   const boundingRect = lastMsgRef.current.getBoundingClientRect();
+            //   const { height } = boundingRect;
+            //   setLastMsgHeight(height);
+            //   lastMsgRef.current.innerHTML = renderToString(<AssistantMsgMarkdown content={finalMsg} />);
+            // }
             throttledSetCurAssistantMsg(msgId, ts, finalMsg);
 
             setIsReading(false);
@@ -138,7 +143,7 @@ export default function Chat({ selectedChat, onChatSave }) {
 
     await axios.post(`${REACT_APP_CHAT_API_URL}/my/chat/add`, { chats: chat });
     onChatSave();
-    navigate('/chat');
+    // navigate('/chat');
     setChat([]);
   };
 
@@ -151,7 +156,7 @@ export default function Chat({ selectedChat, onChatSave }) {
         flexDirection: 'column',
         overflow: 'hidden',
         justifyContent: 'space-between',
-        // alignItems: 'center',
+        alignItems: 'center',
         ...(isMobile && { pb: 6 })
       }}>
         <Stack>
@@ -169,9 +174,9 @@ export default function Chat({ selectedChat, onChatSave }) {
           height: '100%',
           p: 1
         }}>
-          <Stack spacing={2} sx={{ width: '100%', }} >
-            {chat.map((chat, idx) => {
-              const isAssistant = chat.message.role === 'assistant';
+          <Stack spacing={2} sx={{ width: '100%' }} >
+            {chat.map((x, idx) => {
+              const isAssistant = x.message.role === 'assistant';
               return (
                 <Stack key={idx} sx={{ width: '100%', alignItems: isAssistant ? 'start' : 'end' }}>
                   <Stack direction='row' spacing={1} sx={{ alignItems: 'end', maxWidth: '100%' }}>
@@ -186,60 +191,33 @@ export default function Chat({ selectedChat, onChatSave }) {
                     }}>
                       {isAssistant
                         ? <Box ref={idx === chat.length - 1 ? lastMsgRef : undefined}>
-                          <ReactMarkdown
-                            components={(
-                              {
-                                code({ node, inline, className, children, ...props }) {
-                                  const match = /language-(\w+)/.exec(className || '') || ['language-javascript', 'javascript'];
-                                  return !inline && match ? (
-                                    <Stack sx={{ overflowX: 'scroll' }}>
-                                      <CopyCode language={match[1]} code={String(children)} />
-                                      <SyntaxHighlighter
-                                        showLineNumbers
-                                        // @ts-ignore
-                                        style={vscDarkPlus}
-                                        language={match[1]}
-                                        PreTag='div'
-                                        {...props}
-                                      >
-                                        {String(children).replace(/\n$/, '')}
-                                      </SyntaxHighlighter>
-                                    </Stack>
-                                  ) : (
-                                    <code className={className} {...props}>
-                                      {children}
-                                    </code>
-                                  );
-                                }
-                              }
-                            )}
-                          >
-                            {chat.message.content}
-                          </ReactMarkdown>
+                          <AssistantMsgMarkdown content={x.message.content} />
                         </Box>
-                        : <Typography>{chat.message.content}</Typography>
+                        : <Typography>{x.message.content}</Typography>
                       }
                     </Paper>
                   </Stack>
-                  <Typography sx={{ fontSize: '0.6rem', textAlign: 'end', color: 'grey' }}>{dayjs(chat.metadata.ts).format('h:mm a')}</Typography>
+                  <Typography sx={{ fontSize: '0.6rem', textAlign: 'end', color: 'grey' }}>{dayjs(x.metadata.ts).format('h:mm a')}</Typography>
                 </Stack>
               );
             })}
           </Stack>
           <div ref={bottomRef} />
         </Stack>
-        <Stack sx={{ position: 'absolute', bottom: 90, alignSelf: 'end' }}>
-          <Fab
-            disabled={isCompletionLoading || isReading || chat.length === 0}
-            size='small'
-            color='primary'
-            aria-label='new conversation'
-            onClick={onNewChatClick}
-            sx={{ transform: 'scale(0.8)' }}
-          >
-            <AddIcon />
-          </Fab>
-        </Stack>
+        {!!chat.length &&
+          <Stack sx={{ position: 'absolute', bottom: 90, alignSelf: 'end' }}>
+            <Fab
+              disabled={isCompletionLoading || isReading}
+              size='small'
+              color='primary'
+              aria-label='new conversation'
+              onClick={onNewChatClick}
+              sx={{ transform: 'scale(0.8)' }}
+            >
+              <AddIcon />
+            </Fab>
+          </Stack>
+        }
         <Stack className='no-scrollbar' sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -251,7 +229,7 @@ export default function Chat({ selectedChat, onChatSave }) {
             <InputBox onMessagesSubmit={onMessagesSubmit} isLoading={isCompletionLoading} isReading={isReading} />
           </Stack>
         </Stack>
-      </Paper>
-    </Grid>
+      </Paper >
+    </Grid >
   );
 }

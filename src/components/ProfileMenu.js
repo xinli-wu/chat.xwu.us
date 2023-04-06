@@ -24,11 +24,12 @@ export default function ProfileMenu() {
   };
 
   const onLogoutClick = async (_e) => {
-    setUser(null);
     const { data } = await axios.post(`${process.env.REACT_APP_CHAT_API_URL}/me/logout`);
     if (data.status === 'success') {
+      setUser(null);
       setToast({ text: data.message, severity: data.status });
     }
+
   };
 
   const onProfileClick = (_e) => {
