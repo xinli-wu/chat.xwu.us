@@ -62,7 +62,6 @@ function App() {
 
         if (data?.status === 'success') {
           if (data?.data?.user) {
-            console.log('setUser', data.data.user);
             setUser(data.data.user);
           }
           setToast({ text: data.message, severity: 'success' });
@@ -99,9 +98,9 @@ function App() {
     if (!user) {
       navigate('/login');
       localStorage.removeItem('token');
-    };
+    }
+    if (user) localStorage.setItem('token', user.token);
     if (user && ['/', '/login'].includes(location.pathname)) {
-      localStorage.setItem('token', user.token);
       window.location.replace('/chat');
     };
 
@@ -123,6 +122,19 @@ function App() {
     }, 1000 * 60 * 5);
     return () => clearInterval(id);
   }, [user]);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await axios.post(`${REACT_APP_CHAT_API_URL}/me/refresh`);
+      if (data.status === 'success') {
+        setUser(data.data.user);
+      } else {
+        setToast({ text: data.message, severity: 'error' });
+        setUser(null);
+      }
+    })();
+
+  }, []);
 
   return (
     <div className='App'>
