@@ -96,81 +96,84 @@ export default function Image({ selectedChat, onChatSave }) {
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
-        justifyContent: 'space-between',
-        // alignItems: 'center',
         ...(isMobile && { pb: 6 })
       }}>
         <Stack>
           <LoadingProgress show={isLoading || isValidating || chat.isLoading} />
         </Stack>
-        <Stack className='no-scrollbar' sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
+        <Stack sx={{
           width: '100%',
-          maxWidth: 1280,
-          overflowY: 'scroll',
-          overflowX: 'visible',
-          flexGrow: 1,
           height: '100%',
-          p: 1
-        }}>
-          <Stack spacing={2} sx={{ width: '100%' }} >
-            {chat.data.map((x, idx) => {
-              const isAssistant = x.message.role === 'assistant';
-              return (
-                <Stack key={idx} sx={{ width: '100%', alignItems: isAssistant ? 'start' : 'end' }}>
-                  <Stack direction='row' spacing={1} sx={{ alignItems: 'end' }}>
-                    <Paper elevation={12} sx={{
-                      p: 1,
-                      borderRadius: 3,
-                      textAlign: isAssistant ? 'left' : 'right',
-                      width: '100%',
-                    }}>
-                      {isAssistant
-                        ? <Box ref={idx === chat.data.length - 1 ? lastMsgRef : undefined}>
-                          <Grid container spacing={1}>
-                            {x.message.content.map(({ b64_json, url }, idx) => (
-                              <Grid key={idx} item xs={12} sm={12}>
-                                <ImageRenderer b64_json={b64_json} url={url} />
-                              </Grid>
-                            ))}
-                          </Grid>
-                        </Box>
-                        : <Typography>{x.message.content}</Typography>
-                      }
-                    </Paper>
-                  </Stack>
-                  <Typography sx={{ fontSize: '0.6rem', textAlign: 'end', color: 'grey' }}>{dayjs(x.metadata.ts).format('h:mm a')}</Typography>
-                </Stack>
-              );
-            })}
-          </Stack>
-          <div ref={bottomRef} />
-        </Stack>
-        {!!chat.data.length &&
-          <Stack sx={{ position: 'absolute', bottom: 90, alignSelf: 'end' }}>
-            <Fab
-              disabled={!chat.data.length || !!id}
-              size='small'
-              color='primary'
-              aria-label='new conversation'
-              onClick={onNewChatClick}
-              sx={{ transform: 'scale(0.8)' }}
-            >
-              <AddIcon />
-            </Fab>
-          </Stack>
-        }
-        <Stack className='no-scrollbar' sx={{
-          display: 'flex',
-          flexDirection: 'column',
+          justifyContent: 'space-between',
           alignItems: 'center',
-          width: '100%',
-          maxWidth: 1280
-        }}>
-          <Stack ref={footerRef} spacing={1} sx={{ width: '100%' }}>
-            <InputBox onMessagesSubmit={onMessagesSubmit} isLoading={isLoading} disabled={!!chat.data.length || !!id} />
+          overflow: 'scroll',
+          maxWidth: 1280,
+          alignSelf: 'center',
+          p: 1,
+          pt: 0
+        }}
+        >
+          <Stack className='no-scrollbar' sx={{
+            alignItems: 'center',
+            width: '100%',
+            overflowY: 'scroll',
+          }}>
+            <Stack spacing={2} sx={{ width: '100%' }} >
+              {chat.data.map((x, idx) => {
+                const isAssistant = x.message.role === 'assistant';
+                return (
+                  <Stack key={idx} sx={{ width: '100%', alignItems: isAssistant ? 'start' : 'end' }}>
+                    <Stack direction='row' spacing={1} sx={{ alignItems: 'end' }}>
+                      <Paper elevation={12} sx={{
+                        p: 1,
+                        borderRadius: 3,
+                        textAlign: isAssistant ? 'left' : 'right',
+                        width: '100%',
+                      }}>
+                        {isAssistant
+                          ? <Box ref={idx === chat.data.length - 1 ? lastMsgRef : undefined}>
+                            <Grid container spacing={1}>
+                              {x.message.content.map(({ b64_json, url }, idx) => (
+                                <Grid key={idx} item xs={12} sm={12}>
+                                  <ImageRenderer b64_json={b64_json} url={url} />
+                                </Grid>
+                              ))}
+                            </Grid>
+                          </Box>
+                          : <Typography>{x.message.content}</Typography>
+                        }
+                      </Paper>
+                    </Stack>
+                    <Typography sx={{ fontSize: '0.6rem', textAlign: 'end', color: 'grey' }}>{dayjs(x.metadata.ts).format('h:mm a')}</Typography>
+                  </Stack>
+                );
+              })}
+            </Stack>
+            <div ref={bottomRef} />
+          </Stack>
+          {!!chat.data.length &&
+            <Stack sx={{ position: 'absolute', bottom: 90, alignSelf: 'end' }}>
+              <Fab
+                disabled={!chat.data.length || !!id}
+                size='small'
+                color='primary'
+                aria-label='new conversation'
+                onClick={onNewChatClick}
+                sx={{ transform: 'scale(0.8)' }}
+              >
+                <AddIcon />
+              </Fab>
+            </Stack>
+          }
+          <Stack className='no-scrollbar' sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            width: '100%',
+          }}>
+            <Stack ref={footerRef} spacing={1} sx={{ width: '100%' }}>
+              <InputBox onMessagesSubmit={onMessagesSubmit} isLoading={isLoading} disabled={!!chat.data.length || !!id} />
+            </Stack>
           </Stack>
         </Stack>
       </Paper >

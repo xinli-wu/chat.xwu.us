@@ -143,7 +143,6 @@ export default function Chat({ selectedChat, onChatSave }) {
 
     await axios.post(`${REACT_APP_CHAT_API_URL}/my/chat/add`, { chats: chat });
     onChatSave();
-    // navigate('/chat');
     setChat([]);
   };
 
@@ -155,80 +154,84 @@ export default function Chat({ selectedChat, onChatSave }) {
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
-        justifyContent: 'space-between',
-        // alignItems: 'center',
         ...(isMobile && { pb: 6 })
       }}>
         <Stack>
           <LoadingProgress show={isLoading || isValidating || isCompletionLoading} />
         </Stack>
-        <Stack className='no-scrollbar' sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
+        <Stack sx={{
           width: '100%',
-          maxWidth: 1280,
-          overflowY: 'scroll',
-          overflowX: 'visible',
-          flexGrow: 1,
           height: '100%',
-          p: 1
-        }}>
-          <Stack spacing={2} sx={{ width: '100%' }} >
-            {chat.map((x, idx) => {
-              const isAssistant = x.message.role === 'assistant';
-              return (
-                <Stack key={idx} sx={{ width: '100%', alignItems: isAssistant ? 'start' : 'end' }}>
-                  <Stack direction='row' spacing={1} sx={{ alignItems: 'end', maxWidth: '100%' }}>
-                    <Paper elevation={0} sx={{
-                      p: 1,
-                      borderRadius: 3,
-                      textAlign: isAssistant ? 'left' : 'right',
-                      width: '100%',
-                      backgroundColor: theme.palette.mode === 'light' ? 'rgba(225, 232, 239)' : 'rgba(44, 44, 44)',
-                      ...(isAssistant && { backgroundColor: 'rgb(63, 147, 120)' }),
-                      ...((isAssistant && theme.palette.mode === 'light') && { filter: 'brightness(1.25)' })
-                    }}>
-                      {isAssistant
-                        ? <Box ref={idx === chat.length - 1 ? lastMsgRef : undefined}>
-                          <AssistantMsgMarkdown content={x.message.content} />
-                        </Box>
-                        : <Typography>{x.message.content}</Typography>
-                      }
-                    </Paper>
-                  </Stack>
-                  <Typography sx={{ fontSize: '0.6rem', textAlign: 'end', color: 'grey' }}>{dayjs(x.metadata.ts).format('h:mm a')}</Typography>
-                </Stack>
-              );
-            })}
-          </Stack>
-          <div ref={bottomRef} />
-        </Stack>
-        {!!chat.length &&
-          <Stack sx={{ position: 'absolute', bottom: 90, alignSelf: 'end' }}>
-            <Fab
-              disabled={isCompletionLoading || isReading}
-              size='small'
-              color='primary'
-              aria-label='new conversation'
-              onClick={onNewChatClick}
-              sx={{ transform: 'scale(0.8)' }}
-            >
-              <AddIcon />
-            </Fab>
-          </Stack>
-        }
-        <Stack className='no-scrollbar' sx={{
-          display: 'flex',
-          flexDirection: 'column',
+          justifyContent: 'space-between',
           alignItems: 'center',
-          width: '100%',
-          maxWidth: 1280
-        }}>
-          <Stack ref={footerRef} spacing={1} sx={{ width: '100%' }}>
-            <InputBox onMessagesSubmit={onMessagesSubmit} isLoading={isCompletionLoading} isReading={isReading} />
+          overflow: 'scroll',
+          maxWidth: 1280,
+          alignSelf: 'center',
+          p: 1,
+          pt: 0
+        }}
+        >
+          <Stack className='no-scrollbar' sx={{
+            alignItems: 'center',
+            width: '100%',
+            overflowY: 'scroll',
+          }}>
+            <Stack spacing={2} sx={{ width: '100%' }} >
+              {chat.map((x, idx) => {
+                const isAssistant = x.message.role === 'assistant';
+                return (
+                  <Stack key={idx} sx={{ width: '100%', alignItems: isAssistant ? 'start' : 'end' }}>
+                    <Stack direction='row' spacing={1} sx={{ alignItems: 'end', maxWidth: '100%' }}>
+                      <Paper elevation={0} sx={{
+                        p: 1,
+                        borderRadius: 3,
+                        textAlign: isAssistant ? 'left' : 'right',
+                        width: '100%',
+                        backgroundColor: theme.palette.mode === 'light' ? 'rgba(225, 232, 239)' : 'rgba(44, 44, 44)',
+                        ...(isAssistant && { backgroundColor: 'rgb(63, 147, 120)' }),
+                        ...((isAssistant && theme.palette.mode === 'light') && { filter: 'brightness(1.25)' })
+                      }}>
+                        {isAssistant
+                          ? <Box ref={idx === chat.length - 1 ? lastMsgRef : undefined}>
+                            <AssistantMsgMarkdown content={x.message.content} />
+                          </Box>
+                          : <Typography>{x.message.content}</Typography>
+                        }
+                      </Paper>
+                    </Stack>
+                    <Typography sx={{ fontSize: '0.6rem', textAlign: 'end', color: 'grey' }}>{dayjs(x.metadata.ts).format('h:mm a')}</Typography>
+                  </Stack>
+                );
+              })}
+            </Stack>
+            <div ref={bottomRef} />
+          </Stack>
+          {!!chat.length &&
+            <Stack sx={{ position: 'absolute', bottom: 90, alignSelf: 'end' }}>
+              <Fab
+                disabled={isCompletionLoading || isReading}
+                size='small'
+                color='primary'
+                aria-label='new conversation'
+                onClick={onNewChatClick}
+                sx={{ transform: 'scale(0.8)' }}
+              >
+                <AddIcon />
+              </Fab>
+            </Stack>
+          }
+          <Stack className='no-scrollbar' sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            width: '100%',
+          }}>
+            <Stack ref={footerRef} spacing={1} sx={{ width: '100%' }}>
+              <InputBox onMessagesSubmit={onMessagesSubmit} isLoading={isCompletionLoading} isReading={isReading} />
+            </Stack>
           </Stack>
         </Stack>
+
       </Paper >
     </Grid >
   );
