@@ -2,7 +2,6 @@ import { Box, FormControl, FormGroup, Paper, Stack, TextField } from '@mui/mater
 import React, { useContext } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { UserContext } from '../contexts/UserContext';
-// import './Chat.css';
 
 const isTrue = (v) => v?.toLowerCase() === 'true';
 

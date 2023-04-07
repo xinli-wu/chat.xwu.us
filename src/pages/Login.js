@@ -7,11 +7,11 @@ import React, { useContext } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { AppContext } from '../contexts/AppContext';
 import { UserContext } from '../contexts/UserContext';
-
+import { useTranslation } from 'react-i18next';
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function Login() {
-
+  const { t } = useTranslation();
   const { setUser } = useContext(UserContext);
   const { setToast } = useContext(AppContext);
   const [searchParams] = useSearchParams();
@@ -62,7 +62,7 @@ export default function Login() {
                 loading={(login.isFetching || login.isRefetching)}
                 loadingPosition='end'
                 endIcon={<LoginIcon />}>
-                Send Login Link
+                {t('Send Login Link')}
               </LoadingButton>
             </FormControl>
           </FormGroup>

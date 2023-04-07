@@ -6,8 +6,11 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../contexts/AppContext';
 import { UserContext } from '../contexts/UserContext';
+import { useTranslation } from 'react-i18next';
 
 export default function ProfileMenu() {
+  const { t } = useTranslation();
+
   const navigate = useNavigate();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -60,8 +63,8 @@ export default function ProfileMenu() {
           'aria-labelledby': 'profile-button',
         }}
       >
-        <MenuItem dense onClick={onProfileClick}>Profile</MenuItem>
-        <MenuItem dense onClick={onLogoutClick}>Logout</MenuItem>
+        <MenuItem dense onClick={onProfileClick}>{t('Profile')}</MenuItem>
+        <MenuItem dense onClick={onLogoutClick}>{t('Logout')}</MenuItem>
       </Menu>
     </>
   );

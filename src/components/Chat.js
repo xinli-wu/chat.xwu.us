@@ -231,7 +231,6 @@ export default function Chat({ selectedChat, onChatSave }) {
             </Stack>
           </Stack>
         </Stack>
-
       </Paper >
     </Grid >
   );

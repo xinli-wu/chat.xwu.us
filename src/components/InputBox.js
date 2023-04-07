@@ -8,6 +8,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import LoadingProgress from './LoadingProgress';
 import VoiceInput from './VoiceInput';
+import { useTranslation } from 'react-i18next';
 
 export default function InputBox({ onMessagesSubmit, isLoading, isReading = false, disabled = false }) {
   const theme = useTheme();
@@ -17,6 +18,7 @@ export default function InputBox({ onMessagesSubmit, isLoading, isReading = fals
   const [suggestOpen, setSuggestOpen] = React.useState(false);
   const [voiceInput, setVoiceInput] = useState(false);
   const inputElement = useRef(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     localStorage.qHistory = JSON.stringify(suggestions);
@@ -122,7 +124,7 @@ export default function InputBox({ onMessagesSubmit, isLoading, isReading = fals
           fullWidth
           multiline={false}
           // maxRows={10}
-          placeholder={`Start ${voiceInput ? 'speaking' : 'typing'}...`}
+          placeholder={t(`Start ${voiceInput ? 'speaking' : 'typing'}`) + '...'}
           inputProps={{ 'aria-label': 'start typing' }}
           value={voiceInput ? interimTranscript : q}
           onChange={onInputChange}

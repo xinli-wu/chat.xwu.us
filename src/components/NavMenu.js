@@ -1,8 +1,10 @@
 import { MenuItem, MenuList } from '@mui/material';
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export default function NavMenu() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -37,7 +39,7 @@ export default function NavMenu() {
             sx={{ textTransform: 'capitalize', borderRadius: 1, ml: 1 }}
             onClick={() => onMenuItemClick(i)}
           >
-            {x}
+            {t(x)}
           </MenuItem>
         ))}
       </MenuList>

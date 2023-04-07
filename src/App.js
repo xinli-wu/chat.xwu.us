@@ -17,6 +17,9 @@ import Chats from './pages/Chats';
 import Images from './pages/Images';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
+import * as locale from '@mui/material/locale';
+import { useTranslation } from 'react-i18next';
+import './i18n/i18n';
 
 axios.interceptors.request.use(
   config => {
@@ -33,7 +36,6 @@ axios.interceptors.request.use(
 );
 
 const queryClient = new QueryClient();
-
 const { REACT_APP_CHAT_API_URL } = process.env;
 
 function App() {
@@ -54,6 +56,10 @@ function App() {
   const [searchParams] = useSearchParams();
   const email = searchParams.get('email');
   const otp = searchParams.get('otp');
+
+  const { i18n } = useTranslation();
+
+  const lang = useMemo(() => ({ 'en-US': locale.enUS, 'zh-CN': locale.zhCN, }), []);
 
   React.useEffect(() => {
     (async () => {
@@ -90,8 +96,8 @@ function App() {
       createTheme({
         // @ts-ignore
         palette: { mode },
-      }),
-    [mode],
+      }, lang[i18n.language]),
+    [mode, lang, i18n.language],
   );
 
   useEffect(() => {
