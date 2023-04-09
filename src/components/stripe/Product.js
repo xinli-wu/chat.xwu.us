@@ -1,31 +1,21 @@
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Button, Divider } from '@mui/material';
+import { Button } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
-import Collapse from '@mui/material/Collapse';
-import IconButton from '@mui/material/IconButton';
-import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import axios from 'axios';
 import * as React from 'react';
+import { UserContext } from '../../contexts/UserContext';
 
-const ExpandMore = styled((props) => {
-  const { expand, ...other } = props;
-  return <IconButton {...other} />;
-})(({ theme, expand }) => ({
-  transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
-  marginRight: 'auto',
-  transition: theme.transitions.create('transform', {
-    duration: theme.transitions.duration.shortest,
-  }),
-}));
+const { REACT_APP_CHAT_API_URL } = process.env;
 
-export default function Product({ expanded, setExpanded, product }) {
+export default function Product({ product, isLoading }) {
+  const { user } = React.useContext(UserContext);
+  const displayPrice = !!product?.price ? product.price / 100 : 0;
 
   const onCheckoutClick = async (_e) => {
-    const { data } = await axios.post(`${process.env.REACT_APP_CHAT_API_URL}/stripe/create-checkout-session`, { lookup_key: product.lookupKey });
+    const { data } = await axios.post(`${REACT_APP_CHAT_API_URL}/stripe/create-checkout-session`, { id: product.id });
     if (data?.url) {
       window.location.href = data.url;
     } else {
@@ -33,39 +23,31 @@ export default function Product({ expanded, setExpanded, product }) {
     }
   };
 
+  const activePlan = product.name !== 'Free' && user.subscription?.displayName === product.name;
+
+  console.log(user);
+  const bgColor = 'rgb(63, 147, 120)';
+
   return (
-    <Card elevation={24}>
+    <Card elevation={12} sx={{
+      borderRadius: 3, minWidth: 200, minHeight: 220, display: 'grid',
+      ...((activePlan) && { bgcolor: bgColor })
+    }}>
       <CardHeader
-        title={product.title}
-        subheader={`$${product.price} per month`}
+        title={product.name}
+        subheader={`$${displayPrice} per month`}
       />
       <CardContent>
         <Typography variant="body2" color="text.secondary">
-          This impressive paella is a perfect party dish and a fun meal to cook
-          together with your guests. Add 1 cup of frozen peas along with the mussels,
-          if you like.
+          {product.desc}
         </Typography>
       </CardContent>
-      <CardActions disableSpacing>
-        <ExpandMore
-          expand={expanded}
-          onClick={() => setExpanded(prev => !prev)}
-          aria-expanded={expanded}
-          aria-label="show more"
-        >
-          <ExpandMoreIcon />
-        </ExpandMore>
-        <Button onClick={onCheckoutClick}>{`$${product.price} Buy`}</Button>
+      <CardActions disableSpacing sx={{ justifyContent: 'end' }}>
+        {!product.id
+          ? <Button variant='contained' disabled>Free</Button>
+          : <Button variant='contained' disabled={isLoading || activePlan} onClick={onCheckoutClick}>{`$${displayPrice} Buy`}</Button>
+        }
       </CardActions>
-      {expanded && <Divider />}
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <CardContent>
-          <Typography paragraph>Method:</Typography>
-          <Typography>
-            Set aside off of the heat to let rest for 10 minutes, and then serve.
-          </Typography>
-        </CardContent>
-      </Collapse>
     </Card>
   );
 }

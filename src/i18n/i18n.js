@@ -24,7 +24,7 @@ i18n
       escapeValue: false // react already safes from xss
     },
     // cache: [],
-    debug: process.env.NODE_ENV === 'development',
+    // debug: process.env.NODE_ENV === 'development',
   });
 
 

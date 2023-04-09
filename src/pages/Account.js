@@ -1,27 +1,21 @@
-import { Box, FormControl, FormGroup, Paper, Stack, TextField } from '@mui/material';
+import { FormControl, FormGroup, Paper, Stack, TextField } from '@mui/material';
 import React, { useContext } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import Stripe from '../components/stripe/Stripe';
 import { UserContext } from '../contexts/UserContext';
 
-const isTrue = (v) => v?.toLowerCase() === 'true';
 
-export default function Profile() {
+export default function Account() {
 
   const { user } = useContext(UserContext);
   const [form, setForm] = React.useState({ email: user.email });
 
-  const [searchParams] = useSearchParams();
-  const success = isTrue(searchParams.get('success'));
-  const session_id = searchParams.get('session_id');
-  const canceled = isTrue(searchParams.get('canceled'));
-  console.log(success, session_id, canceled);
-
   return (
     <Stack sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 10, }}>
-      <Box
-        sx={{ width: '90%' }}
+      <Stack spacing={2} sx={{
+        p: 6,
+        maxWidth: 1280
+      }}
       >
-        {/* <Stripe /> */}
         <Paper>
           <FormGroup>
             <FormControl sx={{ p: 2 }} margin='dense'>
@@ -31,7 +25,10 @@ export default function Profile() {
             </FormControl>
           </FormGroup>
         </Paper>
-      </Box>
+        <Paper>
+          <Stripe />
+        </Paper>
+      </Stack>
     </Stack>
   );
 }

@@ -1,32 +1,51 @@
-import { Grid } from '@mui/material';
+import { Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import React from 'react';
+import { useFeatures, usePlans } from '../../hooks/useAPI';
+import LoadingProgress from '../LoadingProgress';
 import Product from './Product';
 
 export const ProductDisplay = () => {
-  const [expanded, setExpanded] = React.useState(true);
 
-  const products = [
-    {
-      lookupKey: 'test2222', price: 2.99, title: 'Small', desc: 'I only chat',
-      feature: [{ id: 1, desc: 'chat', config: () => 100 }, { id: 2, desc: 'image', config: () => undefined }]
-    },
-    {
-      lookupKey: 2, price: 6.99, title: 'Medium', desc: 'I only chat',
-      feature: [{ id: 1, desc: 'chat', config: () => 200 }, { id: 2, desc: 'image', config: () => undefined }]
-    },
-    {
-      lookupKey: 3, price: 9.99, title: 'Large', desc: 'I only chat',
-      feature: [{ id: 1, desc: 'chat', config: () => 300 }, { id: 2, desc: 'image', config: () => undefined }]
-    },
-  ];
+  const plans = usePlans();
+  const features = useFeatures();
 
   return (
-    <Grid container spacing={2}>
-      {products.map(product => (
-        <Grid key={product.lookupKey} item xs={12} sm={4} md={4} lg={4} xl={4}>
-          <Product expanded={expanded} setExpanded={setExpanded} product={product} />
-        </Grid>
-      ))}
+    <Grid container spacing={0}>
+      <Paper elevation={6} sx={{ minWidth: 720 }}>
+        <LoadingProgress show={plans.isValidating} />
+        <TableContainer>
+          <Table aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell>Plan</TableCell>
+                {plans.data?.data.map((p, i) => (
+                  <TableCell key={i}>
+                    <Product isLoading={plans.isValidating} product={p} />
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {features.data?.data.map((feature, i) => {
+                return (
+                  <TableRow key={i} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                    <TableCell component="th" scope="row" >{feature.desc}</TableCell>
+                    {plans.data?.data.map((p, i) => {
+                      const curFeature = p.feature.find(f => f.id === feature.id);
+                      return (
+                        <TableCell key={i} sx={{ textAlign: 'center' }}>
+                          {curFeature.quota}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
+
     </Grid>
   );
 };

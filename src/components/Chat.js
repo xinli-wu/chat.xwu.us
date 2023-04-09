@@ -128,7 +128,7 @@ export default function Chat({ selectedChat, onChatSave }) {
 
       read();
     } catch (error) {
-      console.log(error.message);
+      console.error(error.message);
       setToast({ text: `API error: ${error.message}`, severity: 'error' });
     } finally {
       setIsCompletionLoading(false);
@@ -141,7 +141,9 @@ export default function Chat({ selectedChat, onChatSave }) {
 
   const onNewChatClick = async () => {
 
-    await axios.post(`${REACT_APP_CHAT_API_URL}/my/chat/add`, { chats: chat });
+    await axios.post(`${REACT_APP_CHAT_API_URL}/my/chat/add`, { chats: chat }).catch(e => {
+      setToast({ text: `API error: ${e.response.data.message}`, severity: 'error' });
+    });
     onChatSave();
     setChat([]);
   };

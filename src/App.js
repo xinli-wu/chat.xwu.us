@@ -16,7 +16,7 @@ import { AppContext } from './contexts/AppContext';
 import Chats from './pages/Chats';
 import Images from './pages/Images';
 import Login from './pages/Login';
-import Profile from './pages/Profile';
+import Account from './pages/Account';
 import * as locale from '@mui/material/locale';
 import { useTranslation } from 'react-i18next';
 import './i18n/i18n';
@@ -116,7 +116,7 @@ function App() {
     const id = setInterval(() => {
       if (user) {
         (async () => {
-          const { data } = await axios.post(`${REACT_APP_CHAT_API_URL}/me/refresh`);
+          const { data } = await axios.post(`${REACT_APP_CHAT_API_URL}/me/refresh`).catch(() => setUser(null)) || {};
           if (data.status === 'success') {
             setUser(data.data.user);
           } else {
@@ -131,7 +131,7 @@ function App() {
 
   useEffect(() => {
     (async () => {
-      const { data } = await axios.post(`${REACT_APP_CHAT_API_URL}/me/refresh`);
+      const { data } = await axios.post(`${REACT_APP_CHAT_API_URL}/me/refresh`).catch(() => setUser(null)) || {};
       if (data.status === 'success') {
         setUser(data.data.user);
       } else {
@@ -158,8 +158,8 @@ function App() {
                       <Route path='/' element={<Chats />} />
                       <Route path='/chat' element={<Chats />} />
                       <Route path='/chat/:id' element={<Chats />} />
-                      <Route path='/account' element={<Profile />} />
-                      <Route path='/account/:section' element={<Profile />} />
+                      <Route path='/account' element={<Account />} />
+                      <Route path='/account/:section' element={<Account />} />
                       <Route path='/image' element={<Images />} />
                       <Route path='/image/:id' element={<Images />} />
                       <Route path='/*' element={<Chats />} />

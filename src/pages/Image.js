@@ -64,8 +64,8 @@ export default function Image({ selectedChat, onChatSave }) {
       }
 
     } catch (error) {
-      console.log(error.message);
-      setToast({ text: `API error: ${error.message}`, severity: 'error' });
+      console.log(error);
+      setToast({ text: `API error: ${error.response?.data?.message}`, severity: 'error' });
       setChat(prev => ({
         ...prev,
         isLoading: false
@@ -83,7 +83,9 @@ export default function Image({ selectedChat, onChatSave }) {
 
   const onNewChatClick = async () => {
     setChat(prev => ({ ...prev, isLoading: true }));
-    await axios.post(`${REACT_APP_CHAT_API_URL}/my/image/add`, { chats: chat.data });
+    await axios.post(`${REACT_APP_CHAT_API_URL}/my/image/add`, { chats: chat.data }).catch(e => {
+      setToast({ text: `API error: ${e.response.data.message}`, severity: 'error' });
+    });
     onChatSave();
     setChat({ data: [], isLoading: false });
   };

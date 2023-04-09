@@ -26,3 +26,19 @@ export const useImages = () => {
 export const useImage = (objectId) => {
   return useSWR(objectId ? `${REACT_APP_CHAT_API_URL}/my/image/${objectId}` : null, axios);
 };
+
+export const useStripeProducts = () => {
+  return useSWRImmutable(`${REACT_APP_CHAT_API_URL}/stripe/products`, axios);
+};
+
+export const useStripePrices = () => {
+  return useSWRImmutable(`${REACT_APP_CHAT_API_URL}/stripe/prices`, axios);
+};
+
+export const usePlans = () => {
+  return useSWRImmutable(`${REACT_APP_CHAT_API_URL}/stripe/plans`, axios);
+};
+
+export const useFeatures = () => {
+  return useSWRImmutable(`${REACT_APP_CHAT_API_URL}/stripe/features`, axios);
+};
