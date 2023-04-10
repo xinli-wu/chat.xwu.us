@@ -21,17 +21,16 @@ import * as locale from '@mui/material/locale';
 import { useTranslation } from 'react-i18next';
 import './i18n/i18n';
 
-axios.interceptors.request.use(
-  config => {
-    const { origin } = new URL(config.url);
-    const allowedOrigins = [process.env.REACT_APP_CHAT_API_URL];
-    const token = localStorage.getItem('token');
-    if (allowedOrigins.includes(origin) && token) {
-      config.headers.authorization = `Bearer ${token}`;
-    }
-    config.withCredentials = true;
-    return config;
-  },
+axios.interceptors.request.use(config => {
+  const { origin } = new URL(config.url);
+  const allowedOrigins = [process.env.REACT_APP_CHAT_API_URL];
+  const token = localStorage.getItem('token');
+  if (allowedOrigins.includes(origin) && token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  config.withCredentials = true;
+  return config;
+},
   error => Promise.reject(error)
 );
 
@@ -132,14 +131,13 @@ function App() {
   useEffect(() => {
     (async () => {
       const { data } = await axios.post(`${REACT_APP_CHAT_API_URL}/me/refresh`).catch(() => setUser(null)) || {};
-      if (data.status === 'success') {
+      if (data?.status === 'success') {
         setUser(data.data.user);
       } else {
-        setToast({ text: data.message, severity: 'error' });
+        setToast({ text: data?.message, severity: 'error' });
         setUser(null);
       }
     })();
-
   }, []);
 
   return (
