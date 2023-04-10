@@ -17,19 +17,24 @@ export default function TopBar() {
           display: 'flex',
           width: '100%',
           height: 40,
-          position: 'fixed',
+          // position: 'fixed',
           justifyContent: 'space-between',
           top: 0,
           backdropFilter: `blur(.2rem) brightness(${theme.palette.mode === 'dark' ? 0.85 : 0.95})`,
           zIndex: 1,
         }}
       >
-        <Box>
+        <Box sx={{ width: 100 }}>
           <Logo />
         </Box>
         <Box>
           {user &&
-            <Stack direction={'row'} sx={{ height: '100%', display: 'flex', justifyContent: 'center', p: .5 }}>
+            <Stack direction={'row'} sx={{
+              height: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              p: .5
+            }}>
               <NavMenu />
               <ProfileMenu />
             </Stack>

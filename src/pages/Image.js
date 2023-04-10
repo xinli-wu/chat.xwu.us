@@ -4,13 +4,12 @@ import axios from 'axios';
 import InputBox from 'components/InputBox';
 import dayjs from 'dayjs';
 import React, { useContext, useEffect, useRef } from 'react';
-import { isMobile } from 'react-device-detect';
+import { useParams } from 'react-router-dom';
 import { ImageRenderer } from '../components/ImageRenderer';
 import LoadingProgress from '../components/LoadingProgress';
 import { AppContext } from '../contexts/AppContext';
 import { useImage } from '../hooks/useAPI';
 import './Image.css';
-import { useParams } from 'react-router-dom';
 
 export default function Image({ selectedChat, onChatSave }) {
   document.title = 'image';
@@ -98,7 +97,6 @@ export default function Image({ selectedChat, onChatSave }) {
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
-        ...(isMobile && { pb: 6 })
       }}>
         <Stack>
           <LoadingProgress show={isLoading || isValidating || chat.isLoading} />

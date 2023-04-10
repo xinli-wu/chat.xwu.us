@@ -1,12 +1,13 @@
-import { Grid } from '@mui/material';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { Box, Grid, IconButton } from '@mui/material';
 import React, { useEffect } from 'react';
 import { isMobile } from 'react-device-detect';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import ChatHistory from '../components/ChatHistory';
 import { ChatsArea } from '../components/ChatsArea';
 import { useImages } from '../hooks/useAPI';
 import Image from './Image';
-import { useNavigate } from 'react-router-dom';
+import { Drawer } from '@mui/material';
 
 export default function Images() {
   const params = useParams();
@@ -14,7 +15,7 @@ export default function Images() {
 
   const [selectedChat, setSelectedChat] = React.useState(params.id || undefined);
   const [chats, setChats] = React.useState([]);
-
+  const [savedPromptOpen, setSavedPromptOpen] = React.useState(false);
   const { data, error, isLoading, mutate, isValidating } = useImages();
 
   useEffect(() => {
@@ -25,32 +26,64 @@ export default function Images() {
   }, [data, error, isLoading, isValidating]);
 
   const onChatSelect = (id) => {
+    setSavedPromptOpen(false);
     navigate(`/image/${id}`);
     setSelectedChat(id);
   };
 
 
   return (
-    <ChatsArea>
-      <Grid className='no-scrollbar' container spacing={2} sx={{
-        pt: 6,
-        pl: 2,
-        pr: 2,
-        flexGrow: 1,
-        height: 'calc(100vh - 120px)',
-      }}>
-        {!isMobile && (
-          <ChatHistory
-            isLoading={isValidating}
-            setSelectedChat={onChatSelect}
-            chats={chats}
-          />
-        )}
-        <Image
-          selectedChat={selectedChat}
-          onChatSave={mutate}
-        />
-      </Grid>
-    </ChatsArea>
+    <>
+      {isMobile &&
+        <Box sx={{ position: 'fixed' }}>
+          <IconButton onClick={() => setSavedPromptOpen(prev => !prev)}>
+            <ChevronRightIcon />
+          </IconButton>
+        </Box>
+      }
+      <ChatsArea>
+        {isMobile ? (
+          <Box className='no-scrollbar' sx={{
+            height: '100%',
+            width: '90%',
+          }}>
+            <Drawer sx={{ backdropFilter: `blur(.15rem)` }}
+              anchor={'left'}
+              open={savedPromptOpen}
+              onClose={() => setSavedPromptOpen(prev => !prev)}
+              PaperProps={{ sx: { backgroundColor: 'unset' } }}
+            >
+              <ChatHistory
+                isLoading={isValidating}
+                setSelectedChat={onChatSelect}
+                chats={chats}
+              />
+            </Drawer>
+            <Image
+              selectedChat={selectedChat}
+              onChatSave={mutate}
+            />
+          </Box>
+        ) : (
+          <Grid className='no-scrollbar' container spacing={2} sx={{
+            height: '100%',
+            width: '90%',
+            maxWidth: 1680
+          }}>
+            <ChatHistory
+              isLoading={isValidating}
+              setSelectedChat={onChatSelect}
+              chats={chats}
+            />
+            <Image
+              selectedChat={selectedChat}
+              onChatSave={mutate}
+            />
+          </Grid>
+        )
+        }
+
+      </ChatsArea>
+    </>
   );
 }

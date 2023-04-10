@@ -5,7 +5,6 @@ import InputBox from 'components/InputBox';
 import dayjs from 'dayjs';
 import throttle from 'lodash.throttle';
 import React, { useContext, useEffect, useRef } from 'react';
-import { isMobile } from 'react-device-detect';
 import { AppContext } from '../contexts/AppContext';
 import { UserContext } from '../contexts/UserContext';
 import { useChat } from '../hooks/useAPI';
@@ -156,7 +155,6 @@ export default function Chat({ selectedChat, onChatSave }) {
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
-        ...(isMobile && { pb: 6 })
       }}>
         <Stack>
           <LoadingProgress show={isLoading || isValidating || isCompletionLoading} />
