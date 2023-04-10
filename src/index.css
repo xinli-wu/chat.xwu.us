@@ -13,6 +13,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 
   /* transition: background-color 0.2s ease-in-out; */
+  --safe-area-inset-bottom: env(safe-area-inset-bottom);
 }
 
 code {
