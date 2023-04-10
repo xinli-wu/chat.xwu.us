@@ -1,11 +1,11 @@
 import MicIcon from '@mui/icons-material/Mic';
 import { Collapse } from '@mui/material';
 import { IconButton } from '@mui/material';
-import { Box } from '@mui/system';
 import React, { useEffect, useMemo } from 'react';
 import Siriwave from 'react-siriwave';
 import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
 import { isMobile } from 'react-device-detect';
+import { Box } from '@mui/material';
 const hasGetUserMedia = () => {
   return !!(navigator.mediaDevices.getUserMedia);
 };
