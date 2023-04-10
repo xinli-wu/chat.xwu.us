@@ -11,8 +11,7 @@ export default function ChatHistory({ isLoading, setSelectedChat, chats }) {
         borderRadius: isMobile ? 0 : 3,
         overflow: 'scroll',
         height: '100%',
-        minWidth: '60vw',
-        opacity: 0.6,
+        ...(isMobile && { minWidth: '60vw', opacity: 0.6 })
       }}>
         <LoadingProgress show={isLoading} />
         <MenuList dense>
