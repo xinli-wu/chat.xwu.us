@@ -1,5 +1,4 @@
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { Box, Grid, IconButton } from '@mui/material';
+import { Box, Drawer, Grid } from '@mui/material';
 import React, { useEffect } from 'react';
 import { isMobile } from 'react-device-detect';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -7,7 +6,6 @@ import ChatHistory from '../components/ChatHistory';
 import { ChatsArea } from '../components/ChatsArea';
 import { useImages } from '../hooks/useAPI';
 import Image from './Image';
-import { Drawer } from '@mui/material';
 
 export default function Images() {
   const params = useParams();
@@ -34,13 +32,6 @@ export default function Images() {
 
   return (
     <>
-      {isMobile &&
-        <Box sx={{ position: 'fixed' }}>
-          <IconButton onClick={() => setSavedPromptOpen(prev => !prev)}>
-            <ChevronRightIcon />
-          </IconButton>
-        </Box>
-      }
       <ChatsArea>
         {isMobile ? (
           <Box className='no-scrollbar' sx={{
@@ -62,6 +53,7 @@ export default function Images() {
             <Image
               selectedChat={selectedChat}
               onChatSave={mutate}
+              setSavedPromptOpen={setSavedPromptOpen}
             />
           </Box>
         ) : (
@@ -78,11 +70,11 @@ export default function Images() {
             <Image
               selectedChat={selectedChat}
               onChatSave={mutate}
+              setSavedPromptOpen={setSavedPromptOpen}
             />
           </Grid>
         )
         }
-
       </ChatsArea>
     </>
   );

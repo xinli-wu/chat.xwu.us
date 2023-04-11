@@ -1,10 +1,12 @@
 import AddIcon from '@mui/icons-material/Add';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Box, Fab, Grid, Paper, Stack, Typography, useTheme } from '@mui/material';
 import axios from 'axios';
 import InputBox from 'components/InputBox';
 import dayjs from 'dayjs';
 import throttle from 'lodash.throttle';
 import React, { useContext, useEffect, useRef } from 'react';
+import { isMobile } from 'react-device-detect';
 import { AppContext } from '../contexts/AppContext';
 import { UserContext } from '../contexts/UserContext';
 import { useChat } from '../hooks/useAPI';
@@ -12,7 +14,7 @@ import { AssistantMsgMarkdown } from './AssistantMsgMarkdown';
 import './Chat.css';
 import LoadingProgress from './LoadingProgress';
 
-export default function Chat({ selectedChat, onChatSave }) {
+export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
   document.title = 'chat';
 
   const { REACT_APP_CHAT_API_URL } = process.env;
@@ -206,26 +208,40 @@ export default function Chat({ selectedChat, onChatSave }) {
             </Stack>
             <div ref={bottomRef} />
           </Stack>
-          {!!chat.length &&
-            <Stack sx={{ position: 'absolute', bottom: 90, alignSelf: 'end' }}>
-              <Fab
-                disabled={isCompletionLoading || isReading}
-                size='small'
-                color='primary'
-                aria-label='new conversation'
-                onClick={onNewChatClick}
-                sx={{ transform: 'scale(0.8)' }}
-              >
-                <AddIcon />
-              </Fab>
-            </Stack>
-          }
           <Stack className='no-scrollbar' sx={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             width: '100%',
           }}>
+            <Stack direction={'row'} sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+              <Box>
+                {isMobile &&
+                  <Fab
+                    size='small'
+                    color='primary'
+                    onClick={() => setSavedPromptOpen(prev => !prev)}
+                    sx={{ transform: 'scale(0.8)' }}
+                  >
+                    <ChevronRightIcon />
+                  </Fab>
+                }
+              </Box>
+              <Box>
+                {!!chat.length &&
+                  <Fab
+                    disabled={isCompletionLoading || isReading}
+                    size='small'
+                    color='primary'
+                    aria-label='new conversation'
+                    onClick={onNewChatClick}
+                    sx={{ transform: 'scale(0.8)' }}
+                  >
+                    <AddIcon />
+                  </Fab>
+                }
+              </Box>
+            </Stack>
             <Stack ref={footerRef} spacing={1} sx={{ width: '100%' }}>
               <InputBox onMessagesSubmit={onMessagesSubmit} isLoading={isCompletionLoading} isReading={isReading} />
             </Stack>

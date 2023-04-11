@@ -12,7 +12,7 @@ export const ChatsArea = ({ children }) => {
       justifyContent: 'space-between',
       alignItems: 'center',
       flexFlow: 'column nowrap',
-      height: 'calc(100vh - 80px - var(--safe-area-inset-bottom))'
+      height: '100%'
     }}>
       {children}
     </Box>

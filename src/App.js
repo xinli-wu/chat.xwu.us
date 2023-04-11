@@ -20,6 +20,7 @@ import Account from './pages/Account';
 import * as locale from '@mui/material/locale';
 import { useTranslation } from 'react-i18next';
 import './i18n/i18n';
+import { Box } from '@mui/material';
 
 axios.interceptors.request.use(config => {
   const { origin } = new URL(config.url);
@@ -150,21 +151,24 @@ function App() {
               <UserContext.Provider value={{ user, setUser }}>
                 <TopBar />
                 <Toast />
-                <Routes>
-                  {user ?
-                    <>
-                      <Route path='/' element={<Chats />} />
-                      <Route path='/chat' element={<Chats />} />
-                      <Route path='/chat/:id' element={<Chats />} />
-                      <Route path='/account' element={<Account />} />
-                      <Route path='/account/:section' element={<Account />} />
-                      <Route path='/image' element={<Images />} />
-                      <Route path='/image/:id' element={<Images />} />
-                      <Route path='/*' element={<Chats />} />
-                    </>
-                    : <Route path='*' element={<Login />} />
-                  }
-                </Routes>
+                <Box className='main'>
+                  <Routes>
+                    {user ?
+                      <>
+                        <Route path='/' element={<Chats />} />
+                        <Route path='/chat' element={<Chats />} />
+                        <Route path='/chat/:id' element={<Chats />} />
+                        <Route path='/account' element={<Account />} />
+                        <Route path='/account/:section' element={<Account />} />
+                        <Route path='/image' element={<Images />} />
+                        <Route path='/image/:id' element={<Images />} />
+                        <Route path='/*' element={<Chats />} />
+                      </>
+                      : <Route path='*' element={<Login />} />
+                    }
+                  </Routes>
+                </Box>
+
                 <Footer />
               </UserContext.Provider>
             </AppContext.Provider>
