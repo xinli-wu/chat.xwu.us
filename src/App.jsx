@@ -23,10 +23,8 @@ import './i18n/i18n';
 import { Box } from '@mui/material';
 
 const { VITE_CHAT_API_URL } = import.meta.env;
-console.log(VITE_CHAT_API_URL);
 
 axios.interceptors.request.use(config => {
-  console.log(config.url);
   const { origin } = new URL(config.url);
   const allowedOrigins = [VITE_CHAT_API_URL];
   const token = localStorage.getItem('token');
