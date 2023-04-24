@@ -167,7 +167,10 @@ function App() {
                         <Route path='/image/:id' element={<Images />} />
                         <Route path='/*' element={<Chats />} />
                       </>
-                      : <Route path='*' element={<Login />} />
+                      : <>
+                        <Route path='/login' element={<Login />} />
+                        <Route path='*' element={<Login />} />
+                      </>
                     }
                   </Routes>
                 </Box>
