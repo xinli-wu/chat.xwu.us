@@ -10,6 +10,8 @@ import { UserContext } from '../contexts/UserContext';
 import { useTranslation } from 'react-i18next';
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+const { VITE_CHAT_API_URL } = import.meta.env;
+
 export default function Login() {
   const { t } = useTranslation();
   const { setUser } = useContext(UserContext);
@@ -19,7 +21,7 @@ export default function Login() {
 
   const otp = searchParams.get('otp');
 
-  const login = useQuery(['login'], () => axios.post(`${process.env.REACT_APP_CHAT_API_URL}/login`, { email: form.email, otp }), {
+  const login = useQuery(['login'], () => axios.post(`${VITE_CHAT_API_URL}/login`, { email: form.email, otp }), {
     enabled: !!form.email && !!otp,
     retry: false,
     cacheTime: 0,

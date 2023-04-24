@@ -2,7 +2,6 @@ import AddIcon from '@mui/icons-material/Add';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Box, Fab, Grid, Paper, Stack, Typography, useTheme } from '@mui/material';
 import axios from 'axios';
-import InputBox from 'components/InputBox';
 import dayjs from 'dayjs';
 import throttle from 'lodash.throttle';
 import React, { useContext, useEffect, useRef } from 'react';
@@ -13,11 +12,12 @@ import { useChat } from '../hooks/useAPI';
 import { AssistantMsgMarkdown } from './AssistantMsgMarkdown';
 import './Chat.css';
 import LoadingProgress from './LoadingProgress';
+import InputBox from './InputBox';
 
 export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
   document.title = 'chat';
 
-  const { REACT_APP_CHAT_API_URL } = process.env;
+  const { VITE_CHAT_API_URL } = import.meta.env;
   const { user } = useContext(UserContext);
 
   const bottomRef = useRef(null);
@@ -68,9 +68,9 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
     setIsCompletionLoading(true);
 
     try {
-      const raw = await fetch(`${REACT_APP_CHAT_API_URL}/openai/chat/completion`, {
+      const raw = await fetch(`${VITE_CHAT_API_URL}/openai/chat/completion`, {
         method: 'POST',
-        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'Authorization': `Bearer ${user.token}` },
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'Authorization': `Bearer ${user.token} ` },
         body: JSON.stringify({ messages: [...chat.map(x => x.message), newChat.message] })
       });
 
@@ -130,7 +130,7 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
       read();
     } catch (error) {
       console.error(error.message);
-      setToast({ text: `API error: ${error.message}`, severity: 'error' });
+      setToast({ text: `API error: ${error.message} `, severity: 'error' });
     } finally {
       setIsCompletionLoading(false);
     }
@@ -142,8 +142,8 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
 
   const onNewChatClick = async () => {
 
-    await axios.post(`${REACT_APP_CHAT_API_URL}/my/chat/add`, { chats: chat }).catch(e => {
-      setToast({ text: `API error: ${e.response.data.message}`, severity: 'error' });
+    await axios.post(`${VITE_CHAT_API_URL}/my/chat/add`, { chats: chat }).catch(e => {
+      setToast({ text: `API error: ${e.response.data.message} `, severity: 'error' });
     });
     onChatSave();
     setChat([]);
@@ -250,4 +250,4 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
       </Paper >
     </Grid >
   );
-}
+};;;;

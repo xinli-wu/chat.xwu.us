@@ -10,6 +10,9 @@
     "lib": [
       "DOM",
       "ESNext"
+    ],
+    "types": [
+      "vite/client"
     ]
   },
   "include": [

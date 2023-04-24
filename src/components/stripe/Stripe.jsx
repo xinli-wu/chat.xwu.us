@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../../contexts/AppContext';
 import { ProductDisplay } from './ProductDisplay';
 import axios from 'axios';
-const { REACT_APP_CHAT_API_URL } = process.env;
+const { VITE_CHAT_API_URL } = import.meta.env;
 
 export default function Stripe() {
 
@@ -29,7 +29,7 @@ export default function Stripe() {
 
     if (sessionId) {
       (async () => {
-        const { data } = await axios.post(`${REACT_APP_CHAT_API_URL}/stripe/verify-payment`, { sessionId });
+        const { data } = await axios.post(`${VITE_CHAT_API_URL}/stripe/verify-payment`, { sessionId });
         if (data.status === 'success') {
           setToast({ text: data.message, severity: 'success' });
         } else {
@@ -41,4 +41,4 @@ export default function Stripe() {
   }, [sessionId, setToast]);
 
   return <ProductDisplay />;
-}
+};

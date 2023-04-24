@@ -8,6 +8,8 @@ import { AppContext } from '../contexts/AppContext';
 import { UserContext } from '../contexts/UserContext';
 import { useTranslation } from 'react-i18next';
 
+const { VITE_CHAT_API_URL } = import.meta.env;
+
 export default function ProfileMenu() {
   const { t } = useTranslation();
 
@@ -27,7 +29,7 @@ export default function ProfileMenu() {
   };
 
   const onLogoutClick = async (_e) => {
-    const { data } = await axios.post(`${process.env.REACT_APP_CHAT_API_URL}/me/logout`);
+    const { data } = await axios.post(`${VITE_CHAT_API_URL}/me/logout`);
     if (data.status === 'success') {
       setUser(null);
       setToast({ text: data.message, severity: data.status });
@@ -68,4 +70,4 @@ export default function ProfileMenu() {
       </Menu>
     </>
   );
-}
+};

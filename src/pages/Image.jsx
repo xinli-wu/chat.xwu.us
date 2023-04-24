@@ -1,7 +1,6 @@
 import AddIcon from '@mui/icons-material/Add';
 import { Box, Fab, Grid, Paper, Stack, Typography } from '@mui/material';
 import axios from 'axios';
-import InputBox from 'components/InputBox';
 import dayjs from 'dayjs';
 import React, { useContext, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
@@ -12,11 +11,12 @@ import { useImage } from '../hooks/useAPI';
 import './Image.css';
 import { isMobile } from 'react-device-detect';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import InputBox from '../components/InputBox';
 
 export default function Image({ selectedChat, onChatSave, setSavedPromptOpen }) {
   document.title = 'image';
   const { id } = useParams();
-  const { REACT_APP_CHAT_API_URL } = process.env;
+  const { VITE_CHAT_API_URL } = import.meta.env;
   const bottomRef = useRef(null);
   const lastMsgRef = useRef(null);
   const footerRef = useRef(null);
@@ -49,7 +49,7 @@ export default function Image({ selectedChat, onChatSave, setSavedPromptOpen }) 
     setChat(prev => ({ data: [...prev.data, newChat], isLoading: true }));
 
     try {
-      const { data } = await axios.post(`${REACT_APP_CHAT_API_URL}/openai/image/create`, { prompt });
+      const { data } = await axios.post(`${VITE_CHAT_API_URL}/openai/image/create`, { prompt });
       if (data.status === 'error') {
         setToast({ text: data.message, severity: 'error' });
         setChat(prev => ({
@@ -66,7 +66,7 @@ export default function Image({ selectedChat, onChatSave, setSavedPromptOpen }) 
 
     } catch (error) {
       console.log(error);
-      setToast({ text: `API error: ${error.response?.data?.message}`, severity: 'error' });
+      setToast({ text: `API error: ${error.response?.data?.message} `, severity: 'error' });
       setChat(prev => ({
         ...prev,
         isLoading: false
@@ -84,8 +84,8 @@ export default function Image({ selectedChat, onChatSave, setSavedPromptOpen }) 
 
   const onNewChatClick = async () => {
     setChat(prev => ({ ...prev, isLoading: true }));
-    await axios.post(`${REACT_APP_CHAT_API_URL}/my/image/add`, { chats: chat.data }).catch(e => {
-      setToast({ text: `API error: ${e.response.data.message}`, severity: 'error' });
+    await axios.post(`${VITE_CHAT_API_URL}/my/image/add`, { chats: chat.data }).catch(e => {
+      setToast({ text: `API error: ${e.response.data.message} `, severity: 'error' });
     });
     onChatSave();
     setChat({ data: [], isLoading: false });
@@ -195,4 +195,4 @@ export default function Image({ selectedChat, onChatSave, setSavedPromptOpen }) 
       </Paper >
     </Grid >
   );
-}
+};;;;;

@@ -3,8 +3,8 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import axios from 'axios';
-import { UserContext } from 'contexts/UserContext';
-import { ColorModeContext } from 'contexts/utilContext';
+import { UserContext } from './contexts/UserContext';
+import { ColorModeContext } from './contexts/utilContext';
 import jwtDecode from "jwt-decode";
 import React, { useEffect, useMemo } from 'react';
 import { Route, Routes, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
@@ -22,9 +22,13 @@ import { useTranslation } from 'react-i18next';
 import './i18n/i18n';
 import { Box } from '@mui/material';
 
+const { VITE_CHAT_API_URL } = import.meta.env;
+console.log(VITE_CHAT_API_URL);
+
 axios.interceptors.request.use(config => {
+  console.log(config.url);
   const { origin } = new URL(config.url);
-  const allowedOrigins = [process.env.REACT_APP_CHAT_API_URL];
+  const allowedOrigins = [VITE_CHAT_API_URL];
   const token = localStorage.getItem('token');
   if (allowedOrigins.includes(origin) && token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -36,7 +40,6 @@ axios.interceptors.request.use(config => {
 );
 
 const queryClient = new QueryClient();
-const { REACT_APP_CHAT_API_URL } = process.env;
 
 function App() {
   document.body.style.transition = 'background-color 0.1s ease-in-out';
@@ -64,7 +67,7 @@ function App() {
   React.useEffect(() => {
     (async () => {
       if (email && otp) {
-        const { data } = await axios.post(`${process.env.REACT_APP_CHAT_API_URL}/login`, { email, otp });
+        const { data } = await axios.post(`${VITE_CHAT_API_URL}/login`, { email, otp });;
 
         if (data?.status === 'success') {
           if (data?.data?.user) {
@@ -116,7 +119,7 @@ function App() {
     const id = setInterval(() => {
       if (user) {
         (async () => {
-          const { data } = await axios.post(`${REACT_APP_CHAT_API_URL}/me/refresh`).catch(() => setUser(null)) || {};
+          const { data } = await axios.post(`${VITE_CHAT_API_URL}/me/refresh`).catch(() => setUser(null)) || {};
           if (data.status === 'success') {
             setUser(data.data.user);
           } else {
@@ -131,7 +134,7 @@ function App() {
 
   useEffect(() => {
     (async () => {
-      const { data } = await axios.post(`${REACT_APP_CHAT_API_URL}/me/refresh`).catch(() => setUser(null)) || {};
+      const { data } = await axios.post(`${VITE_CHAT_API_URL}/me/refresh`).catch(() => setUser(null)) || {};
       if (data?.status === 'success') {
         setUser(data.data.user);
       } else {
@@ -168,7 +171,6 @@ function App() {
                     }
                   </Routes>
                 </Box>
-
                 <Footer />
               </UserContext.Provider>
             </AppContext.Provider>
@@ -179,4 +181,4 @@ function App() {
   );
 }
 
-export default App;
+export default App;;;;;;;;;;;

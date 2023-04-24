@@ -8,14 +8,14 @@ import axios from 'axios';
 import * as React from 'react';
 import { UserContext } from '../../contexts/UserContext';
 
-const { REACT_APP_CHAT_API_URL } = process.env;
+const { VITE_CHAT_API_URL } = import.meta.env;
 
 export default function Product({ product, isLoading }) {
   const { user } = React.useContext(UserContext);
   const displayPrice = !!product?.price ? product.price / 100 : 0;
 
   const onCheckoutClick = async (_e) => {
-    const { data } = await axios.post(`${REACT_APP_CHAT_API_URL}/stripe/create-checkout-session`, { id: product.id });
+    const { data } = await axios.post(`${VITE_CHAT_API_URL}/stripe/create-checkout-session`, { id: product.id });
     if (data?.url) {
       window.location.href = data.url;
     } else {
@@ -25,7 +25,6 @@ export default function Product({ product, isLoading }) {
 
   const activePlan = product.name !== 'Free' && user.subscription?.displayName === product.name;
 
-  console.log(user);
   const bgColor = 'rgb(63, 147, 120)';
 
   return (
@@ -50,4 +49,4 @@ export default function Product({ product, isLoading }) {
       </CardActions>
     </Card>
   );
-}
+};

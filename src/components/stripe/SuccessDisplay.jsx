@@ -1,6 +1,6 @@
 import React from 'react';
 
-// const { REACT_APP_CHAT_API_URL } = process.env;
+// const { VITE_CHAT_API_URL } = import.meta.env;
 
 export const SuccessDisplay = ({ sessionId }) => {
   return (
@@ -10,7 +10,7 @@ export const SuccessDisplay = ({ sessionId }) => {
           <h3>Subscription to starter plan successful!</h3>
         </div>
       </div>
-      {/* <form action={REACT_APP_CHAT_API_URL + "/create-portal-session"} method="POST">
+      {/* <form action={VITE_CHAT_API_URL + "/create-portal-session"} method="POST">
         <input
           type="hidden"
           id="session-id"
