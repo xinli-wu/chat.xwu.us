@@ -34,17 +34,20 @@ export default function Chats() {
 
   return (
     <>
-
       <ChatsArea>
         {isMobile ? (
-          <Box className='no-scrollbar' sx={{
-            height: '100%',
-            width: '90%',
-          }}>
-            <Drawer sx={{ backdropFilter: `blur(.15rem)` }}
+          <Box
+            className="no-scrollbar"
+            sx={{
+              height: '100%',
+              width: '90%',
+            }}
+          >
+            <Drawer
+              sx={{ backdropFilter: `blur(.15rem)` }}
               anchor={'left'}
               open={savedPromptOpen}
-              onClose={() => setSavedPromptOpen(prev => !prev)}
+              onClose={() => setSavedPromptOpen((prev) => !prev)}
               PaperProps={{ sx: { backgroundColor: 'unset' } }}
             >
               <ChatHistory
@@ -60,11 +63,16 @@ export default function Chats() {
             />
           </Box>
         ) : (
-          <Grid className='no-scrollbar' container spacing={2} sx={{
-            height: '100%',
-            width: '90%',
-            maxWidth: 1680
-          }}>
+          <Grid
+            className="no-scrollbar"
+            container
+            spacing={2}
+            sx={{
+              height: '100%',
+              width: '90%',
+              maxWidth: 1680,
+            }}
+          >
             <ChatHistory
               isLoading={isValidating}
               setSelectedChat={onChatSelect}
@@ -76,10 +84,8 @@ export default function Chats() {
               setSavedPromptOpen={setSavedPromptOpen}
             />
           </Grid>
-        )
-        }
+        )}
       </ChatsArea>
     </>
-
   );
 }

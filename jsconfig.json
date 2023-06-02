@@ -7,18 +7,9 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "jsx": "react",
-    "lib": [
-      "DOM",
-      "ESNext"
-    ],
-    "types": [
-      "vite/client"
-    ]
+    "lib": ["DOM", "ESNext"],
+    "types": ["vite/client"]
   },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["src"],
+  "exclude": ["node_modules"]
 }

@@ -7,14 +7,23 @@ import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
 import { isMobile } from 'react-device-detect';
 import { Box } from '@mui/material';
 const hasGetUserMedia = () => {
-  return !!(navigator.mediaDevices.getUserMedia);
+  return !!navigator.mediaDevices.getUserMedia;
 };
 
-
-export default function VoiceInputIconBtn({ setQ, setInterimTranscript, voiceInput, setVoiceInput, disabled = false }) {
-  const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
+export default function VoiceInputIconBtn({
+  setQ,
+  setInterimTranscript,
+  voiceInput,
+  setVoiceInput,
+  disabled = false,
+}) {
+  const SpeechRecognition =
+    window.webkitSpeechRecognition || window.SpeechRecognition;
   // const recognition = new SpeechRecognition();
-  let recognition = useMemo(() => new SpeechRecognition() || null, [SpeechRecognition]);
+  let recognition = useMemo(
+    () => new SpeechRecognition() || null,
+    [SpeechRecognition],
+  );
 
   if (!SpeechRecognition) console.log('Speech Recognition Not Available');
 
@@ -35,7 +44,6 @@ export default function VoiceInputIconBtn({ setQ, setInterimTranscript, voiceInp
   // recognition.onspeechend = () => {
   //   console.log('onspeechend');
   // };
-
 
   // recognition.onaudiostart = () => {
   //   console.log('onaudiostart');
@@ -80,7 +88,8 @@ export default function VoiceInputIconBtn({ setQ, setInterimTranscript, voiceInp
   // };
 
   recognition.onresult = (e) => {
-    let final_transcript = '', interim_transcript = '';
+    let final_transcript = '',
+      interim_transcript = '';
     for (let i = e.resultIndex; i < e.results.length; ++i) {
       if (e.results[i].isFinal) {
         final_transcript += e.results[i][0].transcript;
@@ -111,30 +120,41 @@ export default function VoiceInputIconBtn({ setQ, setInterimTranscript, voiceInp
 
   return (
     <>
-      <IconButton disabled={disabled} aria-label='voice' size='small' onClick={toggleRecording} sx={{ ml: .5, mr: .5 }}>
-        {voiceInput
-          ? <RecordVoiceOverIcon htmlColor='rgb(46,149,118)' />
-          : <MicIcon />
-        }
+      <IconButton
+        disabled={disabled}
+        aria-label="voice"
+        size="small"
+        onClick={toggleRecording}
+        sx={{ ml: 0.5, mr: 0.5 }}
+      >
+        {voiceInput ? (
+          <RecordVoiceOverIcon htmlColor="rgb(46,149,118)" />
+        ) : (
+          <MicIcon />
+        )}
       </IconButton>
-      <Collapse orientation='horizontal' in={voiceInput}>
-        <Box sx={{
-          width: 70,
-          height: 30,
-          ...(isMobile && { paddingRight: 12 }),
-          visibility: voiceInput ? 'unset' : 'hidden',
-        }}>
+      <Collapse orientation="horizontal" in={voiceInput}>
+        <Box
+          sx={{
+            width: 70,
+            height: 30,
+            ...(isMobile && { paddingRight: 12 }),
+            visibility: voiceInput ? 'unset' : 'hidden',
+          }}
+        >
           <Box sx={{ position: 'relative', left: -10, top: isMobile ? 2 : 5 }}>
-            {voiceInput && <Siriwave
-              width={70}
-              height={30}
-              // eslint-disable-next-line
-              style={'ios9'}
-              amplitude={4}
-            />}
+            {voiceInput && (
+              <Siriwave
+                width={70}
+                height={30}
+                // eslint-disable-next-line
+                style={'ios9'}
+                amplitude={4}
+              />
+            )}
           </Box>
         </Box>
       </Collapse>
     </>
   );
-};
+}

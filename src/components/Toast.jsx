@@ -7,11 +7,10 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 });
 
 function SlideTransition(props) {
-  return <Slide unmountOnExit {...props} direction='down' />;
+  return <Slide unmountOnExit {...props} direction="down" />;
 }
 
 export const Toast = () => {
-
   const { toast, setToast } = useContext(AppContext);
   const [open, setOpen] = React.useState(true);
 
@@ -38,7 +37,9 @@ export const Toast = () => {
         onClose={onSnackbarClose}
         TransitionProps={{ onExited: () => setToast({}) }}
       >
-        <Alert severity={toast.severity} sx={{ width: '100%' }}>{toast.text}</Alert>
+        <Alert severity={toast.severity} sx={{ width: '100%' }}>
+          {toast.text}
+        </Alert>
       </Snackbar>
     </>
   );

@@ -1,4 +1,3 @@
-
 const useGlobalLinearProgress = (value) => {
   return value;
 };

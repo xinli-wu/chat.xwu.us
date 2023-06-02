@@ -9,7 +9,6 @@ export const CopyCode = ({ language, code }) => {
   const [copied, setCopied] = React.useState(false);
   const { setToast } = useContext(AppContext);
 
-
   const onCopyClick = () => {
     setCopied(true);
     setToast({ text: 'Success', severity: 'success' });
@@ -21,12 +20,11 @@ export const CopyCode = ({ language, code }) => {
     <>
       {/* <span>{language}</span> */}
       <CopyToClipboard text={String(code)} onCopy={() => onCopyClick()}>
-        <span style={{ display: 'flex', justifyContent: 'end', marginBottom: -47 }}>
+        <span
+          style={{ display: 'flex', justifyContent: 'end', marginBottom: -47 }}
+        >
           <IconButton color="primary" aria-label="Copy to clipboard">
-            {copied
-              ? <DoneIcon color='success' />
-              : <ContentCopyIcon />
-            }
+            {copied ? <DoneIcon color="success" /> : <ContentCopyIcon />}
           </IconButton>
         </span>
       </CopyToClipboard>

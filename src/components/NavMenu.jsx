@@ -8,9 +8,11 @@ export default function NavMenu() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [menuItem, setMenuItem] = React.useState(location.pathname.split('/')[1]);
+  const [menuItem, setMenuItem] = React.useState(
+    location.pathname.split('/')[1],
+  );
 
-  const menuItems = React.useMemo(() => (['chat', 'image']), []);
+  const menuItems = React.useMemo(() => ['chat', 'image'], []);
 
   const onMenuItemClick = (menuItem) => {
     menuItem = menuItems[menuItem];
@@ -29,8 +31,15 @@ export default function NavMenu() {
 
   return (
     <>
-      <MenuList dense
-        sx={{ display: 'flex', flexDirection: 'row', p: 0, height: '100%', pr: 1 }}
+      <MenuList
+        dense
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          p: 0,
+          height: '100%',
+          pr: 1,
+        }}
       >
         {menuItems.map((x, i) => (
           <MenuItem

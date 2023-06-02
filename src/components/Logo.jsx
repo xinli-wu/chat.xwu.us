@@ -10,21 +10,21 @@ export default function Logo() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const altLogo = 0;// Math.floor(Math.random() * 2);
+  const altLogo = 0; // Math.floor(Math.random() * 2);
   const theme = useTheme();
   const mode = theme.palette.mode;
 
   const logoH = {
-    'dark': [uChatDarkH, uChatDarkH],
-    'light': [uChatLightH, uChatLightH]
+    dark: [uChatDarkH, uChatDarkH],
+    light: [uChatLightH, uChatLightH],
   };
 
   const logoV = {
-    'dark': [uChatDarkV, uChatDarkV],
-    'light': [uChatLightV, uChatLightV]
+    dark: [uChatDarkV, uChatDarkV],
+    light: [uChatLightV, uChatLightV],
   };
 
-  const favicon = document.getElementById("favicon");
+  const favicon = document.getElementById('favicon');
   if (favicon) favicon.href = logoV[mode][altLogo];
 
   const onLogoClick = (e) => {
@@ -32,6 +32,11 @@ export default function Logo() {
   };
 
   return (
-    <img src={logoH[mode][altLogo]} alt='Logo' onClick={onLogoClick} style={{ cursor: 'pointer', height: '100%' }} />
+    <img
+      src={logoH[mode][altLogo]}
+      alt="Logo"
+      onClick={onLogoClick}
+      style={{ cursor: 'pointer', height: '100%' }}
+    />
   );
 }

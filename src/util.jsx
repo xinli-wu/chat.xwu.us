@@ -1,5 +1,8 @@
 export const getMicVolume = async () => {
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+  const stream = await navigator.mediaDevices.getUserMedia({
+    audio: true,
+    video: false,
+  });
   const audioContext = new AudioContext();
   const analyser = audioContext.createAnalyser();
   const microphone = audioContext.createMediaStreamSource(stream);
@@ -19,7 +22,7 @@ export const getMicVolume = async () => {
 
     const length = array.length;
     for (let i = 0; i < length; i++) {
-      values += (array[i]);
+      values += array[i];
     }
     const average = values / length;
     return average;

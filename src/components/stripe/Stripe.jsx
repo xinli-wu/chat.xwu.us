@@ -5,7 +5,6 @@ import axios from 'axios';
 const { VITE_CHAT_API_URL } = import.meta.env;
 
 export default function Stripe() {
-
   const { setToast } = useContext(AppContext);
 
   const [sessionId, setSessionId] = useState('');
@@ -26,19 +25,20 @@ export default function Stripe() {
   }, [sessionId, setToast]);
 
   useEffect(() => {
-
     if (sessionId) {
       (async () => {
-        const { data } = await axios.post(`${VITE_CHAT_API_URL}/stripe/verify-payment`, { sessionId });
+        const { data } = await axios.post(
+          `${VITE_CHAT_API_URL}/stripe/verify-payment`,
+          { sessionId },
+        );
         if (data.status === 'success') {
           setToast({ text: data.message, severity: 'success' });
         } else {
           setToast({ text: data.message, severity: 'error' });
         }
-
       })();
     }
   }, [sessionId, setToast]);
 
   return <ProductDisplay />;
-};
+}

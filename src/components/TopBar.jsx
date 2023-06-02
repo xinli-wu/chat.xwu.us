@@ -6,7 +6,6 @@ import NavMenu from './NavMenu';
 import ProfileMenu from './ProfileMenu';
 
 export default function TopBar() {
-
   const theme = useTheme();
   const { user } = useContext(UserContext);
 
@@ -19,7 +18,9 @@ export default function TopBar() {
           height: 40,
           justifyContent: 'space-between',
           top: 0,
-          backdropFilter: `blur(.2rem) brightness(${theme.palette.mode === 'dark' ? 0.85 : 0.95})`,
+          backdropFilter: `blur(.2rem) brightness(${
+            theme.palette.mode === 'dark' ? 0.85 : 0.95
+          })`,
           zIndex: 1,
         }}
       >
@@ -27,20 +28,22 @@ export default function TopBar() {
           <Logo />
         </Box>
         <Box>
-          {user &&
-            <Stack direction={'row'} sx={{
-              height: '100%',
-              display: 'flex',
-              justifyContent: 'center',
-              p: .5
-            }}>
+          {user && (
+            <Stack
+              direction={'row'}
+              sx={{
+                height: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                p: 0.5,
+              }}
+            >
               <NavMenu />
               <ProfileMenu />
             </Stack>
-          }
+          )}
         </Box>
       </Box>
     </>
-
   );
 }

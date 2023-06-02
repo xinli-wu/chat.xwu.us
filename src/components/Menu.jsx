@@ -8,13 +8,19 @@ function Menu() {
   const { pathname } = useLocation();
 
   return (
-    <Stack spacing={2} direction='row' sx={{ pl: 0 }}>
+    <Stack spacing={2} direction="row" sx={{ pl: 0 }}>
       {menu.map((item) => {
-        const curPage = matchPath(pathname.toLocaleLowerCase(), `/${item.toLocaleLowerCase()}`);
+        const curPage = matchPath(
+          pathname.toLocaleLowerCase(),
+          `/${item.toLocaleLowerCase()}`,
+        );
         return (
-          <Button key={item} size='small' onClick={() => navigate(`/${item.toLocaleLowerCase()}`)}
-            variant='text'
-            sx={{ borderBottom: `${curPage ? 1 : 0}px solid`, }}
+          <Button
+            key={item}
+            size="small"
+            onClick={() => navigate(`/${item.toLocaleLowerCase()}`)}
+            variant="text"
+            sx={{ borderBottom: `${curPage ? 1 : 0}px solid` }}
           >
             {item}
           </Button>

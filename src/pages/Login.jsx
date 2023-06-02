@@ -17,15 +17,21 @@ export default function Login() {
   const { setUser } = useContext(UserContext);
   const { setToast } = useContext(AppContext);
   const [searchParams] = useSearchParams();
-  const [form, setForm] = React.useState({ email: searchParams.get('email') || '' });
+  const [form, setForm] = React.useState({
+    email: searchParams.get('email') || '',
+  });
 
   const otp = searchParams.get('otp');
 
-  const login = useQuery(['login'], () => axios.post(`${VITE_CHAT_API_URL}/login`, { email: form.email, otp }), {
-    enabled: !!form.email && !!otp,
-    retry: false,
-    cacheTime: 0,
-  });
+  const login = useQuery(
+    ['login'],
+    () => axios.post(`${VITE_CHAT_API_URL}/login`, { email: form.email, otp }),
+    {
+      enabled: !!form.email && !!otp,
+      retry: false,
+      cacheTime: 0,
+    },
+  );
 
   React.useEffect(() => {
     if (login.isSuccess) {
@@ -40,30 +46,70 @@ export default function Login() {
     }
 
     if (login.isError) {
-      setToast({ text: login.error?.response?.data.message, severity: 'error' });
+      setToast({
+        text: login.error?.response?.data.message,
+        severity: 'error',
+      });
     }
-
-  }, [login.data, login.isError, login.isSuccess, login.error, setUser, setToast]);
+  }, [
+    login.data,
+    login.isError,
+    login.isSuccess,
+    login.error,
+    setUser,
+    setToast,
+  ]);
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 30 }}>
-      <Paper sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '70%', minWidth: 300, maxWidth: 600 }}>
-        <form onSubmit={(e) => { e.preventDefault(); login.refetch(); }} style={{ width: '100%' }}>
-          <FormGroup onSubmit={() => login.refetch()} sx={{ p: 2, width: '100%' }}>
-            <FormControl sx={{ p: 1 }} margin='dense'>
-              <TextField disabled={login.isFetching} label='Email' variant='standard' fullWidth
-                onChange={(e) => setForm({ email: e.target.value })} value={form.email}
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        mt: 30,
+      }}
+    >
+      <Paper
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          width: '70%',
+          minWidth: 300,
+          maxWidth: 600,
+        }}
+      >
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            login.refetch();
+          }}
+          style={{ width: '100%' }}
+        >
+          <FormGroup
+            onSubmit={() => login.refetch()}
+            sx={{ p: 2, width: '100%' }}
+          >
+            <FormControl sx={{ p: 1 }} margin="dense">
+              <TextField
+                disabled={login.isFetching}
+                label="Email"
+                variant="standard"
+                fullWidth
+                onChange={(e) => setForm({ email: e.target.value })}
+                value={form.email}
               />
             </FormControl>
-            <FormControl sx={{ p: 1 }} margin='dense'>
+            <FormControl sx={{ p: 1 }} margin="dense">
               <LoadingButton
-                type='submit'
-                variant='contained'
+                type="submit"
+                variant="contained"
                 disabled={!emailRegex.test(form.email)}
                 onClick={() => login.refetch()}
-                loading={(login.isFetching || login.isRefetching)}
-                loadingPosition='end'
-                endIcon={<LoginIcon />}>
+                loading={login.isFetching || login.isRefetching}
+                loadingPosition="end"
+                endIcon={<LoginIcon />}
+              >
                 {t('Send Login Link')}
               </LoadingButton>
             </FormControl>

@@ -1,16 +1,16 @@
-import i18n from "i18next";
-import { initReactI18next } from "react-i18next";
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import translationsEN from './en/en.json';
 import translationsZH from './zh/zh.json';
 
 const resources = {
   en: {
-    translation: translationsEN
+    translation: translationsEN,
   },
   zh: {
-    translation: translationsZH
-  }
+    translation: translationsZH,
+  },
 };
 
 i18n
@@ -21,11 +21,10 @@ i18n
     fallbackLng: 'en', // default language
     keySeparator: false, // we do not use keys in form messages.welcome
     interpolation: {
-      escapeValue: false // react already safes from xss
+      escapeValue: false, // react already safes from xss
     },
     // cache: [],
     // debug: import.meta.env.NODE_ENV === 'development',
   });
-
 
 export default i18n;

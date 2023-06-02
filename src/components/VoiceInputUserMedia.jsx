@@ -3,16 +3,18 @@ import { IconButton } from '@mui/material';
 import React, { useRef } from 'react';
 
 const hasGetUserMedia = () => {
-  return !!(navigator.mediaDevices.getUserMedia);
+  return !!navigator.mediaDevices.getUserMedia;
 };
 
 const getConnectedDevices = async (type) => {
   const devices = await navigator.mediaDevices.enumerateDevices();
-  return devices.filter(device => device.kind === type);
+  return devices.filter((device) => device.kind === type);
 };
 
 const openMic = async (constraints) => {
-  return await navigator.mediaDevices.getUserMedia(constraints).catch(e => console.error(e.message));;
+  return await navigator.mediaDevices
+    .getUserMedia(constraints)
+    .catch((e) => console.error(e.message));
 };
 
 export default function VoiceInput({ setQ }) {
@@ -29,7 +31,7 @@ export default function VoiceInput({ setQ }) {
 
   const saveRecording = () => {
     const blob = new Blob(recordedData, {
-      type: 'audio/mp4; codecs=opus'
+      type: 'audio/mp4; codecs=opus',
     });
     const url = URL.createObjectURL(blob);
 
@@ -45,14 +47,19 @@ export default function VoiceInput({ setQ }) {
       mediaRecorder.stop();
       mediaRecorder = null;
       stream = null;
-    };
+    }
   };
 
   //send stream to server for processing, unfinished
   const userMediaBased = async (micId) => {
-    if (!stream) stream = await openMic({ audio: { deviceId: micId, echoCancellation: true } });
+    if (!stream)
+      stream = await openMic({
+        audio: { deviceId: micId, echoCancellation: true },
+      });
     if (!mediaRecorder) {
-      mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm;codecs=opus' });
+      mediaRecorder = new MediaRecorder(stream, {
+        mimeType: 'audio/webm;codecs=opus',
+      });
       mediaRecorder.ondataavailable = saveChunkToRecording;
       mediaRecorder.onstop = saveRecording;
     }
@@ -89,7 +96,7 @@ export default function VoiceInput({ setQ }) {
 
   return (
     <>
-      <IconButton aria-label="voice" size='small' onMouseUp={toggleRecording}>
+      <IconButton aria-label="voice" size="small" onMouseUp={toggleRecording}>
         <MicIcon />
       </IconButton>
       {/* <audio src="" controls ref={audioRef}>
@@ -97,4 +104,4 @@ export default function VoiceInput({ setQ }) {
       </audio> */}
     </>
   );
-};
+}

@@ -6,12 +6,17 @@ import React from 'react';
 import './ImageRenderer.css';
 
 export const ImageRenderer = ({ b64_json, url }) => {
-
   const theme = useTheme();
 
   const [open, setOpen] = React.useState(false);
 
-  const Image = () => <img src={`${url ? url : `data:image/jpeg;base64,${b64_json}`}`} alt='' style={{ width: '100%', height: '100%' }} />;
+  const Image = () => (
+    <img
+      src={`${url ? url : `data:image/jpeg;base64,${b64_json}`}`}
+      alt=""
+      style={{ width: '100%', height: '100%' }}
+    />
+  );
 
   const style = {
     position: 'absolute',
@@ -27,14 +32,18 @@ export const ImageRenderer = ({ b64_json, url }) => {
 
   return (
     <>
-      <Box className='root' onClick={() => setOpen(true)} sx={{
-        width: 256,
-        height: 256,
-        borderRadius: 2,
-        overflow: 'hidden',
-        cursor: 'pointer',
-        outline: `1px solid ${theme.palette.primary.main}`,
-      }}>
+      <Box
+        className="root"
+        onClick={() => setOpen(true)}
+        sx={{
+          width: 256,
+          height: 256,
+          borderRadius: 2,
+          overflow: 'hidden',
+          cursor: 'pointer',
+          outline: `1px solid ${theme.palette.primary.main}`,
+        }}
+      >
         <Image />
       </Box>
       <Modal

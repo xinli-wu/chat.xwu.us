@@ -34,7 +34,6 @@ export default function ProfileMenu() {
       setUser(null);
       setToast({ text: data.message, severity: data.status });
     }
-
   };
 
   const onProfileClick = (_e) => {
@@ -46,18 +45,20 @@ export default function ProfileMenu() {
     <>
       <IconButton
         sx={{ p: 0 }}
-        id='profile-button'
+        id="profile-button"
         aria-controls={open ? 'profile-menu' : undefined}
-        aria-haspopup='true'
+        aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
         onClick={handleClick}
-        color='inherit'
-        size='small'
+        color="inherit"
+        size="small"
       >
-        <Avatar sx={{ width: 32, height: 32, textTransform: 'capitalize' }}>{user.email.slice(0, 1)}</Avatar>
+        <Avatar sx={{ width: 32, height: 32, textTransform: 'capitalize' }}>
+          {user.email.slice(0, 1)}
+        </Avatar>
       </IconButton>
       <Menu
-        id='profile-menu'
+        id="profile-menu"
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
@@ -65,9 +66,13 @@ export default function ProfileMenu() {
           'aria-labelledby': 'profile-button',
         }}
       >
-        <MenuItem dense onClick={onProfileClick}>{t('Profile')}</MenuItem>
-        <MenuItem dense onClick={onLogoutClick}>{t('Logout')}</MenuItem>
+        <MenuItem dense onClick={onProfileClick}>
+          {t('Profile')}
+        </MenuItem>
+        <MenuItem dense onClick={onLogoutClick}>
+          {t('Logout')}
+        </MenuItem>
       </Menu>
     </>
   );
-};
+}
