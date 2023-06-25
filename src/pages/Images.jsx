@@ -11,9 +11,7 @@ export default function Images() {
   const params = useParams();
   const navigate = useNavigate();
 
-  const [selectedChat, setSelectedChat] = React.useState(
-    params.id || undefined,
-  );
+  const [selectedChat, setSelectedChat] = React.useState(params.id || undefined);
   const [chats, setChats] = React.useState([]);
   const [savedPromptOpen, setSavedPromptOpen] = React.useState(false);
   const { data, error, isLoading, mutate, isValidating } = useImages();
@@ -49,17 +47,9 @@ export default function Images() {
               onClose={() => setSavedPromptOpen((prev) => !prev)}
               PaperProps={{ sx: { backgroundColor: 'unset' } }}
             >
-              <ChatHistory
-                isLoading={isValidating}
-                setSelectedChat={onChatSelect}
-                chats={chats}
-              />
+              <ChatHistory isLoading={isValidating} setSelectedChat={onChatSelect} chats={chats} />
             </Drawer>
-            <Image
-              selectedChat={selectedChat}
-              onChatSave={mutate}
-              setSavedPromptOpen={setSavedPromptOpen}
-            />
+            <Image selectedChat={selectedChat} onChatSave={mutate} setSavedPromptOpen={setSavedPromptOpen} />
           </Box>
         ) : (
           <Grid
@@ -72,16 +62,8 @@ export default function Images() {
               maxWidth: 1680,
             }}
           >
-            <ChatHistory
-              isLoading={isValidating}
-              setSelectedChat={onChatSelect}
-              chats={chats}
-            />
-            <Image
-              selectedChat={selectedChat}
-              onChatSave={mutate}
-              setSavedPromptOpen={setSavedPromptOpen}
-            />
+            <ChatHistory isLoading={isValidating} setSelectedChat={onChatSelect} chats={chats} />
+            <Image selectedChat={selectedChat} onChatSave={mutate} setSavedPromptOpen={setSavedPromptOpen} />
           </Grid>
         )}
       </ChatsArea>

@@ -1,14 +1,6 @@
 import AddIcon from '@mui/icons-material/Add';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import {
-  Box,
-  Fab,
-  Grid,
-  Paper,
-  Stack,
-  Typography,
-  useTheme,
-} from '@mui/material';
+import { Box, Fab, Grid, Paper, Stack, Typography, useTheme } from '@mui/material';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import throttle from 'lodash.throttle';
@@ -127,8 +119,7 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
                 throttledSetCurAssistantMsg(msgObj.id, ts, finalMsg + ' ▊');
                 // finalMsg += content;
                 if (lastMsgRef.current) {
-                  const boundingRect =
-                    lastMsgRef.current.getBoundingClientRect();
+                  const boundingRect = lastMsgRef.current.getBoundingClientRect();
                   const { height } = boundingRect;
                   setLastMsgHeight(height);
                   // lastMsgRef.current.innerHTML = renderToString(<AssistantMsgMarkdown content={finalMsg + ' ▊'} />);
@@ -164,14 +155,12 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
   }, [chat.length, lastMsgHeight]);
 
   const onNewChatClick = async () => {
-    await axios
-      .post(`${VITE_CHAT_API_URL}/my/chat/add`, { chats: chat })
-      .catch((e) => {
-        setToast({
-          text: `API error: ${e.response.data.message} `,
-          severity: 'error',
-        });
+    await axios.post(`${VITE_CHAT_API_URL}/my/chat/add`, { chats: chat }).catch((e) => {
+      setToast({
+        text: `API error: ${e.response.data.message} `,
+        severity: 'error',
       });
+    });
     onChatSave();
     setChat([]);
   };
@@ -188,9 +177,7 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
         }}
       >
         <Stack>
-          <LoadingProgress
-            show={isLoading || isValidating || isCompletionLoading}
-          />
+          <LoadingProgress show={isLoading || isValidating || isCompletionLoading} />
         </Stack>
         <Stack
           sx={{
@@ -224,11 +211,7 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
                       alignItems: isAssistant ? 'start' : 'end',
                     }}
                   >
-                    <Stack
-                      direction="row"
-                      spacing={1}
-                      sx={{ alignItems: 'end', maxWidth: '100%' }}
-                    >
+                    <Stack direction="row" spacing={1} sx={{ alignItems: 'end', maxWidth: '100%' }}>
                       <Paper
                         elevation={0}
                         sx={{
@@ -236,10 +219,7 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
                           borderRadius: 3,
                           textAlign: isAssistant ? 'left' : 'right',
                           width: '100%',
-                          backgroundColor:
-                            theme.palette.mode === 'light'
-                              ? 'rgba(225, 232, 239)'
-                              : 'rgba(44, 44, 44)',
+                          backgroundColor: theme.palette.mode === 'light' ? 'rgba(225, 232, 239)' : 'rgba(44, 44, 44)',
                           ...(isAssistant && {
                             backgroundColor: 'rgb(63, 147, 120)',
                           }),
@@ -250,11 +230,7 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
                         }}
                       >
                         {isAssistant ? (
-                          <Box
-                            ref={
-                              idx === chat.length - 1 ? lastMsgRef : undefined
-                            }
-                          >
+                          <Box ref={idx === chat.length - 1 ? lastMsgRef : undefined}>
                             <AssistantMsgMarkdown content={x.message.content} />
                           </Box>
                         ) : (
@@ -322,11 +298,7 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
               </Box>
             </Stack>
             <Stack ref={footerRef} spacing={1} sx={{ width: '100%' }}>
-              <InputBox
-                onMessagesSubmit={onMessagesSubmit}
-                isLoading={isCompletionLoading}
-                isReading={isReading}
-              />
+              <InputBox onMessagesSubmit={onMessagesSubmit} isLoading={isCompletionLoading} isReading={isReading} />
             </Stack>
           </Stack>
         </Stack>

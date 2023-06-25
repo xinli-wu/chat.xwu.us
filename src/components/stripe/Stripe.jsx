@@ -27,10 +27,7 @@ export default function Stripe() {
   useEffect(() => {
     if (sessionId) {
       (async () => {
-        const { data } = await axios.post(
-          `${VITE_CHAT_API_URL}/stripe/verify-payment`,
-          { sessionId },
-        );
+        const { data } = await axios.post(`${VITE_CHAT_API_URL}/stripe/verify-payment`, { sessionId });
         if (data.status === 'success') {
           setToast({ text: data.message, severity: 'success' });
         } else {

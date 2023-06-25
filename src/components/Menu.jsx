@@ -10,10 +10,7 @@ function Menu() {
   return (
     <Stack spacing={2} direction="row" sx={{ pl: 0 }}>
       {menu.map((item) => {
-        const curPage = matchPath(
-          pathname.toLocaleLowerCase(),
-          `/${item.toLocaleLowerCase()}`,
-        );
+        const curPage = matchPath(pathname.toLocaleLowerCase(), `/${item.toLocaleLowerCase()}`);
         return (
           <Button
             key={item}

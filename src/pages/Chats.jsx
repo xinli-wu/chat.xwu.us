@@ -50,17 +50,9 @@ export default function Chats() {
               onClose={() => setSavedPromptOpen((prev) => !prev)}
               PaperProps={{ sx: { backgroundColor: 'unset' } }}
             >
-              <ChatHistory
-                isLoading={isValidating}
-                setSelectedChat={onChatSelect}
-                chats={chats}
-              />
+              <ChatHistory isLoading={isValidating} setSelectedChat={onChatSelect} chats={chats} />
             </Drawer>
-            <Chat
-              selectedChat={selectedChat}
-              onChatSave={mutate}
-              setSavedPromptOpen={setSavedPromptOpen}
-            />
+            <Chat selectedChat={selectedChat} onChatSave={mutate} setSavedPromptOpen={setSavedPromptOpen} />
           </Box>
         ) : (
           <Grid
@@ -73,16 +65,8 @@ export default function Chats() {
               maxWidth: 1680,
             }}
           >
-            <ChatHistory
-              isLoading={isValidating}
-              setSelectedChat={onChatSelect}
-              chats={chats}
-            />
-            <Chat
-              selectedChat={selectedChat}
-              onChatSave={mutate}
-              setSavedPromptOpen={setSavedPromptOpen}
-            />
+            <ChatHistory isLoading={isValidating} setSelectedChat={onChatSelect} chats={chats} />
+            <Chat selectedChat={selectedChat} onChatSave={mutate} setSavedPromptOpen={setSavedPromptOpen} />
           </Grid>
         )}
       </ChatsArea>

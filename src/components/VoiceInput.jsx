@@ -10,20 +10,10 @@ const hasGetUserMedia = () => {
   return !!navigator.mediaDevices.getUserMedia;
 };
 
-export default function VoiceInputIconBtn({
-  setQ,
-  setInterimTranscript,
-  voiceInput,
-  setVoiceInput,
-  disabled = false,
-}) {
-  const SpeechRecognition =
-    window.webkitSpeechRecognition || window.SpeechRecognition;
+export default function VoiceInputIconBtn({ setQ, setInterimTranscript, voiceInput, setVoiceInput, disabled = false }) {
+  const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
   // const recognition = new SpeechRecognition();
-  let recognition = useMemo(
-    () => new SpeechRecognition() || null,
-    [SpeechRecognition],
-  );
+  let recognition = useMemo(() => new SpeechRecognition() || null, [SpeechRecognition]);
 
   if (!SpeechRecognition) console.log('Speech Recognition Not Available');
 
@@ -127,11 +117,7 @@ export default function VoiceInputIconBtn({
         onClick={toggleRecording}
         sx={{ ml: 0.5, mr: 0.5 }}
       >
-        {voiceInput ? (
-          <RecordVoiceOverIcon htmlColor="rgb(46,149,118)" />
-        ) : (
-          <MicIcon />
-        )}
+        {voiceInput ? <RecordVoiceOverIcon htmlColor="rgb(46,149,118)" /> : <MicIcon />}
       </IconButton>
       <Collapse orientation="horizontal" in={voiceInput}>
         <Box

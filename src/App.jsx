@@ -7,13 +7,7 @@ import { UserContext } from './contexts/UserContext';
 import { ColorModeContext } from './contexts/utilContext';
 import jwtDecode from 'jwt-decode';
 import React, { useEffect, useMemo } from 'react';
-import {
-  Route,
-  Routes,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from 'react-router-dom';
+import { Route, Routes, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import './App.css';
 import Footer from './components/Footer';
 import { Toast } from './components/Toast';
@@ -48,9 +42,7 @@ const queryClient = new QueryClient();
 
 function App() {
   document.body.style.transition = 'background-color 0.1s ease-in-out';
-  const preferedMode = useMediaQuery('(prefers-color-scheme: dark)')
-    ? 'dark'
-    : 'light';
+  const preferedMode = useMediaQuery('(prefers-color-scheme: dark)') ? 'dark' : 'light';
   const [mode, setMode] = React.useState(preferedMode);
   const navigate = useNavigate();
   const location = useLocation();
@@ -72,10 +64,7 @@ function App() {
 
   const { i18n } = useTranslation();
 
-  const lang = useMemo(
-    () => ({ 'en-US': locale.enUS, 'zh-CN': locale.zhCN }),
-    [],
-  );
+  const lang = useMemo(() => ({ 'en-US': locale.enUS, 'zh-CN': locale.zhCN }), []);
 
   React.useEffect(() => {
     (async () => {
@@ -135,10 +124,7 @@ function App() {
     const id = setInterval(() => {
       if (user) {
         (async () => {
-          const { data } =
-            (await axios
-              .post(`${VITE_CHAT_API_URL}/me/refresh`)
-              .catch(() => setUser(null))) || {};
+          const { data } = (await axios.post(`${VITE_CHAT_API_URL}/me/refresh`).catch(() => setUser(null))) || {};
           if (data.status === 'success') {
             setUser(data.data.user);
           } else {
@@ -153,10 +139,7 @@ function App() {
 
   useEffect(() => {
     (async () => {
-      const { data } =
-        (await axios
-          .post(`${VITE_CHAT_API_URL}/me/refresh`)
-          .catch(() => setUser(null))) || {};
+      const { data } = (await axios.post(`${VITE_CHAT_API_URL}/me/refresh`).catch(() => setUser(null))) || {};
       if (data?.status === 'success') {
         setUser(data.data.user);
       } else {

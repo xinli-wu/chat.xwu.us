@@ -13,11 +13,7 @@ import { isMobile } from 'react-device-detect';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import InputBox from '../components/InputBox';
 
-export default function Image({
-  selectedChat,
-  onChatSave,
-  setSavedPromptOpen,
-}) {
+export default function Image({ selectedChat, onChatSave, setSavedPromptOpen }) {
   document.title = 'image';
   const { id } = useParams();
   const { VITE_CHAT_API_URL } = import.meta.env;
@@ -51,10 +47,7 @@ export default function Image({
     setChat((prev) => ({ data: [...prev.data, newChat], isLoading: true }));
 
     try {
-      const { data } = await axios.post(
-        `${VITE_CHAT_API_URL}/openai/image/create`,
-        { prompt },
-      );
+      const { data } = await axios.post(`${VITE_CHAT_API_URL}/openai/image/create`, { prompt });
       if (data.status === 'error') {
         setToast({ text: data.message, severity: 'error' });
         setChat((prev) => ({
@@ -97,14 +90,12 @@ export default function Image({
 
   const onNewChatClick = async () => {
     setChat((prev) => ({ ...prev, isLoading: true }));
-    await axios
-      .post(`${VITE_CHAT_API_URL}/my/image/add`, { chats: chat.data })
-      .catch((e) => {
-        setToast({
-          text: `API error: ${e.response.data.message} `,
-          severity: 'error',
-        });
+    await axios.post(`${VITE_CHAT_API_URL}/my/image/add`, { chats: chat.data }).catch((e) => {
+      setToast({
+        text: `API error: ${e.response.data.message} `,
+        severity: 'error',
       });
+    });
     onChatSave();
     setChat({ data: [], isLoading: false });
   };
@@ -155,11 +146,7 @@ export default function Image({
                       alignItems: isAssistant ? 'start' : 'end',
                     }}
                   >
-                    <Stack
-                      direction="row"
-                      spacing={1}
-                      sx={{ alignItems: 'end' }}
-                    >
+                    <Stack direction="row" spacing={1} sx={{ alignItems: 'end' }}>
                       <Paper
                         elevation={12}
                         sx={{
@@ -170,24 +157,13 @@ export default function Image({
                         }}
                       >
                         {isAssistant ? (
-                          <Box
-                            ref={
-                              idx === chat.data.length - 1
-                                ? lastMsgRef
-                                : undefined
-                            }
-                          >
+                          <Box ref={idx === chat.data.length - 1 ? lastMsgRef : undefined}>
                             <Grid container spacing={1}>
-                              {x.message.content.map(
-                                ({ b64_json, url }, idx) => (
-                                  <Grid key={idx} item xs={12} sm={12}>
-                                    <ImageRenderer
-                                      b64_json={b64_json}
-                                      url={url}
-                                    />
-                                  </Grid>
-                                ),
-                              )}
+                              {x.message.content.map(({ b64_json, url }, idx) => (
+                                <Grid key={idx} item xs={12} sm={12}>
+                                  <ImageRenderer b64_json={b64_json} url={url} />
+                                </Grid>
+                              ))}
                             </Grid>
                           </Box>
                         ) : (

@@ -23,15 +23,11 @@ export default function Login() {
 
   const otp = searchParams.get('otp');
 
-  const login = useQuery(
-    ['login'],
-    () => axios.post(`${VITE_CHAT_API_URL}/login`, { email: form.email, otp }),
-    {
-      enabled: !!form.email && !!otp,
-      retry: false,
-      cacheTime: 0,
-    },
-  );
+  const login = useQuery(['login'], () => axios.post(`${VITE_CHAT_API_URL}/login`, { email: form.email, otp }), {
+    enabled: !!form.email && !!otp,
+    retry: false,
+    cacheTime: 0,
+  });
 
   React.useEffect(() => {
     if (login.isSuccess) {
@@ -51,14 +47,7 @@ export default function Login() {
         severity: 'error',
       });
     }
-  }, [
-    login.data,
-    login.isError,
-    login.isSuccess,
-    login.error,
-    setUser,
-    setToast,
-  ]);
+  }, [login.data, login.isError, login.isSuccess, login.error, setUser, setToast]);
 
   return (
     <Box
@@ -86,10 +75,7 @@ export default function Login() {
           }}
           style={{ width: '100%' }}
         >
-          <FormGroup
-            onSubmit={() => login.refetch()}
-            sx={{ p: 2, width: '100%' }}
-          >
+          <FormGroup onSubmit={() => login.refetch()} sx={{ p: 2, width: '100%' }}>
             <FormControl sx={{ p: 1 }} margin="dense">
               <TextField
                 disabled={login.isFetching}

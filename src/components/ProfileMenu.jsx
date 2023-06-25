@@ -53,9 +53,7 @@ export default function ProfileMenu() {
         color="inherit"
         size="small"
       >
-        <Avatar sx={{ width: 32, height: 32, textTransform: 'capitalize' }}>
-          {user.email.slice(0, 1)}
-        </Avatar>
+        <Avatar sx={{ width: 32, height: 32, textTransform: 'capitalize' }}>{user.email.slice(0, 1)}</Avatar>
       </IconButton>
       <Menu
         id="profile-menu"

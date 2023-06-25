@@ -12,9 +12,7 @@ const getConnectedDevices = async (type) => {
 };
 
 const openMic = async (constraints) => {
-  return await navigator.mediaDevices
-    .getUserMedia(constraints)
-    .catch((e) => console.error(e.message));
+  return await navigator.mediaDevices.getUserMedia(constraints).catch((e) => console.error(e.message));
 };
 
 export default function VoiceInput({ setQ }) {

@@ -9,11 +9,7 @@ function ColorModeSwitch() {
   const colorMode = React.useContext(ColorModeContext);
   return (
     <IconButton onClick={colorMode.toggleColorMode} color="inherit">
-      {theme.palette.mode === 'dark' ? (
-        <Brightness7Icon />
-      ) : (
-        <Brightness4Icon />
-      )}
+      {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
     </IconButton>
   );
 }

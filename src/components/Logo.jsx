@@ -32,11 +32,6 @@ export default function Logo() {
   };
 
   return (
-    <img
-      src={logoH[mode][altLogo]}
-      alt="Logo"
-      onClick={onLogoClick}
-      style={{ cursor: 'pointer', height: '100%' }}
-    />
+    <img src={logoH[mode][altLogo]} alt="Logo" onClick={onLogoClick} style={{ cursor: 'pointer', height: '100%' }} />
   );
 }

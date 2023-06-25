@@ -10,10 +10,7 @@ export const AssistantMsgMarkdown = ({ content }) => {
     <ReactMarkdown
       components={{
         code({ node, inline, className, children, ...props }) {
-          const match = /language-(\w+)/.exec(className || '') || [
-            'language-javascript',
-            'javascript',
-          ];
+          const match = /language-(\w+)/.exec(className || '') || ['language-javascript', 'javascript'];
           return !inline && match ? (
             <Stack sx={{ overflowX: 'scroll' }}>
               <CopyCode language={match[1]} code={String(children)} />

@@ -20,9 +20,7 @@ export const CopyCode = ({ language, code }) => {
     <>
       {/* <span>{language}</span> */}
       <CopyToClipboard text={String(code)} onCopy={() => onCopyClick()}>
-        <span
-          style={{ display: 'flex', justifyContent: 'end', marginBottom: -47 }}
-        >
+        <span style={{ display: 'flex', justifyContent: 'end', marginBottom: -47 }}>
           <IconButton color="primary" aria-label="Copy to clipboard">
             {copied ? <DoneIcon color="success" /> : <ContentCopyIcon />}
           </IconButton>

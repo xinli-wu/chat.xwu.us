@@ -15,10 +15,7 @@ export default function Product({ product, isLoading }) {
   const displayPrice = !!product?.price ? product.price / 100 : 0;
 
   const onCheckoutClick = async (_e) => {
-    const { data } = await axios.post(
-      `${VITE_CHAT_API_URL}/stripe/create-checkout-session`,
-      { id: product.id },
-    );
+    const { data } = await axios.post(`${VITE_CHAT_API_URL}/stripe/create-checkout-session`, { id: product.id });
     if (data?.url) {
       window.location.href = data.url;
     } else {
@@ -26,8 +23,7 @@ export default function Product({ product, isLoading }) {
     }
   };
 
-  const activePlan =
-    product.name !== 'Free' && user.subscription?.displayName === product.name;
+  const activePlan = product.name !== 'Free' && user.subscription?.displayName === product.name;
 
   const bgColor = 'rgb(63, 147, 120)';
 
@@ -42,10 +38,7 @@ export default function Product({ product, isLoading }) {
         ...(activePlan && { bgcolor: bgColor }),
       }}
     >
-      <CardHeader
-        title={product.name}
-        subheader={`$${displayPrice} per month`}
-      />
+      <CardHeader title={product.name} subheader={`$${displayPrice} per month`} />
       <CardContent>
         <Typography variant="body2" color="text.secondary">
           {product.desc}

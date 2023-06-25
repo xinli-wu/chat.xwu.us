@@ -9,10 +9,7 @@ export const useChats = () => {
 };
 
 export const useChat = (objectId) => {
-  return useSWRImmutable(
-    objectId ? `${VITE_CHAT_API_URL}/my/chat/${objectId} ` : null,
-    axios,
-  );
+  return useSWRImmutable(objectId ? `${VITE_CHAT_API_URL}/my/chat/${objectId} ` : null, axios);
 };
 
 export const useRefresh = () => {
@@ -26,10 +23,7 @@ export const useImages = () => {
 };
 
 export const useImage = (objectId) => {
-  return useSWR(
-    objectId ? `${VITE_CHAT_API_URL}/my/image/${objectId} ` : null,
-    axios,
-  );
+  return useSWR(objectId ? `${VITE_CHAT_API_URL}/my/image/${objectId} ` : null, axios);
 };
 
 export const useStripeProducts = () => {

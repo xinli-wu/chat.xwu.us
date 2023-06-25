@@ -1,13 +1,4 @@
-import {
-  Grid,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from '@mui/material';
+import { Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import React from 'react';
 import { useFeatures, usePlans } from '../../hooks/useAPI';
 import LoadingProgress from '../LoadingProgress';
@@ -36,17 +27,12 @@ export const ProductDisplay = () => {
             <TableBody>
               {features.data?.data.map((feature, i) => {
                 return (
-                  <TableRow
-                    key={i}
-                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                  >
+                  <TableRow key={i} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                     <TableCell component="th" scope="row">
                       {feature.desc}
                     </TableCell>
                     {plans.data?.data.map((p, i) => {
-                      const curFeature = p.feature.find(
-                        (f) => f.id === feature.id,
-                      );
+                      const curFeature = p.feature.find((f) => f.id === feature.id);
                       return (
                         <TableCell key={i} sx={{ textAlign: 'center' }}>
                           {curFeature.quota}

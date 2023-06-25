@@ -1,16 +1,6 @@
 import ClearIcon from '@mui/icons-material/Clear';
 import SendIcon from '@mui/icons-material/Send';
-import {
-  Box,
-  Collapse,
-  Divider,
-  List,
-  ListItemButton,
-  ListItemText,
-  Paper,
-  Stack,
-  useTheme,
-} from '@mui/material';
+import { Box, Collapse, Divider, List, ListItemButton, ListItemText, Paper, Stack, useTheme } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import InputBase from '@mui/material/InputBase';
 import dayjs from 'dayjs';
@@ -20,18 +10,11 @@ import LoadingProgress from './LoadingProgress';
 import VoiceInput from './VoiceInput';
 import { useTranslation } from 'react-i18next';
 
-export default function InputBox({
-  onMessagesSubmit,
-  isLoading,
-  isReading = false,
-  disabled = false,
-}) {
+export default function InputBox({ onMessagesSubmit, isLoading, isReading = false, disabled = false }) {
   const theme = useTheme();
   const [q, setQ] = useState('');
   const [interimTranscript, setInterimTranscript] = useState('');
-  const [suggestions, setSuggestions] = useState(
-    JSON.parse(localStorage.qHistory || '[]'),
-  );
+  const [suggestions, setSuggestions] = useState(JSON.parse(localStorage.qHistory || '[]'));
   const [suggestOpen, setSuggestOpen] = React.useState(false);
   const [voiceInput, setVoiceInput] = useState(false);
   const inputElement = useRef(null);
@@ -45,9 +28,7 @@ export default function InputBox({
     // close virtual keyboard
     inputElement?.current?.children[0]?.blur();
     setSuggestions((prev) =>
-      [...prev.filter((x) => x.q !== q), { q, t: dayjs().unix() }]
-        .sort((a, b) => b.t - a.t)
-        .slice(0, 7),
+      [...prev.filter((x) => x.q !== q), { q, t: dayjs().unix() }].sort((a, b) => b.t - a.t).slice(0, 7),
     );
     onMessagesSubmit(q);
     setQ('');
@@ -97,10 +78,7 @@ export default function InputBox({
               <b>
                 <span
                   style={{
-                    backgroundColor:
-                      theme.palette.mode === 'light'
-                        ? 'rgb(150,200,100)'
-                        : 'rgb(46,149,118)',
+                    backgroundColor: theme.palette.mode === 'light' ? 'rgb(150,200,100)' : 'rgb(46,149,118)',
                   }}
                 >
                   {shouldBeBold}
@@ -113,16 +91,10 @@ export default function InputBox({
     );
   };
 
-  const filteredSuggestions = suggestions.filter((x) =>
-    x.q.toLocaleLowerCase().includes(q.toLocaleLowerCase()),
-  );
+  const filteredSuggestions = suggestions.filter((x) => x.q.toLocaleLowerCase().includes(q.toLocaleLowerCase()));
 
   return (
-    <Paper
-      elevation={suggestOpen ? 24 : 6}
-      component="form"
-      onSubmit={onQSubmit}
-    >
+    <Paper elevation={suggestOpen ? 24 : 6} component="form" onSubmit={onQSubmit}>
       {!!suggestions.length && !disabled && (
         <Collapse in={suggestOpen} timeout={150}>
           <Stack
@@ -137,10 +109,7 @@ export default function InputBox({
                   return (
                     <Collapse key={x.q}>
                       <Stack direction={'row'}>
-                        <ListItemButton
-                          dense
-                          onMouseDown={(e) => onSuggestionClick(e, x.q)}
-                        >
+                        <ListItemButton dense onMouseDown={(e) => onSuggestionClick(e, x.q)}>
                           <ListItemText>
                             <BoldedText text={x.q} shouldBeBold={q} />
                           </ListItemText>
@@ -192,18 +161,12 @@ export default function InputBox({
           value={voiceInput ? interimTranscript : q}
           onChange={onInputChange}
           onBlur={onSearchBoxBlur}
-          onClick={() =>
-            !voiceInput && !isReading && !isLoading
-              ? setSuggestOpen(true)
-              : null
-          }
+          onClick={() => (!voiceInput && !isReading && !isLoading ? setSuggestOpen(true) : null)}
           componentsProps={{
             input: {
               style: {
                 fontStyle: voiceInput ? 'italic' : 'normal',
-                color: voiceInput
-                  ? theme.palette.grey[400]
-                  : theme.palette.text.primary,
+                color: voiceInput ? theme.palette.grey[400] : theme.palette.text.primary,
               },
             },
           }}
@@ -215,11 +178,7 @@ export default function InputBox({
           aria-label="send"
           disabled={q.trim().length === 0}
         >
-          {isLoading ? (
-            <LoadingProgress variant="circular" show={isLoading} />
-          ) : (
-            <SendIcon />
-          )}
+          {isLoading ? <LoadingProgress variant="circular" show={isLoading} /> : <SendIcon />}
         </IconButton>
       </Box>
     </Paper>

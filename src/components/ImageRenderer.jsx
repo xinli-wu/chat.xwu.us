@@ -11,11 +11,7 @@ export const ImageRenderer = ({ b64_json, url }) => {
   const [open, setOpen] = React.useState(false);
 
   const Image = () => (
-    <img
-      src={`${url ? url : `data:image/jpeg;base64,${b64_json}`}`}
-      alt=""
-      style={{ width: '100%', height: '100%' }}
-    />
+    <img src={`${url ? url : `data:image/jpeg;base64,${b64_json}`}`} alt="" style={{ width: '100%', height: '100%' }} />
   );
 
   const style = {

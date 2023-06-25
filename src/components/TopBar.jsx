@@ -18,9 +18,7 @@ export default function TopBar() {
           height: 40,
           justifyContent: 'space-between',
           top: 0,
-          backdropFilter: `blur(.2rem) brightness(${
-            theme.palette.mode === 'dark' ? 0.85 : 0.95
-          })`,
+          backdropFilter: `blur(.2rem) brightness(${theme.palette.mode === 'dark' ? 0.85 : 0.95})`,
           zIndex: 1,
         }}
       >

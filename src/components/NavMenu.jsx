@@ -8,9 +8,7 @@ export default function NavMenu() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [menuItem, setMenuItem] = React.useState(
-    location.pathname.split('/')[1],
-  );
+  const [menuItem, setMenuItem] = React.useState(location.pathname.split('/')[1]);
 
   const menuItems = React.useMemo(() => ['chat', 'image'], []);
 
