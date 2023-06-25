@@ -5,7 +5,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { CopyCode } from './CopyCode';
 
-export const AssistantMsgMarkdown = ({ content }) => {
+export const AssistantMsgMarkdown = ({ content, canCopy = false }) => {
   return (
     <ReactMarkdown
       components={{
@@ -13,15 +13,8 @@ export const AssistantMsgMarkdown = ({ content }) => {
           const match = /language-(\w+)/.exec(className || '') || ['language-javascript', 'javascript'];
           return !inline && match ? (
             <Stack sx={{ overflowX: 'scroll' }}>
-              <CopyCode language={match[1]} code={String(children)} />
-              <SyntaxHighlighter
-                showLineNumbers
-                // @ts-ignore
-                style={vscDarkPlus}
-                language={match[1]}
-                PreTag="div"
-                {...props}
-              >
+              {canCopy && <CopyCode language={match[1]} code={String(children)} />}
+              <SyntaxHighlighter showLineNumbers style={vscDarkPlus} language={match[1]} PreTag="div" {...props}>
                 {String(children).replace(/\n$/, '')}
               </SyntaxHighlighter>
             </Stack>

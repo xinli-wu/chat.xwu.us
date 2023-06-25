@@ -3,16 +3,16 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Box, Fab, Grid, Paper, Stack, Typography, useTheme } from '@mui/material';
 import axios from 'axios';
 import dayjs from 'dayjs';
-import throttle from 'lodash.throttle';
 import React, { useContext, useEffect, useRef } from 'react';
 import { isMobile } from 'react-device-detect';
+import { renderToString } from 'react-dom/server';
 import { AppContext } from '../contexts/AppContext';
 import { UserContext } from '../contexts/UserContext';
 import { useChat } from '../hooks/useAPI';
 import { AssistantMsgMarkdown } from './AssistantMsgMarkdown';
 import './Chat.css';
-import LoadingProgress from './LoadingProgress';
 import InputBox from './InputBox';
+import LoadingProgress from './LoadingProgress';
 
 export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
   document.title = 'chat';
@@ -44,7 +44,7 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
     }
   }, [data, error, isLoading]);
 
-  const setCurAssistantMsg = (id, ts, msg) => {
+  const updateCurAssistantMsg = (id, ts, msg) => {
     setChat((prev) => [
       ...prev.filter((x) => x.metadata.id !== id),
       {
@@ -57,10 +57,13 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
     ]);
   };
 
-  const throttledSetCurAssistantMsg = throttle(setCurAssistantMsg, 70, {
-    leading: true,
-    trailing: true,
-  });
+  const updateLastMsgHeight = () => {
+    if (lastMsgRef.current) {
+      const boundingRect = lastMsgRef.current.getBoundingClientRect();
+      const { height } = boundingRect;
+      setLastMsgHeight(height);
+    }
+  };
 
   const onMessagesSubmit = async (newMsg) => {
     const ts = dayjs().toISOString();
@@ -93,6 +96,9 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
       setIsReading(true);
       let finalMsg = '';
       let msgId = null;
+      if (lastMsgRef.current) {
+        lastMsgRef.current.innerHTML = finalMsg;
+      }
 
       const read = () =>
         reader.read().then(({ done, value }) => {
@@ -109,35 +115,28 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
 
             if (msg !== '[DONE]') {
               const msgObj = JSON.parse(msg);
-              if (!msgId) msgId = msgObj.id;
+              if (!msgId) {
+                msgId = msgObj.id;
+                updateCurAssistantMsg(msgId, ts, finalMsg); //This is a placeholder for the currently generated assistant message
+              }
               const { content } = msgObj.choices[0].delta;
               if (content) {
                 finalMsg += content;
 
-                //setState once to push a new chat, content can be anything
-                // if (finalMsg === '') throttledSetCurAssistantMsg(msgObj.id, ts, ' ▊');
-                throttledSetCurAssistantMsg(msgObj.id, ts, finalMsg + ' ▊');
-                // finalMsg += content;
                 if (lastMsgRef.current) {
-                  const boundingRect = lastMsgRef.current.getBoundingClientRect();
-                  const { height } = boundingRect;
-                  setLastMsgHeight(height);
-                  // lastMsgRef.current.innerHTML = renderToString(<AssistantMsgMarkdown content={finalMsg + ' ▊'} />);
+                  updateLastMsgHeight();
+                  lastMsgRef.current.innerHTML = renderToString(<AssistantMsgMarkdown content={finalMsg + ' ▊'} />);
                 }
               }
             } else {
-              // if (lastMsgRef.current) {
-              //   const boundingRect = lastMsgRef.current.getBoundingClientRect();
-              //   const { height } = boundingRect;
-              //   setLastMsgHeight(height);
-              //   lastMsgRef.current.innerHTML = renderToString(<AssistantMsgMarkdown content={finalMsg} />);
-              // }
-              throttledSetCurAssistantMsg(msgId, ts, finalMsg);
-
+              if (lastMsgRef.current) {
+                updateLastMsgHeight();
+                updateCurAssistantMsg(msgId, ts, finalMsg);
+                lastMsgRef.current.innerHTML = '';
+              }
               setIsReading(false);
             }
           });
-
           read();
         });
 
@@ -157,7 +156,7 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
   const onNewChatClick = async () => {
     await axios.post(`${VITE_CHAT_API_URL}/my/chat/add`, { chats: chat }).catch((e) => {
       setToast({
-        text: `API error: ${e.response.data.message} `,
+        text: `API error: ${e.response.data.message}`,
         severity: 'error',
       });
     });
@@ -167,15 +166,7 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
 
   return (
     <Grid item xs={12} sm={12} md={8} lg={9} xl={9} sx={{ height: '100%' }}>
-      <Paper
-        sx={{
-          borderRadius: 3,
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-        }}
-      >
+      <Paper sx={{ borderRadius: 3, height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <Stack>
           <LoadingProgress show={isLoading || isValidating || isCompletionLoading} />
         </Stack>
@@ -192,25 +183,12 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
             pt: 0,
           }}
         >
-          <Stack
-            className="no-scrollbar"
-            sx={{
-              alignItems: 'center',
-              width: '100%',
-              overflowY: 'scroll',
-            }}
-          >
+          <Stack className="no-scrollbar" sx={{ alignItems: 'center', width: '100%', overflowY: 'scroll' }}>
             <Stack spacing={2} sx={{ width: '100%' }}>
               {chat.map((x, idx) => {
                 const isAssistant = x.message.role === 'assistant';
                 return (
-                  <Stack
-                    key={idx}
-                    sx={{
-                      width: '100%',
-                      alignItems: isAssistant ? 'start' : 'end',
-                    }}
-                  >
+                  <Stack key={idx} sx={{ width: '100%', alignItems: isAssistant ? 'start' : 'end' }}>
                     <Stack direction="row" spacing={1} sx={{ alignItems: 'end', maxWidth: '100%' }}>
                       <Paper
                         elevation={0}
@@ -230,21 +208,16 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
                         }}
                       >
                         {isAssistant ? (
-                          <Box ref={idx === chat.length - 1 ? lastMsgRef : undefined}>
-                            <AssistantMsgMarkdown content={x.message.content} />
-                          </Box>
+                          <>
+                            <Box ref={idx === chat.length - 1 ? lastMsgRef : undefined}></Box>
+                            <AssistantMsgMarkdown content={x.message.content} canCopy />
+                          </>
                         ) : (
                           <Typography>{x.message.content}</Typography>
                         )}
                       </Paper>
                     </Stack>
-                    <Typography
-                      sx={{
-                        fontSize: '0.6rem',
-                        textAlign: 'end',
-                        color: 'grey',
-                      }}
-                    >
+                    <Typography sx={{ fontSize: '0.6rem', textAlign: 'end', color: 'grey' }}>
                       {dayjs(x.metadata.ts).format('h:mm a')}
                     </Typography>
                   </Stack>
@@ -255,21 +228,9 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
           </Stack>
           <Stack
             className="no-scrollbar"
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              width: '100%',
-            }}
+            sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}
           >
-            <Stack
-              direction={'row'}
-              sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                width: '100%',
-              }}
-            >
+            <Stack direction={'row'} sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
               <Box>
                 {isMobile && (
                   <Fab

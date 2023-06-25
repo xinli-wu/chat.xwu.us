@@ -12,20 +12,20 @@ export const CopyCode = ({ language, code }) => {
   const onCopyClick = () => {
     setCopied(true);
     setToast({ text: 'Success', severity: 'success' });
-
-    setTimeout(() => setCopied(false), 3000);
   };
 
+  React.useEffect(() => {
+    const timer = setTimeout(() => setCopied(false), 3000);
+    return () => clearTimeout(timer);
+  }, [copied]);
+
   return (
-    <>
-      {/* <span>{language}</span> */}
-      <CopyToClipboard text={String(code)} onCopy={() => onCopyClick()}>
-        <span style={{ display: 'flex', justifyContent: 'end', marginBottom: -47 }}>
-          <IconButton color="primary" aria-label="Copy to clipboard">
-            {copied ? <DoneIcon color="success" /> : <ContentCopyIcon />}
-          </IconButton>
-        </span>
-      </CopyToClipboard>
-    </>
+    <CopyToClipboard text={String(code)} onCopy={() => onCopyClick()}>
+      <span style={{ display: 'flex', justifyContent: 'end', marginBottom: -47 }}>
+        <IconButton color="primary" aria-label="Copy to clipboard">
+          {copied ? <DoneIcon color="success" /> : <ContentCopyIcon />}
+        </IconButton>
+      </span>
+    </CopyToClipboard>
   );
 };
