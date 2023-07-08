@@ -4,12 +4,16 @@ import useSWRImmutable from 'swr/immutable';
 
 const { VITE_CHAT_API_URL } = import.meta.env;
 
+export const useModels = () => {
+  return useSWRImmutable(`${VITE_CHAT_API_URL}/openai/chat/getModels`, axios);
+};
+
 export const useChats = () => {
   return useSWR(`${VITE_CHAT_API_URL}/my/chat`, axios);
 };
 
 export const useChat = (objectId) => {
-  return useSWRImmutable(objectId ? `${VITE_CHAT_API_URL}/my/chat/${objectId} ` : null, axios);
+  return useSWR(objectId ? `${VITE_CHAT_API_URL}/my/chat/${objectId} ` : null, axios);
 };
 
 export const useRefresh = () => {
@@ -19,7 +23,7 @@ export const useRefresh = () => {
 };
 
 export const useImages = () => {
-  return useSWRImmutable(`${VITE_CHAT_API_URL}/my/image`, axios);
+  return useSWR(`${VITE_CHAT_API_URL}/my/image`, axios);
 };
 
 export const useImage = (objectId) => {
@@ -27,7 +31,7 @@ export const useImage = (objectId) => {
 };
 
 export const useStripeProducts = () => {
-  return useSWRImmutable(`${VITE_CHAT_API_URL}/stripe/products`, axios);
+  return useSWR(`${VITE_CHAT_API_URL}/stripe/products`, axios);
 };
 
 export const useStripePrices = () => {

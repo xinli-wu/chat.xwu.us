@@ -1,17 +1,16 @@
-import AddIcon from '@mui/icons-material/Add';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Box, Fab, Grid, Paper, Stack, Typography } from '@mui/material';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import React, { useContext, useEffect, useRef } from 'react';
+import { isMobile } from 'react-device-detect';
 import { useParams } from 'react-router-dom';
 import { ImageRenderer } from '../components/ImageRenderer';
+import InputBox from '../components/InputBox';
 import LoadingProgress from '../components/LoadingProgress';
 import { AppContext } from '../contexts/AppContext';
 import { useImage } from '../hooks/useAPI';
 import './Image.css';
-import { isMobile } from 'react-device-detect';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import InputBox from '../components/InputBox';
 
 export default function Image({ selectedChat, onChatSave, setSavedPromptOpen }) {
   document.title = 'image';
@@ -88,7 +87,7 @@ export default function Image({ selectedChat, onChatSave, setSavedPromptOpen }) 
     return () => clearTimeout(id);
   }, [chat.data.length]);
 
-  const onNewChatClick = async () => {
+  const onSaveBtnClick = async () => {
     setChat((prev) => ({ ...prev, isLoading: true }));
     await axios.post(`${VITE_CHAT_API_URL}/my/image/add`, { chats: chat.data }).catch((e) => {
       setToast({
@@ -215,26 +214,14 @@ export default function Image({ selectedChat, onChatSave, setSavedPromptOpen }) 
                   </Fab>
                 )}
               </Box>
-              <Box>
-                {!!chat.data.length && (
-                  <Fab
-                    disabled={!chat.data.length || !!id}
-                    size="small"
-                    color="primary"
-                    aria-label="new conversation"
-                    onClick={onNewChatClick}
-                    sx={{ transform: 'scale(0.8)' }}
-                  >
-                    <AddIcon />
-                  </Fab>
-                )}
-              </Box>
             </Stack>
             <Stack ref={footerRef} spacing={1} sx={{ width: '100%' }}>
               <InputBox
                 onMessagesSubmit={onMessagesSubmit}
                 isLoading={isLoading}
                 disabled={!!chat.data.length || !!id}
+                canSave={!!chat.data.length || !!id}
+                onSaveBtnClick={onSaveBtnClick}
               />
             </Stack>
           </Stack>

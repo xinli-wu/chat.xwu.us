@@ -1,6 +1,5 @@
-import AddIcon from '@mui/icons-material/Add';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { Box, Fab, Grid, Paper, Stack, Typography, useTheme } from '@mui/material';
+import { Autocomplete, Box, Fab, Grid, Paper, Stack, TextField, Typography, useTheme } from '@mui/material';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import React, { useContext, useEffect, useRef } from 'react';
@@ -8,7 +7,7 @@ import { isMobile } from 'react-device-detect';
 import { renderToString } from 'react-dom/server';
 import { AppContext } from '../contexts/AppContext';
 import { UserContext } from '../contexts/UserContext';
-import { useChat } from '../hooks/useAPI';
+import { useChat, useModels } from '../hooks/useAPI';
 import { AssistantMsgMarkdown } from './AssistantMsgMarkdown';
 import './Chat.css';
 import InputBox from './InputBox';
@@ -26,6 +25,8 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
   const theme = useTheme();
   const { setToast } = useContext(AppContext);
 
+  const models = useModels();
+  const [model, setModel] = React.useState(models.data?.data?.data[0]);
   const [chat, setChat] = React.useState([]);
   const [isCompletionLoading, setIsCompletionLoading] = React.useState(false);
   const [isReading, setIsReading] = React.useState(false);
@@ -33,6 +34,13 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
   const lastUserMessage = useRef('');
 
   const { data, error, isLoading, isValidating } = useChat(selectedChat);
+
+  useEffect(() => {
+    if (models.error || models.isLoading) return;
+    if (models.data?.data?.status === 'success') {
+      setModel(models.data.data.data[0]);
+    }
+  }, [models.data, models.error, models.isLoading]);
 
   useEffect(() => {
     if (error || isLoading) return;
@@ -85,6 +93,7 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
         },
         body: JSON.stringify({
           messages: [...chat.map((x) => x.message), newChat.message],
+          config: { model },
         }),
       });
 
@@ -153,7 +162,7 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chat.length, lastMsgHeight]);
 
-  const onNewChatClick = async () => {
+  const onSaveBtnClick = async () => {
     await axios.post(`${VITE_CHAT_API_URL}/my/chat/add`, { chats: chat }).catch((e) => {
       setToast({
         text: `API error: ${e.response.data.message}`,
@@ -166,104 +175,122 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
 
   return (
     <Grid item xs={12} sm={12} md={8} lg={9} xl={9} sx={{ height: '100%' }}>
-      <Paper sx={{ borderRadius: 3, height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        <Stack>
-          <LoadingProgress show={isLoading || isValidating || isCompletionLoading} />
-        </Stack>
-        <Stack
+      <Stack style={{ height: '100%' }} spacing={1}>
+        <Paper
           sx={{
-            width: '100%',
-            height: '100%',
-            justifyContent: 'space-between',
+            borderRadius: 3,
+            height: '10%',
+            maxHeight: 100,
+            display: 'flex',
             alignItems: 'center',
-            overflow: 'scroll',
-            maxWidth: 1280,
-            alignSelf: 'center',
             p: 1,
-            pt: 0,
           }}
         >
-          <Stack className="no-scrollbar" sx={{ alignItems: 'center', width: '100%', overflowY: 'scroll' }}>
-            <Stack spacing={2} sx={{ width: '100%' }}>
-              {chat.map((x, idx) => {
-                const isAssistant = x.message.role === 'assistant';
-                return (
-                  <Stack key={idx} sx={{ width: '100%', alignItems: isAssistant ? 'start' : 'end' }}>
-                    <Stack direction="row" spacing={1} sx={{ alignItems: 'end', maxWidth: '100%' }}>
-                      <Paper
-                        elevation={0}
-                        sx={{
-                          p: 1,
-                          borderRadius: 3,
-                          textAlign: isAssistant ? 'left' : 'right',
-                          width: '100%',
-                          backgroundColor: theme.palette.mode === 'light' ? 'rgba(225, 232, 239)' : 'rgba(44, 44, 44)',
-                          ...(isAssistant && {
-                            backgroundColor: 'rgb(63, 147, 120)',
-                          }),
-                          ...(isAssistant &&
-                            theme.palette.mode === 'light' && {
-                              filter: 'brightness(1.25)',
-                            }),
-                        }}
-                      >
-                        {isAssistant ? (
-                          <>
-                            <Box ref={idx === chat.length - 1 ? lastMsgRef : undefined}></Box>
-                            <AssistantMsgMarkdown content={x.message.content} canCopy />
-                          </>
-                        ) : (
-                          <Typography>{x.message.content}</Typography>
-                        )}
-                      </Paper>
-                    </Stack>
-                    <Typography sx={{ fontSize: '0.6rem', textAlign: 'end', color: 'grey' }}>
-                      {dayjs(x.metadata.ts).format('h:mm a')}
-                    </Typography>
-                  </Stack>
-                );
-              })}
-            </Stack>
-            <div ref={bottomRef} />
+          {models.data && model && (
+            <Autocomplete
+              onChange={(_e, v) => setModel(v)}
+              value={model}
+              size="small"
+              fullWidth
+              options={models.data?.data?.data}
+              groupBy={(option) => option?.group}
+              getOptionLabel={(option) => option?.id}
+              renderInput={(params) => <TextField {...params} label="Choose Model" />}
+            />
+          )}
+        </Paper>
+        <Paper sx={{ borderRadius: 3, flexGrow: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <Stack>
+            <LoadingProgress show={isLoading || isValidating || isCompletionLoading} />
           </Stack>
           <Stack
-            className="no-scrollbar"
-            sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}
+            sx={{
+              width: '100%',
+              height: '100%',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              overflow: 'scroll',
+              maxWidth: 1280,
+              alignSelf: 'center',
+              p: 1,
+              pt: 0,
+            }}
           >
-            <Stack direction={'row'} sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-              <Box>
-                {isMobile && (
-                  <Fab
-                    size="small"
-                    color="primary"
-                    onClick={() => setSavedPromptOpen((prev) => !prev)}
-                    sx={{ transform: 'scale(0.8)' }}
-                  >
-                    <ChevronRightIcon />
-                  </Fab>
-                )}
-              </Box>
-              <Box>
-                {!!chat.length && (
-                  <Fab
-                    disabled={isCompletionLoading || isReading}
-                    size="small"
-                    color="primary"
-                    aria-label="new conversation"
-                    onClick={onNewChatClick}
-                    sx={{ transform: 'scale(0.8)' }}
-                  >
-                    <AddIcon />
-                  </Fab>
-                )}
-              </Box>
+            <Stack className="no-scrollbar" sx={{ alignItems: 'center', width: '100%', overflowY: 'scroll' }}>
+              <Stack spacing={2} sx={{ width: '100%' }}>
+                {chat.map((x, idx) => {
+                  const isAssistant = x.message.role === 'assistant';
+                  return (
+                    <Stack key={idx} sx={{ width: '100%', alignItems: isAssistant ? 'start' : 'end' }}>
+                      <Stack direction="row" spacing={1} sx={{ alignItems: 'end', maxWidth: '100%' }}>
+                        <Paper
+                          elevation={0}
+                          sx={{
+                            p: 1,
+                            borderRadius: 3,
+                            textAlign: isAssistant ? 'left' : 'right',
+                            width: '100%',
+                            backgroundColor:
+                              theme.palette.mode === 'light' ? 'rgba(225, 232, 239)' : 'rgba(44, 44, 44)',
+                            ...(isAssistant && {
+                              backgroundColor: 'rgb(63, 147, 120)',
+                            }),
+                            ...(isAssistant &&
+                              theme.palette.mode === 'light' && {
+                                filter: 'brightness(1.25)',
+                              }),
+                          }}
+                        >
+                          {isAssistant ? (
+                            <>
+                              <Box ref={idx === chat.length - 1 ? lastMsgRef : undefined}></Box>
+                              <AssistantMsgMarkdown content={x.message.content} canCopy />
+                            </>
+                          ) : (
+                            <Typography>{x.message.content}</Typography>
+                          )}
+                        </Paper>
+                      </Stack>
+                      <Typography sx={{ fontSize: '0.6rem', textAlign: 'end', color: 'grey' }}>
+                        {dayjs(x.metadata.ts).format('h:mm a')}
+                      </Typography>
+                    </Stack>
+                  );
+                })}
+              </Stack>
+              <div ref={bottomRef} />
             </Stack>
-            <Stack ref={footerRef} spacing={1} sx={{ width: '100%' }}>
-              <InputBox onMessagesSubmit={onMessagesSubmit} isLoading={isCompletionLoading} isReading={isReading} />
+            <Stack
+              className="no-scrollbar"
+              sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}
+            >
+              <Stack direction={'row'} sx={{ display: 'flex', justifyContent: 'right', width: '100%' }}>
+                <Box>
+                  {isMobile && (
+                    <Fab
+                      size="small"
+                      color="primary"
+                      onClick={() => setSavedPromptOpen((prev) => !prev)}
+                      sx={{ transform: 'scale(0.8)' }}
+                    >
+                      <ChevronRightIcon />
+                    </Fab>
+                  )}
+                </Box>
+              </Stack>
+              <Stack ref={footerRef} spacing={1} sx={{ width: '100%' }}>
+                <InputBox
+                  onMessagesSubmit={onMessagesSubmit}
+                  isLoading={isCompletionLoading}
+                  isReading={isReading}
+                  canSave={!!chat.length}
+                  onSaveBtnClick={onSaveBtnClick}
+                />
+              </Stack>
             </Stack>
           </Stack>
-        </Stack>
-      </Paper>
+        </Paper>
+      </Stack>
     </Grid>
   );
 }

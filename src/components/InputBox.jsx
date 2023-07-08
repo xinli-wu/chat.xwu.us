@@ -1,6 +1,6 @@
 import ClearIcon from '@mui/icons-material/Clear';
 import SendIcon from '@mui/icons-material/Send';
-import { Box, Collapse, Divider, List, ListItemButton, ListItemText, Paper, Stack, useTheme } from '@mui/material';
+import { Box, Collapse, Divider, Fab, List, ListItemButton, ListItemText, Paper, Stack, useTheme } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import InputBase from '@mui/material/InputBase';
 import dayjs from 'dayjs';
@@ -9,8 +9,16 @@ import { TransitionGroup } from 'react-transition-group';
 import LoadingProgress from './LoadingProgress';
 import VoiceInput from './VoiceInput';
 import { useTranslation } from 'react-i18next';
-
-export default function InputBox({ onMessagesSubmit, isLoading, isReading = false, disabled = false }) {
+import AddIcon from '@mui/icons-material/Add';
+import SaveIcon from '@mui/icons-material/Save';
+export default function InputBox({
+  onMessagesSubmit,
+  isLoading,
+  isReading = false,
+  disabled = false,
+  canSave = false,
+  onSaveBtnClick,
+}) {
   const theme = useTheme();
   const [q, setQ] = useState('');
   const [interimTranscript, setInterimTranscript] = useState('');
@@ -127,11 +135,7 @@ export default function InputBox({ onMessagesSubmit, isLoading, isReading = fals
                 })}
               </TransitionGroup>
             </List>
-            <Divider
-              sx={{
-                ...(filteredSuggestions.length === 0 && { display: 'none' }),
-              }}
-            />
+            <Divider sx={{ ...(filteredSuggestions.length === 0 && { display: 'none' }) }} />
           </Stack>
         </Collapse>
       )}
@@ -171,14 +175,17 @@ export default function InputBox({ onMessagesSubmit, isLoading, isReading = fals
             },
           }}
         />
-        <IconButton
-          type="submit"
-          size="small"
-          sx={{ ml: 0.5, mr: 0.5 }}
-          aria-label="send"
-          disabled={q.trim().length === 0}
-        >
+        <IconButton type="submit" size="small" aria-label="send" disabled={q.trim().length === 0}>
           {isLoading ? <LoadingProgress variant="circular" show={isLoading} /> : <SendIcon />}
+        </IconButton>
+        <IconButton
+          size="small"
+          aria-label="save"
+          disabled={isReading || !canSave}
+          color="primary"
+          onClick={onSaveBtnClick}
+        >
+          <SaveIcon />
         </IconButton>
       </Box>
     </Paper>

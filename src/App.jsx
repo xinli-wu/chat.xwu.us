@@ -121,19 +121,22 @@ function App() {
   }, [user, location.pathname, navigate]);
 
   useEffect(() => {
-    const id = setInterval(() => {
-      if (user) {
-        (async () => {
-          const { data } = (await axios.post(`${VITE_CHAT_API_URL}/me/refresh`).catch(() => setUser(null))) || {};
-          if (data.status === 'success') {
-            setUser(data.data.user);
-          } else {
-            setToast({ text: data.message, severity: 'error' });
-            setUser(null);
-          }
-        })();
-      }
-    }, 1000 * 60 * 5);
+    const id = setInterval(
+      () => {
+        if (user) {
+          (async () => {
+            const { data } = (await axios.post(`${VITE_CHAT_API_URL}/me/refresh`).catch(() => setUser(null))) || {};
+            if (data.status === 'success') {
+              setUser(data.data.user);
+            } else {
+              setToast({ text: data.message, severity: 'error' });
+              setUser(null);
+            }
+          })();
+        }
+      },
+      1000 * 60 * 5,
+    );
     return () => clearInterval(id);
   }, [user]);
 
