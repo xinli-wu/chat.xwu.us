@@ -1,19 +1,16 @@
 import MicIcon from '@mui/icons-material/Mic';
-import { Collapse } from '@mui/material';
-import { IconButton } from '@mui/material';
+import { Collapse, IconButton, Box } from '@mui/material';
 import React, { useEffect, useMemo } from 'react';
 import Siriwave from 'react-siriwave';
 import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
 import { isMobile } from 'react-device-detect';
-import { Box } from '@mui/material';
-const hasGetUserMedia = () => {
-  return !!navigator.mediaDevices.getUserMedia;
-};
+
+const hasGetUserMedia = () => !!navigator.mediaDevices.getUserMedia;
 
 export default function VoiceInputIconBtn({ setQ, setInterimTranscript, voiceInput, setVoiceInput, disabled = false }) {
   const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
   // const recognition = new SpeechRecognition();
-  let recognition = useMemo(() => new SpeechRecognition() || null, [SpeechRecognition]);
+  const recognition = useMemo(() => new SpeechRecognition() || null, [SpeechRecognition]);
 
   if (!SpeechRecognition) console.log('Speech Recognition Not Available');
 
@@ -78,18 +75,17 @@ export default function VoiceInputIconBtn({ setQ, setInterimTranscript, voiceInp
   // };
 
   recognition.onresult = (e) => {
-    let final_transcript = '',
-      interim_transcript = '';
+    let finalTranscript = '';
+    let interimTranscript = '';
     for (let i = e.resultIndex; i < e.results.length; ++i) {
       if (e.results[i].isFinal) {
-        final_transcript += e.results[i][0].transcript;
+        finalTranscript += e.results[i][0].transcript;
         recognition.stop();
-        setQ(final_transcript);
+        setQ(finalTranscript);
         return;
-      } else {
-        interim_transcript += e.results[i][0].transcript;
-        setInterimTranscript(interim_transcript + '...');
       }
+      interimTranscript += e.results[i][0].transcript;
+      setInterimTranscript(`${interimTranscript}...`);
     }
   };
 

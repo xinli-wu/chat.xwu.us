@@ -7,4 +7,5 @@ const initialState = {
   setToast: (_) => undefined,
 };
 
-export const AppContext = React.createContext(initialState);
+const AppContext = React.createContext(initialState);
+export default AppContext;

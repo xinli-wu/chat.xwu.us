@@ -1,7 +1,7 @@
 import { FormControl, FormGroup, Paper, Stack, TextField } from '@mui/material';
 import React, { useContext } from 'react';
 import Stripe from '../components/stripe/Stripe';
-import { UserContext } from '../contexts/UserContext';
+import UserContext from '../contexts/UserContext';
 
 export default function Account() {
   const { user } = useContext(UserContext);
@@ -27,7 +27,7 @@ export default function Account() {
           <FormGroup>
             <FormControl sx={{ p: 2 }} margin="dense">
               <TextField
-                disabled={true}
+                disabled
                 label="Email"
                 variant="standard"
                 fullWidth

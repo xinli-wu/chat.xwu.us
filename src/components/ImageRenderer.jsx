@@ -1,18 +1,16 @@
 import { useTheme } from '@emotion/react';
-import { Backdrop } from '@mui/material';
-import { Fade } from '@mui/material';
-import { Box, Modal } from '@mui/material';
+import { Backdrop, Fade, Box, Modal } from '@mui/material';
 import React from 'react';
 import './ImageRenderer.css';
 
-export const ImageRenderer = ({ b64_json, url }) => {
+function Image({ url, b64JSON }) {
+  return <img src={url || `data:image/jpeg;base64,${b64JSON}`} alt="" style={{ width: '100%', height: '100%' }} />;
+}
+
+function ImageRenderer({ b64JSON, url }) {
   const theme = useTheme();
 
   const [open, setOpen] = React.useState(false);
-
-  const Image = () => (
-    <img src={`${url ? url : `data:image/jpeg;base64,${b64_json}`}`} alt="" style={{ width: '100%', height: '100%' }} />
-  );
 
   const style = {
     position: 'absolute',
@@ -40,7 +38,7 @@ export const ImageRenderer = ({ b64_json, url }) => {
           outline: `1px solid ${theme.palette.primary.main}`,
         }}
       >
-        <Image />
+        <Image url={url} b64JSON={b64JSON} />
       </Box>
       <Modal
         open={open}
@@ -54,11 +52,13 @@ export const ImageRenderer = ({ b64_json, url }) => {
         <Fade in={open}>
           <Box sx={style}>
             <Box sx={{ borderRadius: 4, overflow: 'hidden' }}>
-              <Image />
+              <Image url={url} b64JSON={b64JSON} />
             </Box>
           </Box>
         </Fade>
       </Modal>
     </>
   );
-};
+}
+
+export default ImageRenderer;

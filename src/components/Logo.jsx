@@ -1,10 +1,10 @@
 import { useTheme } from '@mui/material';
 import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import uChatDarkH from '../assets/images/logo/uChatDarkH.png';
 import uChatDarkV from '../assets/images/logo/uChatDarkV.png';
 import uChatLightH from '../assets/images/logo/uChatLightH.png';
 import uChatLightV from '../assets/images/logo/uChatLightV.png';
-import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function Logo() {
   const navigate = useNavigate();
@@ -12,7 +12,7 @@ export default function Logo() {
 
   const altLogo = 0; // Math.floor(Math.random() * 2);
   const theme = useTheme();
-  const mode = theme.palette.mode;
+  const { mode } = theme.palette;
 
   const logoH = {
     dark: [uChatDarkH, uChatDarkH],

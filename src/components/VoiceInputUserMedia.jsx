@@ -2,18 +2,15 @@ import MicIcon from '@mui/icons-material/Mic';
 import { IconButton } from '@mui/material';
 import React, { useRef } from 'react';
 
-const hasGetUserMedia = () => {
-  return !!navigator.mediaDevices.getUserMedia;
-};
+const hasGetUserMedia = () => !!navigator.mediaDevices.getUserMedia;
 
 const getConnectedDevices = async (type) => {
   const devices = await navigator.mediaDevices.enumerateDevices();
   return devices.filter((device) => device.kind === type);
 };
 
-const openMic = async (constraints) => {
-  return await navigator.mediaDevices.getUserMedia(constraints).catch((e) => console.error(e.message));
-};
+const openMic = async (constraints) =>
+  navigator.mediaDevices.getUserMedia(constraints).catch((e) => console.error(e.message));
 
 export default function VoiceInput({ setQ }) {
   // const inputMediaRef = useRef();
@@ -48,12 +45,13 @@ export default function VoiceInput({ setQ }) {
     }
   };
 
-  //send stream to server for processing, unfinished
+  // send stream to server for processing, unfinished
   const userMediaBased = async (micId) => {
-    if (!stream)
+    if (!stream) {
       stream = await openMic({
         audio: { deviceId: micId, echoCancellation: true },
       });
+    }
     if (!mediaRecorder) {
       mediaRecorder = new MediaRecorder(stream, {
         mimeType: 'audio/webm;codecs=opus',

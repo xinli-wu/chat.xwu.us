@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export const useToast = () => {
+const useToast = () => {
   const [toast, setToast] = useState({});
 
   const showToast = (params) => {
@@ -12,5 +12,14 @@ export const useToast = () => {
   const warning = (params) => showToast({ ...params, severity: 'warning' });
   const info = (params) => showToast({ ...params, severity: 'info' });
 
-  return { toast, setToast, success, error, warning, info };
+  return {
+    toast,
+    setToast,
+    success,
+    error,
+    warning,
+    info,
+  };
 };
+
+export default useToast;

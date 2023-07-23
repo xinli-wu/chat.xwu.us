@@ -5,10 +5,10 @@ import dayjs from 'dayjs';
 import React, { useContext, useEffect, useRef } from 'react';
 import { isMobile } from 'react-device-detect';
 import { renderToString } from 'react-dom/server';
-import { AppContext } from '../contexts/AppContext';
-import { UserContext } from '../contexts/UserContext';
+import AppContext from '../contexts/AppContext';
+import UserContext from '../contexts/UserContext';
 import { useChat, useModels } from '../hooks/useAPI';
-import { AssistantMsgMarkdown } from './AssistantMsgMarkdown';
+import AssistantMsgMarkdown from './AssistantMsgMarkdown';
 import './Chat.css';
 import InputBox from './InputBox';
 import LoadingProgress from './LoadingProgress';
@@ -77,7 +77,7 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
     const ts = dayjs().toISOString();
     lastUserMessage.current = newMsg;
     const newChat = {
-      metadata: { id: 'user' + chat.length, ts },
+      metadata: { id: `user${chat.length}`, ts },
       message: { role: 'user', content: newMsg },
     };
     setChat((prev) => [...prev, newChat]);
@@ -126,7 +126,7 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
               const msgObj = JSON.parse(msg);
               if (!msgId) {
                 msgId = msgObj.id;
-                updateCurAssistantMsg(msgId, ts, finalMsg); //This is a placeholder for the currently generated assistant message
+                updateCurAssistantMsg(msgId, ts, finalMsg); // This is a placeholder for the currently generated assistant message
               }
               const { content } = msgObj.choices[0].delta;
               if (content) {
@@ -134,7 +134,7 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
 
                 if (lastMsgRef.current) {
                   updateLastMsgHeight();
-                  lastMsgRef.current.innerHTML = renderToString(<AssistantMsgMarkdown content={finalMsg + ' ▊'} />);
+                  lastMsgRef.current.innerHTML = renderToString(<AssistantMsgMarkdown content={`${finalMsg} ▊`} />);
                 }
               }
             } else {
@@ -199,7 +199,15 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
             />
           )}
         </Paper>
-        <Paper sx={{ borderRadius: 3, flexGrow: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <Paper
+          sx={{
+            borderRadius: 3,
+            flexGrow: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+          }}
+        >
           <Stack>
             <LoadingProgress show={isLoading || isValidating || isCompletionLoading} />
           </Stack>
@@ -243,7 +251,7 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
                         >
                           {isAssistant ? (
                             <>
-                              <Box ref={idx === chat.length - 1 ? lastMsgRef : undefined}></Box>
+                              <Box ref={idx === chat.length - 1 ? lastMsgRef : undefined} />
                               <AssistantMsgMarkdown content={x.message.content} canCopy />
                             </>
                           ) : (
@@ -262,9 +270,14 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
             </Stack>
             <Stack
               className="no-scrollbar"
-              sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                width: '100%',
+              }}
             >
-              <Stack direction={'row'} sx={{ display: 'flex', justifyContent: 'right', width: '100%' }}>
+              <Stack direction="row" sx={{ display: 'flex', justifyContent: 'right', width: '100%' }}>
                 <Box>
                   {isMobile && (
                     <Fab

@@ -2,7 +2,7 @@ import React from 'react';
 
 // const { VITE_CHAT_API_URL } = import.meta.env;
 
-export const SuccessDisplay = ({ sessionId }) => {
+function SuccessDisplay() {
   return (
     <section>
       <div className="product Box-root">
@@ -23,4 +23,6 @@ export const SuccessDisplay = ({ sessionId }) => {
       </form> */}
     </section>
   );
-};
+}
+
+export default SuccessDisplay;

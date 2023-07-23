@@ -1,16 +1,28 @@
 module.exports = {
-  env: { browser: true, es2020: true, node: true },
-  extends: [
-    'eslint:recommended',
-    'plugin:react/recommended',
-    'plugin:react/jsx-runtime',
-    'plugin:react-hooks/recommended',
-    'prettier',
-  ],
-  parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
-  settings: { react: { version: '18.2' } },
-  plugins: ['react-refresh'],
+  env: {
+    browser: true,
+    es2021: true,
+  },
+  extends: ['airbnb', 'plugin:prettier/recommended'],
+  plugins: ['prettier'],
+  parserOptions: {
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+    ecmaFeatures: {
+      jsx: true,
+    },
+  },
   rules: {
-    'react-refresh/only-export-components': 'warn',
+    'import/no-extraneous-dependencies': 'off',
+    'react/no-array-index-key': 'off',
+    'react/prop-types': 'off',
+    'no-shadow': 'off',
+    'no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' }],
+    'no-plusplus': 'off',
+    'react/jsx-props-no-spreading': 'off',
+    'no-underscore-dangle': 'off',
+    'jsx-a11y/click-events-have-key-events': 'off',
+    'jsx-a11y/no-noninteractive-element-interactions': 'off',
+    'no-param-reassign': 'off',
   },
 };

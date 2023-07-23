@@ -4,9 +4,9 @@ import MenuItem from '@mui/material/MenuItem';
 import axios from 'axios';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AppContext } from '../contexts/AppContext';
-import { UserContext } from '../contexts/UserContext';
 import { useTranslation } from 'react-i18next';
+import AppContext from '../contexts/AppContext';
+import UserContext from '../contexts/UserContext';
 
 const { VITE_CHAT_API_URL } = import.meta.env;
 

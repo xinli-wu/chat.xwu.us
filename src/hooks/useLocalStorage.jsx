@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export const useLocalStorage = () => {
+const useLocalStorage = () => {
   const [value, setValue] = useState(null);
 
   const setItem = (key, value) => {
@@ -14,10 +14,17 @@ export const useLocalStorage = () => {
     return value;
   };
 
-  const removeItem = (key) => {
+  const removeItem = () => {
     // localStorage.removeItem(key);
     setValue(null);
   };
 
-  return { value, setItem, getItem, removeItem };
+  return {
+    value,
+    setItem,
+    getItem,
+    removeItem,
+  };
 };
+
+export default useLocalStorage;

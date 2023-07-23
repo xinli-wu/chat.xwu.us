@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
 import React from 'react';
 
-export const ChatsArea = ({ children }) => {
+function ChatsArea({ children }) {
   return (
     <Box
       sx={{
@@ -18,4 +18,6 @@ export const ChatsArea = ({ children }) => {
       {children}
     </Box>
   );
-};
+}
+
+export default ChatsArea;

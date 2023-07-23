@@ -4,7 +4,7 @@ import { isMobile } from 'react-device-detect';
 import { useNavigate, useParams } from 'react-router-dom';
 import Chat from '../components/Chat';
 import ChatHistory from '../components/ChatHistory';
-import { ChatsArea } from '../components/ChatsArea';
+import ChatsArea from '../components/ChatsArea';
 import { useChats } from '../hooks/useAPI';
 
 export default function Chats() {
@@ -33,43 +33,41 @@ export default function Chats() {
   };
 
   return (
-    <>
-      <ChatsArea>
-        {isMobile ? (
-          <Box
-            className="no-scrollbar"
-            sx={{
-              height: '100%',
-              width: '90%',
-            }}
-          >
-            <Drawer
-              sx={{ backdropFilter: `blur(.15rem)` }}
-              anchor={'left'}
-              open={savedPromptOpen}
-              onClose={() => setSavedPromptOpen((prev) => !prev)}
-              PaperProps={{ sx: { backgroundColor: 'unset' } }}
-            >
-              <ChatHistory isLoading={isValidating} setSelectedChat={onChatSelect} chats={chats} />
-            </Drawer>
-            <Chat selectedChat={selectedChat} onChatSave={mutate} setSavedPromptOpen={setSavedPromptOpen} />
-          </Box>
-        ) : (
-          <Grid
-            className="no-scrollbar"
-            container
-            spacing={2}
-            sx={{
-              height: '100%',
-              width: '90%',
-              maxWidth: 1680,
-            }}
+    <ChatsArea>
+      {isMobile ? (
+        <Box
+          className="no-scrollbar"
+          sx={{
+            height: '100%',
+            width: '90%',
+          }}
+        >
+          <Drawer
+            sx={{ backdropFilter: 'blur(.15rem)' }}
+            anchor="left"
+            open={savedPromptOpen}
+            onClose={() => setSavedPromptOpen((prev) => !prev)}
+            PaperProps={{ sx: { backgroundColor: 'unset' } }}
           >
             <ChatHistory isLoading={isValidating} setSelectedChat={onChatSelect} chats={chats} />
-            <Chat selectedChat={selectedChat} onChatSave={mutate} setSavedPromptOpen={setSavedPromptOpen} />
-          </Grid>
-        )}
-      </ChatsArea>
-    </>
+          </Drawer>
+          <Chat selectedChat={selectedChat} onChatSave={mutate} setSavedPromptOpen={setSavedPromptOpen} />
+        </Box>
+      ) : (
+        <Grid
+          className="no-scrollbar"
+          container
+          spacing={2}
+          sx={{
+            height: '100%',
+            width: '90%',
+            maxWidth: 1680,
+          }}
+        >
+          <ChatHistory isLoading={isValidating} setSelectedChat={onChatSelect} chats={chats} />
+          <Chat selectedChat={selectedChat} onChatSave={mutate} setSavedPromptOpen={setSavedPromptOpen} />
+        </Grid>
+      )}
+    </ChatsArea>
   );
 }

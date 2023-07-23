@@ -6,13 +6,13 @@ import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
 import axios from 'axios';
 import * as React from 'react';
-import { UserContext } from '../../contexts/UserContext';
+import UserContext from '../../contexts/UserContext';
 
 const { VITE_CHAT_API_URL } = import.meta.env;
 
 export default function Product({ product, isLoading }) {
   const { user } = React.useContext(UserContext);
-  const displayPrice = !!product?.price ? product.price / 100 : 0;
+  const displayPrice = product?.price ? product.price / 100 : 0;
 
   const onCheckoutClick = async (_e) => {
     const { data } = await axios.post(`${VITE_CHAT_API_URL}/stripe/create-checkout-session`, { id: product.id });
@@ -50,11 +50,9 @@ export default function Product({ product, isLoading }) {
             Free
           </Button>
         ) : (
-          <Button
-            variant="contained"
-            disabled={isLoading || activePlan}
-            onClick={onCheckoutClick}
-          >{`$${displayPrice} Buy`}</Button>
+          <Button variant="contained" disabled={isLoading || activePlan} onClick={onCheckoutClick}>
+            {`$${displayPrice} Buy`}
+          </Button>
         )}
       </CardActions>
     </Card>

@@ -1,5 +1,3 @@
-const useGlobalLinearProgress = (value) => {
-  return value;
-};
+const useGlobalLinearProgress = (value) => value;
 
 export default useGlobalLinearProgress;

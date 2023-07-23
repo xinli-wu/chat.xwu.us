@@ -6,11 +6,38 @@ import InputBase from '@mui/material/InputBase';
 import dayjs from 'dayjs';
 import React, { useEffect, useRef, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
-import LoadingProgress from './LoadingProgress';
-import VoiceInput from './VoiceInput';
 import { useTranslation } from 'react-i18next';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
+import VoiceInput from './VoiceInput';
+import LoadingProgress from './LoadingProgress';
+
+function BoldedText({ text, shouldBeBold }) {
+  const theme = useTheme();
+  const textArray = text.split(new RegExp(shouldBeBold, 'i'));
+
+  return (
+    <span>
+      {textArray.map((item, idx) => (
+        <span key={idx}>
+          {item}
+          {idx !== textArray.length - 1 && (
+            <b>
+              <span
+                style={{
+                  backgroundColor: theme.palette.mode === 'light' ? 'rgb(150,200,100)' : 'rgb(46,149,118)',
+                }}
+              >
+                {shouldBeBold}
+              </span>
+            </b>
+          )}
+        </span>
+      ))}
+    </span>
+  );
+}
+
 export default function InputBox({
   onMessagesSubmit,
   isLoading,
@@ -74,31 +101,6 @@ export default function InputBox({
     setSuggestions((prev) => [...prev.filter((x) => x.q !== q)]);
   };
 
-  const BoldedText = ({ text, shouldBeBold }) => {
-    const textArray = text.split(new RegExp(shouldBeBold, 'i'));
-
-    return (
-      <span>
-        {textArray.map((item, idx) => (
-          <span key={idx}>
-            {item}
-            {idx !== textArray.length - 1 && (
-              <b>
-                <span
-                  style={{
-                    backgroundColor: theme.palette.mode === 'light' ? 'rgb(150,200,100)' : 'rgb(46,149,118)',
-                  }}
-                >
-                  {shouldBeBold}
-                </span>
-              </b>
-            )}
-          </span>
-        ))}
-      </span>
-    );
-  };
-
   const filteredSuggestions = suggestions.filter((x) => x.q.toLocaleLowerCase().includes(q.toLocaleLowerCase()));
 
   return (
@@ -113,26 +115,20 @@ export default function InputBox({
           >
             <List sx={{ ...(filteredSuggestions.length === 0 && { p: 0 }) }}>
               <TransitionGroup>
-                {filteredSuggestions.map((x) => {
-                  return (
-                    <Collapse key={x.q}>
-                      <Stack direction={'row'}>
-                        <ListItemButton dense onMouseDown={(e) => onSuggestionClick(e, x.q)}>
-                          <ListItemText>
-                            <BoldedText text={x.q} shouldBeBold={q} />
-                          </ListItemText>
-                        </ListItemButton>
-                        <IconButton
-                          aria-label="delete"
-                          size="small"
-                          onMouseDown={(e) => onSuggestionDeleteClick(e, x.q)}
-                        >
-                          <ClearIcon />
-                        </IconButton>
-                      </Stack>
-                    </Collapse>
-                  );
-                })}
+                {filteredSuggestions.map((x) => (
+                  <Collapse key={x.q}>
+                    <Stack direction="row">
+                      <ListItemButton dense onMouseDown={(e) => onSuggestionClick(e, x.q)}>
+                        <ListItemText>
+                          <BoldedText text={x.q} shouldBeBold={q} />
+                        </ListItemText>
+                      </ListItemButton>
+                      <IconButton aria-label="delete" size="small" onMouseDown={(e) => onSuggestionDeleteClick(e, x.q)}>
+                        <ClearIcon />
+                      </IconButton>
+                    </Stack>
+                  </Collapse>
+                ))}
               </TransitionGroup>
             </List>
             <Divider sx={{ ...(filteredSuggestions.length === 0 && { display: 'none' }) }} />
@@ -160,7 +156,7 @@ export default function InputBox({
           fullWidth
           multiline={false}
           // maxRows={10}
-          placeholder={t(`Start ${voiceInput ? 'speaking' : 'typing'}`) + '...'}
+          placeholder={`${t(`Start ${voiceInput ? 'speaking' : 'typing'}`)}...`}
           inputProps={{ 'aria-label': 'start typing' }}
           value={voiceInput ? interimTranscript : q}
           onChange={onInputChange}

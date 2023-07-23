@@ -3,9 +3,9 @@ import DoneIcon from '@mui/icons-material/Done';
 import { IconButton } from '@mui/material';
 import React, { useContext } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
-import { AppContext } from '../contexts/AppContext';
+import AppContext from '../contexts/AppContext';
 
-export const CopyCode = ({ language, code }) => {
+function CopyCode({ language, code }) {
   const [copied, setCopied] = React.useState(false);
   const { setToast } = useContext(AppContext);
 
@@ -28,4 +28,6 @@ export const CopyCode = ({ language, code }) => {
       </span>
     </CopyToClipboard>
   );
-};
+}
+
+export default CopyCode;

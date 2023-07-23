@@ -1,26 +1,25 @@
-import { useMediaQuery } from '@mui/material';
+import { useMediaQuery, Box } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import axios from 'axios';
-import { UserContext } from './contexts/UserContext';
-import { ColorModeContext } from './contexts/utilContext';
 import jwtDecode from 'jwt-decode';
 import React, { useEffect, useMemo } from 'react';
 import { Route, Routes, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import * as locale from '@mui/material/locale';
+import { useTranslation } from 'react-i18next';
+import UserContext from './contexts/UserContext';
+import { ColorModeContext } from './contexts/utilContext';
 import './App.css';
 import Footer from './components/Footer';
-import { Toast } from './components/Toast';
+import Toast from './components/Toast';
 import TopBar from './components/TopBar';
-import { AppContext } from './contexts/AppContext';
+import AppContext from './contexts/AppContext';
 import Chats from './pages/Chats';
 import Images from './pages/Images';
 import Login from './pages/Login';
 import Account from './pages/Account';
-import * as locale from '@mui/material/locale';
-import { useTranslation } from 'react-i18next';
 import './i18n/i18n';
-import { Box } from '@mui/material';
 
 const { VITE_CHAT_API_URL } = import.meta.env;
 
@@ -46,14 +45,16 @@ function App() {
   const [mode, setMode] = React.useState(preferedMode);
   const navigate = useNavigate();
   const location = useLocation();
-  const assumedUser = useMemo(() => {
-    return localStorage['token']
-      ? {
-          email: jwtDecode(localStorage['token'])?.email,
-          token: localStorage['token'],
-        }
-      : null;
-  }, []);
+  const assumedUser = useMemo(
+    () =>
+      localStorage.token
+        ? {
+            email: jwtDecode(localStorage.token)?.email,
+            token: localStorage.token,
+          }
+        : null,
+    [],
+  );
 
   const [user, setUser] = React.useState(assumedUser);
   const [app, setApp] = React.useState({ page: '/' });
@@ -152,14 +153,17 @@ function App() {
     })();
   }, []);
 
+  const AppContextValue = useMemo(() => ({ app, setApp, toast, setToast }), []);
+  const UserContextValue = useMemo(() => ({ user, setUser }), []);
+
   return (
     <div className="App">
       <ThemeProvider theme={theme}>
         <ColorModeContext.Provider value={colorMode}>
           <CssBaseline />
           <QueryClientProvider client={queryClient}>
-            <AppContext.Provider value={{ app, setApp, toast, setToast }}>
-              <UserContext.Provider value={{ user, setUser }}>
+            <AppContext.Provider value={AppContextValue}>
+              <UserContext.Provider value={UserContextValue}>
                 <TopBar />
                 <Toast />
                 <Box className="main">

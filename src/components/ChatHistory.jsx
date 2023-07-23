@@ -1,7 +1,7 @@
 import { Grid, ListItemText, MenuItem, MenuList, Paper } from '@mui/material';
 import React from 'react';
-import LoadingProgress from './LoadingProgress';
 import { isMobile } from 'react-device-detect';
+import LoadingProgress from './LoadingProgress';
 
 export default function ChatHistory({ isLoading, setSelectedChat, chats }) {
   return (

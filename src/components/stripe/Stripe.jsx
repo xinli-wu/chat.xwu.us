@@ -1,7 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { AppContext } from '../../contexts/AppContext';
-import { ProductDisplay } from './ProductDisplay';
 import axios from 'axios';
+import AppContext from '../../contexts/AppContext';
+import ProductDisplay from './ProductDisplay';
+
 const { VITE_CHAT_API_URL } = import.meta.env;
 
 export default function Stripe() {
@@ -20,7 +21,7 @@ export default function Stripe() {
     }
 
     if (query.get('canceled')) {
-      setToast({ text: `You have cancelled your payment`, severity: 'info' });
+      setToast({ text: 'You have cancelled your payment', severity: 'info' });
     }
   }, [sessionId, setToast]);
 

@@ -28,28 +28,26 @@ export default function NavMenu() {
   }, [menuItems, menuItem, navigate, location.pathname]);
 
   return (
-    <>
-      <MenuList
-        dense
-        sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          p: 0,
-          height: '100%',
-          pr: 1,
-        }}
-      >
-        {menuItems.map((x, i) => (
-          <MenuItem
-            key={x}
-            selected={x === menuItem}
-            sx={{ textTransform: 'capitalize', borderRadius: 1, ml: 1 }}
-            onClick={() => onMenuItemClick(i)}
-          >
-            {t(x)}
-          </MenuItem>
-        ))}
-      </MenuList>
-    </>
+    <MenuList
+      dense
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        p: 0,
+        height: '100%',
+        pr: 1,
+      }}
+    >
+      {menuItems.map((x, i) => (
+        <MenuItem
+          key={x}
+          selected={x === menuItem}
+          sx={{ textTransform: 'capitalize', borderRadius: 1, ml: 1 }}
+          onClick={() => onMenuItemClick(i)}
+        >
+          {t(x)}
+        </MenuItem>
+      ))}
+    </MenuList>
   );
 }

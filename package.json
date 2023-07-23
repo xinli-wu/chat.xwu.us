@@ -6,24 +6,26 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
-    "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "format": "prettier --write ./src"
+    "lint": "eslint src --ext js,jsx",
+    "lint:fix": "eslint --fix src --ext js,jsx",
+    "format": "prettier --write ./src",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
-    "@fontsource/roboto": "^5.0.4",
-    "@mui/base": "5.0.0-beta.6",
-    "@mui/icons-material": "^5.13.7",
-    "@mui/lab": "5.0.0-alpha.135",
-    "@mui/material": "^5.13.7",
-    "@tanstack/react-query": "^4.29.19",
+    "@fontsource/roboto": "^5.0.5",
+    "@mui/base": "5.0.0-beta.8",
+    "@mui/icons-material": "^5.14.1",
+    "@mui/lab": "5.0.0-alpha.137",
+    "@mui/material": "^5.14.1",
+    "@tanstack/react-query": "^4.32.0",
     "axios": "^1.4.0",
     "dayjs": "^1.11.9",
     "dotenv": "^16.3.1",
     "html-entities": "^2.4.0",
-    "i18next": "^23.2.8",
+    "i18next": "^23.2.11",
     "i18next-browser-languagedetector": "^7.1.0",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^3.1.2",
@@ -32,15 +34,15 @@
     "react-copy-to-clipboard": "^5.1.0",
     "react-device-detect": "^2.2.3",
     "react-dom": "^18.2.0",
-    "react-i18next": "^13.0.1",
+    "react-i18next": "^13.0.2",
     "react-markdown": "^8.0.7",
     "react-player": "^2.12.0",
-    "react-router-dom": "^6.14.1",
+    "react-router-dom": "^6.14.2",
     "react-siriwave": "^3.1.0",
     "react-syntax-highlighter": "^15.5.0",
     "react-transition-group": "^4.4.5",
     "swr": "^2.2.0",
-    "web-vitals": "^3.3.2"
+    "web-vitals": "^3.4.0"
   },
   "browserslist": {
     "production": [
@@ -55,15 +57,27 @@
     ]
   },
   "devDependencies": {
-    "@types/react": "^18.2.14",
-    "@types/react-dom": "^18.2.6",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
     "@vitejs/plugin-react-swc": "^3.3.2",
-    "eslint": "^8.44.0",
+    "eslint": "^8.45.0",
+    "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^8.8.0",
-    "eslint-plugin-react": "^7.32.2",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-jsx-a11y": "^6.7.1",
+    "eslint-plugin-prettier": "^5.0.0",
+    "eslint-plugin-react": "^7.33.0",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.2",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.3",
     "prettier": "^3.0.0",
-    "vite": "^4.4.2"
+    "vite": "^4.4.6"
+  },
+  "lint-staged": {
+    "**/*.{js,jsx}": [
+      "pnpm lint",
+      "pnpm prettier"
+    ]
   }
 }

@@ -4,7 +4,7 @@ import { useFeatures, usePlans } from '../../hooks/useAPI';
 import LoadingProgress from '../LoadingProgress';
 import Product from './Product';
 
-export const ProductDisplay = () => {
+function ProductDisplay() {
   const plans = usePlans();
   const features = useFeatures();
 
@@ -25,27 +25,27 @@ export const ProductDisplay = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {features.data?.data.map((feature, i) => {
-                return (
-                  <TableRow key={i} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                    <TableCell component="th" scope="row">
-                      {feature.desc}
-                    </TableCell>
-                    {plans.data?.data.map((p, i) => {
-                      const curFeature = p.feature.find((f) => f.id === feature.id);
-                      return (
-                        <TableCell key={i} sx={{ textAlign: 'center' }}>
-                          {curFeature.quota}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                );
-              })}
+              {features.data?.data.map((feature, i) => (
+                <TableRow key={i} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                  <TableCell component="th" scope="row">
+                    {feature.desc}
+                  </TableCell>
+                  {plans.data?.data.map((p, i) => {
+                    const curFeature = p.feature.find((f) => f.id === feature.id);
+                    return (
+                      <TableCell key={i} sx={{ textAlign: 'center' }}>
+                        {curFeature.quota}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </TableContainer>
       </Paper>
     </Grid>
   );
-};
+}
+
+export default ProductDisplay;

@@ -5,9 +5,10 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import React, { useContext } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { AppContext } from '../contexts/AppContext';
-import { UserContext } from '../contexts/UserContext';
 import { useTranslation } from 'react-i18next';
+import UserContext from '../contexts/UserContext';
+import AppContext from '../contexts/AppContext';
+
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const { VITE_CHAT_API_URL } = import.meta.env;

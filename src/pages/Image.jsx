@@ -5,10 +5,10 @@ import dayjs from 'dayjs';
 import React, { useContext, useEffect, useRef } from 'react';
 import { isMobile } from 'react-device-detect';
 import { useParams } from 'react-router-dom';
-import { ImageRenderer } from '../components/ImageRenderer';
+import ImageRenderer from '../components/ImageRenderer';
 import InputBox from '../components/InputBox';
 import LoadingProgress from '../components/LoadingProgress';
-import { AppContext } from '../contexts/AppContext';
+import AppContext from '../contexts/AppContext';
 import { useImage } from '../hooks/useAPI';
 import './Image.css';
 
@@ -39,7 +39,7 @@ export default function Image({ selectedChat, onChatSave, setSavedPromptOpen }) 
   const onMessagesSubmit = async (prompt) => {
     const now = dayjs().toISOString();
     const newChat = {
-      metadata: { id: 'user' + chat.data.length, c: now },
+      metadata: { id: `user${chat.data.length}`, c: now },
       message: { role: 'user', content: prompt },
     };
 
@@ -158,9 +158,9 @@ export default function Image({ selectedChat, onChatSave, setSavedPromptOpen }) 
                         {isAssistant ? (
                           <Box ref={idx === chat.data.length - 1 ? lastMsgRef : undefined}>
                             <Grid container spacing={1}>
-                              {x.message.content.map(({ b64_json, url }, idx) => (
+                              {x.message.content.map(({ b64_json: b64JSON, url }, idx) => (
                                 <Grid key={idx} item xs={12} sm={12}>
-                                  <ImageRenderer b64_json={b64_json} url={url} />
+                                  <ImageRenderer b64JSON={b64JSON} url={url} />
                                 </Grid>
                               ))}
                             </Grid>
@@ -195,7 +195,7 @@ export default function Image({ selectedChat, onChatSave, setSavedPromptOpen }) 
             }}
           >
             <Stack
-              direction={'row'}
+              direction="row"
               sx={{
                 display: 'flex',
                 justifyContent: 'space-between',

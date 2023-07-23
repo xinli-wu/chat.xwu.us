@@ -1,4 +1,4 @@
-export const getMicVolume = async () => {
+const getMicVolume = async () => {
   const stream = await navigator.mediaDevices.getUserMedia({
     audio: true,
     video: false,
@@ -15,16 +15,19 @@ export const getMicVolume = async () => {
   analyser.connect(javascriptNode);
   javascriptNode.connect(audioContext.destination);
 
-  javascriptNode.onaudioprocess = function () {
+  javascriptNode.onaudioprocess = () => {
     const array = new Uint8Array(analyser.frequencyBinCount);
     analyser.getByteFrequencyData(array);
     let values = 0;
 
-    const length = array.length;
-    for (let i = 0; i < length; i++) {
-      values += array[i];
-    }
+    const { length } = array;
+    array.forEach((value) => {
+      values += value;
+    });
+
     const average = values / length;
     return average;
   };
 };
+
+export default getMicVolume;
