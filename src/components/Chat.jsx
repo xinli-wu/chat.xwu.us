@@ -87,9 +87,9 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
       const raw = await fetch(`${VITE_CHAT_API_URL}/openai/chat/completion`, {
         method: 'POST',
         headers: {
-          Accept: 'application/json',
+          'Accept': 'application/json',
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${user.token} `,
+          'Authorization': `Bearer ${user.token} `,
         },
         body: JSON.stringify({
           messages: [...chat.map((x) => x.message), newChat.message],
@@ -179,8 +179,6 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
         <Paper
           sx={{
             borderRadius: 3,
-            height: '10%',
-            maxHeight: 100,
             display: 'flex',
             alignItems: 'center',
             p: 1,
@@ -188,7 +186,7 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
         >
           {models.data && model && (
             <Autocomplete
-              onChange={(_e, v) => setModel(v)}
+              onChange={(_e, v) => setModel(v ?? models.data.data.data[0])}
               value={model}
               size="small"
               fullWidth

@@ -1,16 +1,15 @@
 import ClearIcon from '@mui/icons-material/Clear';
+import SaveIcon from '@mui/icons-material/Save';
 import SendIcon from '@mui/icons-material/Send';
-import { Box, Collapse, Divider, Fab, List, ListItemButton, ListItemText, Paper, Stack, useTheme } from '@mui/material';
+import { Box, Collapse, Divider, List, ListItemButton, ListItemText, Paper, Stack, useTheme } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import InputBase from '@mui/material/InputBase';
 import dayjs from 'dayjs';
 import React, { useEffect, useRef, useState } from 'react';
-import { TransitionGroup } from 'react-transition-group';
 import { useTranslation } from 'react-i18next';
-import AddIcon from '@mui/icons-material/Add';
-import SaveIcon from '@mui/icons-material/Save';
-import VoiceInput from './VoiceInput';
+import { TransitionGroup } from 'react-transition-group';
 import LoadingProgress from './LoadingProgress';
+import VoiceInput from './VoiceInput';
 
 function BoldedText({ text, shouldBeBold }) {
   const theme = useTheme();
