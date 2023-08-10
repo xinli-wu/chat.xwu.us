@@ -163,12 +163,13 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
   }, [chat.length, lastMsgHeight]);
 
   const onSaveBtnClick = async () => {
-    await axios.post(`${VITE_CHAT_API_URL}/my/chat/add`, { chats: chat }).catch((e) => {
+    const { data } = await axios.post(`${VITE_CHAT_API_URL}/my/chat/add`, { chats: chat }).catch((e) => {
       setToast({
         text: `API error: ${e.response.data.message}`,
         severity: 'error',
       });
     });
+    if (data?.status === 'success') setToast({ text: `Saved successfully!`, severity: 'success' });
     onChatSave();
     setChat([]);
   };

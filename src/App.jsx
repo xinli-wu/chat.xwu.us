@@ -70,18 +70,19 @@ function App() {
   React.useEffect(() => {
     (async () => {
       if (email && otp) {
-        const { data } = await axios.post(`${VITE_CHAT_API_URL}/login`, {
-          email,
-          otp,
-        });
+        try {
+          const { data } = await axios.post(`${VITE_CHAT_API_URL}/login`, { email, otp });
 
-        if (data?.status === 'success') {
-          if (data?.data?.user) {
-            setUser(data.data.user);
+          if (data?.status === 'success') {
+            if (data?.data?.user) {
+              setUser(data.data.user);
+            }
+            setToast({ text: data.message, severity: 'success' });
+          } else {
+            setToast({ text: data.message, severity: 'error' });
           }
-          setToast({ text: data.message, severity: 'success' });
-        } else {
-          setToast({ text: data.message, severity: 'error' });
+        } catch (error) {
+          setToast({ text: error.response.data.message, severity: 'error' });
         }
       }
     })();
@@ -153,8 +154,8 @@ function App() {
     })();
   }, []);
 
-  const AppContextValue = useMemo(() => ({ app, setApp, toast, setToast }), []);
-  const UserContextValue = useMemo(() => ({ user, setUser }), []);
+  const AppContextValue = useMemo(() => ({ app, setApp, toast, setToast }), [app, setApp, toast, setToast]);
+  const UserContextValue = useMemo(() => ({ user, setUser }), [user, setUser]);
 
   return (
     <div className="App">
