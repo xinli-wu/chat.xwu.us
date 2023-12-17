@@ -13,10 +13,23 @@ import './Chat.css';
 import InputBox from './InputBox';
 import LoadingProgress from './LoadingProgress';
 
+const { VITE_CHAT_API_URL } = import.meta.env;
+
+const streamChatCompletion = async ({ user, body }) => {
+  return fetch(`${VITE_CHAT_API_URL}/openai/chat/completion`, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${user.token} `,
+    },
+    body,
+  });
+};
+
 export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
   document.title = 'chat';
 
-  const { VITE_CHAT_API_URL } = import.meta.env;
   const { user } = useContext(UserContext);
 
   const bottomRef = useRef(null);
@@ -84,68 +97,51 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
     setIsCompletionLoading(true);
 
     try {
-      const raw = await fetch(`${VITE_CHAT_API_URL}/openai/chat/completion`, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.token} `,
-        },
-        body: JSON.stringify({
-          messages: [...chat.map((x) => x.message), newChat.message],
-          config: { model },
-        }),
-      });
+      const body = JSON.stringify({ messages: [...chat.map((x) => x.message), newChat.message], config: { model } });
 
-      if (!raw.ok) {
-        throw new Error((await raw.text()) || '');
-      }
-      const reader = raw.body.getReader();
+      const stream = await streamChatCompletion({ user, body });
+
+      if (!stream.ok) throw new Error((await stream.text()) || '');
+
+      const reader = stream.body.getReader();
 
       setIsReading(true);
-      let finalMsg = '';
-      let msgId = null;
-      if (lastMsgRef.current) {
-        lastMsgRef.current.innerHTML = finalMsg;
-      }
+
+      const msg = { id: null, content: '' };
 
       const read = () =>
         reader.read().then(({ done, value }) => {
-          if (done) return;
+          if (!done) {
+            const decoder = new TextDecoder();
+            const chunk = decoder.decode(value).split('\n');
+            chunk.pop();
 
-          const decoder = new TextDecoder();
-          const lines = decoder
-            .decode(value)
-            .toString()
-            .split('\n')
-            .filter((line) => line.trim() !== '');
-          lines.forEach((l) => {
-            const msg = l.replace(/^data: /, '');
+            chunk.forEach((x) => {
+              const obj = JSON.parse(x);
+              if (msg.id === null) {
+                msg.id = obj.id;
+              }
+              msg.content += obj.choices[0].delta.content || '';
+            });
 
-            if (msg !== '[DONE]') {
-              const msgObj = JSON.parse(msg);
-              if (!msgId) {
-                msgId = msgObj.id;
-                updateCurAssistantMsg(msgId, ts, finalMsg); // This is a placeholder for the currently generated assistant message
-              }
-              const { content } = msgObj.choices[0].delta;
-              if (content) {
-                finalMsg += content;
+            // if (chat[chat.length - 1]?.message?.role !== 'assistant') {
+            //   updateCurAssistantMsg(msg.id, ts, msg.content);
+            // }
+            updateCurAssistantMsg(msg.id, ts, `${msg.content}▊`);
+            updateLastMsgHeight();
 
-                if (lastMsgRef.current) {
-                  updateLastMsgHeight();
-                  lastMsgRef.current.innerHTML = renderToString(<AssistantMsgMarkdown content={`${finalMsg} ▊`} />);
-                }
-              }
-            } else {
-              if (lastMsgRef.current) {
-                updateLastMsgHeight();
-                updateCurAssistantMsg(msgId, ts, finalMsg);
-                lastMsgRef.current.innerHTML = '';
-              }
-              setIsReading(false);
-            }
-          });
+            // if (lastMsgRef.current) {
+            //   // lastMsgRef.current.innerHTML = renderToString(<AssistantMsgMarkdown content={`${msg.content} ▊`} />);
+            //   updateLastMsgHeight();
+            // }
+          }
+          if (done) {
+            setIsReading(false);
+            // lastMsgRef.current.innerHTML = '';
+            updateCurAssistantMsg(msg.id, ts, msg.content);
+            return;
+          }
+
           read();
         });
 
@@ -162,6 +158,10 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chat.length, lastMsgHeight]);
 
+  useEffect(() => {
+    updateLastMsgHeight();
+  }, [chat]);
+
   const onSaveBtnClick = async () => {
     const { data } = await axios.post(`${VITE_CHAT_API_URL}/my/chat/add`, { chats: chat }).catch((e) => {
       setToast({
@@ -177,14 +177,7 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
   return (
     <Grid item xs={12} sm={12} md={8} lg={9} xl={9} sx={{ height: '100%' }}>
       <Stack style={{ height: '100%' }} spacing={1}>
-        <Paper
-          sx={{
-            borderRadius: 3,
-            display: 'flex',
-            alignItems: 'center',
-            p: 1,
-          }}
-        >
+        <Paper sx={{ borderRadius: 3, display: 'flex', alignItems: 'center', p: 1 }}>
           {models.data && model && (
             <Autocomplete
               onChange={(_e, v) => setModel(v ?? models.data.data.data[0])}
@@ -198,15 +191,7 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
             />
           )}
         </Paper>
-        <Paper
-          sx={{
-            borderRadius: 3,
-            flexGrow: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden',
-          }}
-        >
+        <Paper sx={{ borderRadius: 3, flexGrow: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
           <Stack>
             <LoadingProgress show={isLoading || isValidating || isCompletionLoading} />
           </Stack>
@@ -231,26 +216,24 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
                     <Stack key={idx} sx={{ width: '100%', alignItems: isAssistant ? 'start' : 'end' }}>
                       <Stack direction="row" spacing={1} sx={{ alignItems: 'end', maxWidth: '100%' }}>
                         <Paper
+                          ref={idx === chat.length - 1 ? lastMsgRef : undefined}
                           elevation={0}
                           sx={{
                             p: 1,
                             borderRadius: 3,
                             textAlign: isAssistant ? 'left' : 'right',
                             width: '100%',
-                            backgroundColor:
-                              theme.palette.mode === 'light' ? 'rgba(225, 232, 239)' : 'rgba(44, 44, 44)',
+                            backgroundColor: theme.palette.mode === 'light' ? 'rgba(225, 232, 239)' : 'rgba(44, 44, 44)',
                             ...(isAssistant && {
                               backgroundColor: 'rgb(63, 147, 120)',
                             }),
-                            ...(isAssistant &&
-                              theme.palette.mode === 'light' && {
-                                filter: 'brightness(1.25)',
-                              }),
+                            ...(isAssistant && theme.palette.mode === 'light' && { filter: 'brightness(1.25)' }),
                           }}
                         >
                           {isAssistant ? (
                             <>
-                              <Box ref={idx === chat.length - 1 ? lastMsgRef : undefined} />
+                              {/* <Box ref={idx === chat.length - 1 ? lastMsgRef : undefined} /> */}
+                              {/* see renderToString() above */}
                               <AssistantMsgMarkdown content={x.message.content} canCopy />
                             </>
                           ) : (
@@ -258,33 +241,18 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
                           )}
                         </Paper>
                       </Stack>
-                      <Typography sx={{ fontSize: '0.6rem', textAlign: 'end', color: 'grey' }}>
-                        {dayjs(x.metadata.ts).format('h:mm a')}
-                      </Typography>
+                      <Typography sx={{ fontSize: '0.6rem', textAlign: 'end', color: 'grey' }}>{dayjs(x.metadata.ts).format('h:mm a')}</Typography>
                     </Stack>
                   );
                 })}
               </Stack>
               <div ref={bottomRef} />
             </Stack>
-            <Stack
-              className="no-scrollbar"
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                width: '100%',
-              }}
-            >
+            <Stack className="no-scrollbar" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
               <Stack direction="row" sx={{ display: 'flex', justifyContent: 'right', width: '100%' }}>
                 <Box>
                   {isMobile && (
-                    <Fab
-                      size="small"
-                      color="primary"
-                      onClick={() => setSavedPromptOpen((prev) => !prev)}
-                      sx={{ transform: 'scale(0.8)' }}
-                    >
+                    <Fab size="small" color="primary" onClick={() => setSavedPromptOpen((prev) => !prev)} sx={{ transform: 'scale(0.8)' }}>
                       <ChevronRightIcon />
                     </Fab>
                   )}

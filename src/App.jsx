@@ -3,7 +3,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import axios from 'axios';
-import jwtDecode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import React, { useEffect, useMemo } from 'react';
 import { Route, Routes, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import * as locale from '@mui/material/locale';
@@ -188,7 +188,6 @@ function App() {
                     )}
                   </Routes>
                 </Box>
-                <Footer />
               </UserContext.Provider>
             </AppContext.Provider>
           </QueryClientProvider>

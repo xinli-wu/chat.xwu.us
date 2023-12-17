@@ -6,7 +6,7 @@
 
 .main {
   height: calc(100% - 40px);
-  padding-bottom: 40px;
-  padding-bottom: calc(40px + env(safe-area-inset-bottom));
-  padding-bottom: calc(40px + constant(safe-area-inset-bottom));
+  /* padding-bottom: 80px;
+  padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  padding-bottom: calc(80px + constant(safe-area-inset-bottom)); */
 }

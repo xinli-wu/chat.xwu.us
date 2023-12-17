@@ -18,16 +18,15 @@ export default function Login() {
   const { setUser } = useContext(UserContext);
   const { setToast } = useContext(AppContext);
   const [searchParams] = useSearchParams();
-  const [form, setForm] = React.useState({
-    email: searchParams.get('email') || '',
-  });
+  const [form, setForm] = React.useState({ email: searchParams.get('email') || '' });
 
   const otp = searchParams.get('otp');
 
-  const login = useQuery(['login'], () => axios.post(`${VITE_CHAT_API_URL}/login`, { email: form.email, otp }), {
+  const login = useQuery({
+    queryKey: ['login'],
+    queryFn: () => axios.post(`${VITE_CHAT_API_URL}/login`, { email: form.email, otp }),
     enabled: !!form.email && !!otp,
     retry: false,
-    cacheTime: 0,
   });
 
   React.useEffect(() => {

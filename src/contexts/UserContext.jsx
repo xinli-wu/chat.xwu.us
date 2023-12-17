@@ -2,7 +2,7 @@ import React from 'react';
 
 const initialState = {
   user: null,
-  setUser: () => undefined,
+  setUser: (_user) => undefined,
 };
 
 const UserContext = React.createContext(initialState);

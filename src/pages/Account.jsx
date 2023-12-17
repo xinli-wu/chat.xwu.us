@@ -26,14 +26,7 @@ export default function Account() {
         <Paper>
           <FormGroup>
             <FormControl sx={{ p: 2 }} margin="dense">
-              <TextField
-                disabled
-                label="Email"
-                variant="standard"
-                fullWidth
-                onChange={(e) => setForm({ email: e.target.value })}
-                value={form.email}
-              />
+              <TextField disabled label="Email" variant="standard" fullWidth onChange={(e) => setForm({ email: e.target.value })} value={form.email} />
             </FormControl>
           </FormGroup>
         </Paper>

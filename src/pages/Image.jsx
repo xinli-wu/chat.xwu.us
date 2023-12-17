@@ -204,12 +204,7 @@ export default function Image({ selectedChat, onChatSave, setSavedPromptOpen }) 
             >
               <Box>
                 {isMobile && (
-                  <Fab
-                    size="small"
-                    color="primary"
-                    onClick={() => setSavedPromptOpen((prev) => !prev)}
-                    sx={{ transform: 'scale(0.8)' }}
-                  >
+                  <Fab size="small" color="primary" onClick={() => setSavedPromptOpen((prev) => !prev)} sx={{ transform: 'scale(0.8)' }}>
                     <ChevronRightIcon />
                   </Fab>
                 )}
