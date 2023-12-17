@@ -47,7 +47,6 @@ export default function Chats() {
           >
             <Grid className="no-scrollbar" container spacing={2} sx={{ height: '100%', width: '90%', maxWidth: 1680 }}>
               <LeftPanel isLoading={isValidating} setSelectedChat={onChatSelect} chats={chats} />
-              <Chat selectedChat={selectedChat} onChatSave={mutate} setSavedPromptOpen={setSavedPromptOpen} />
             </Grid>
           </Drawer>
           <Chat selectedChat={selectedChat} onChatSave={mutate} setSavedPromptOpen={setSavedPromptOpen} />
