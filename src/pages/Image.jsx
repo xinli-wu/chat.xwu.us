@@ -59,8 +59,8 @@ export default function Image({ selectedChat, onChatSave, setSavedPromptOpen }) 
           data: [
             ...prev.data,
             {
-              metadata: { id: data.created, c: now },
-              message: { role: 'assistant', content: data.data },
+              metadata: { id: data.data.created, c: now },
+              message: { role: 'assistant', content: data.data.data },
             },
           ],
           isLoading: false,
