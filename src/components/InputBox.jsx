@@ -37,7 +37,14 @@ function BoldedText({ text, shouldBeBold }) {
   );
 }
 
-export default function InputBox({ onMessagesSubmit, isLoading, isReading = false, disabled = false, canSave = false, onSaveBtnClick }) {
+export default function InputBox({
+  onMessagesSubmit,
+  isLoading,
+  isReading = false,
+  disabled = false,
+  canSave = false,
+  onSaveBtnClick,
+}) {
   const theme = useTheme();
   const [q, setQ] = useState('');
   const [interimTranscript, setInterimTranscript] = useState('');
@@ -54,7 +61,9 @@ export default function InputBox({ onMessagesSubmit, isLoading, isReading = fals
   const updateSuggestions = (q) => {
     // close virtual keyboard
     inputElement?.current?.children[0]?.blur();
-    setSuggestions((prev) => [...prev.filter((x) => x.q !== q), { q, t: dayjs().unix() }].sort((a, b) => b.t - a.t).slice(0, 7));
+    setSuggestions((prev) =>
+      [...prev.filter((x) => x.q !== q), { q, t: dayjs().unix() }].sort((a, b) => b.t - a.t).slice(0, 7)
+    );
     onMessagesSubmit(q);
     setQ('');
   };
@@ -133,7 +142,13 @@ export default function InputBox({ onMessagesSubmit, isLoading, isReading = fals
           height: 44,
         }}
       >
-        <VoiceInput disabled={disabled} setQ={setQ} setInterimTranscript={setInterimTranscript} voiceInput={voiceInput} setVoiceInput={setVoiceInput} />
+        <VoiceInput
+          disabled={disabled}
+          setQ={setQ}
+          setInterimTranscript={setInterimTranscript}
+          voiceInput={voiceInput}
+          setVoiceInput={setVoiceInput}
+        />
         <InputBase
           ref={inputElement}
           disabled={voiceInput || isReading || isLoading || disabled}
@@ -158,7 +173,13 @@ export default function InputBox({ onMessagesSubmit, isLoading, isReading = fals
         <IconButton type="submit" size="small" aria-label="send" disabled={q.trim().length === 0}>
           {isLoading ? <LoadingProgress variant="circular" show={isLoading} /> : <SendIcon />}
         </IconButton>
-        <IconButton size="small" aria-label="save" disabled={isReading || !canSave} color="primary" onClick={onSaveBtnClick}>
+        <IconButton
+          size="small"
+          aria-label="save"
+          disabled={isReading || !canSave}
+          color="primary"
+          onClick={onSaveBtnClick}
+        >
           <SaveIcon />
         </IconButton>
       </Box>

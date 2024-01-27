@@ -12,7 +12,12 @@ function SupoortChannel({ channel }) {
   return (
     <Button size="small" sx={{ color: 'text.secondary', p: 2 }} onClick={onChannelClick}>
       <Stack spacing={1}>
-        <QRCode quietZone={5} value={channel.url} size={128} style={{ height: 'auto', maxWidth: '100%', width: '100%' }} />
+        <QRCode
+          quietZone={5}
+          value={channel.url}
+          size={128}
+          style={{ height: 'auto', maxWidth: '100%', width: '100%' }}
+        />
         <Typography variant="body2" sx={{ fontSize: '0.65rem' }}>
           {channel.name}
         </Typography>
@@ -80,7 +85,6 @@ function AuthorInfo() {
 
 export default function Footer() {
   const { user } = useContext(UserContext);
-  console.log(user);
 
   const supportChannel = [
     {

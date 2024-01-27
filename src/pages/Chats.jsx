@@ -1,13 +1,11 @@
-import { Box, Drawer, Grid, Stack } from '@mui/material';
+import { Box, Drawer, Grid } from '@mui/material';
 import React, { useEffect } from 'react';
 import { isMobile } from 'react-device-detect';
 import { useNavigate, useParams } from 'react-router-dom';
 import Chat from '../components/Chat';
-import ChatHistory from '../components/ChatHistory';
 import ChatsArea from '../components/ChatsArea';
-import { useChats } from '../hooks/useAPI';
-import Footer from '../components/Footer';
 import LeftPanel from '../components/LeftPanel';
+import { useChats } from '../hooks/useAPI';
 
 export default function Chats() {
   const params = useParams();

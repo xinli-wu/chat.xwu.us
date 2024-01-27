@@ -11,9 +11,7 @@ export const useChats = () => useSWR(`${VITE_CHAT_API_URL}/my/chat`, axios);
 export const useChat = (objectId) => useSWR(objectId ? `${VITE_CHAT_API_URL}/my/chat/${objectId} ` : null, axios);
 
 export const useRefresh = () =>
-  useSWR(`${VITE_CHAT_API_URL}/me/refresh`, axios.post, {
-    refreshInterval: 1000 * 60 * 5,
-  });
+  useSWR(`${VITE_CHAT_API_URL}/me/refresh`, axios.post, { refreshInterval: 1000 * 60 * 5 });
 
 export const useImages = () => useSWR(`${VITE_CHAT_API_URL}/my/image`, axios);
 

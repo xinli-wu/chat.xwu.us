@@ -6,6 +6,7 @@ import ChatHistory from '../components/ChatHistory';
 import ChatsArea from '../components/ChatsArea';
 import { useImages } from '../hooks/useAPI';
 import Image from './Image';
+import LeftPanel from '../components/LeftPanel';
 
 export default function Images() {
   const params = useParams();
@@ -61,7 +62,7 @@ export default function Images() {
             maxWidth: 1680,
           }}
         >
-          <ChatHistory isLoading={isValidating} setSelectedChat={onChatSelect} chats={chats} />
+          <LeftPanel isLoading={isValidating} setSelectedChat={onChatSelect} chats={chats} />
           <Image selectedChat={selectedChat} onChatSave={mutate} setSavedPromptOpen={setSavedPromptOpen} />
         </Grid>
       )}

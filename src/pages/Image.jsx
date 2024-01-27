@@ -72,10 +72,7 @@ export default function Image({ selectedChat, onChatSave, setSavedPromptOpen }) 
         text: `API error: ${error.response?.data?.message} `,
         severity: 'error',
       });
-      setChat((prev) => ({
-        ...prev,
-        isLoading: false,
-      }));
+      setChat((prev) => ({ ...prev, isLoading: false }));
     }
   };
 
@@ -101,15 +98,7 @@ export default function Image({ selectedChat, onChatSave, setSavedPromptOpen }) 
 
   return (
     <Grid item xs={12} sm={12} md={8} lg={9} xl={9} sx={{ height: '100%' }}>
-      <Paper
-        sx={{
-          borderRadius: 3,
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-        }}
-      >
+      <Paper sx={{ borderRadius: 3, height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <Stack>
           <LoadingProgress show={isLoading || isValidating || chat.isLoading} />
         </Stack>
@@ -126,34 +115,16 @@ export default function Image({ selectedChat, onChatSave, setSavedPromptOpen }) 
             pt: 0,
           }}
         >
-          <Stack
-            className="no-scrollbar"
-            sx={{
-              alignItems: 'center',
-              width: '100%',
-              overflowY: 'scroll',
-            }}
-          >
+          <Stack className="no-scrollbar" sx={{ alignItems: 'center', width: '100%', overflowY: 'scroll' }}>
             <Stack spacing={2} sx={{ width: '100%' }}>
               {chat.data.map((x, idx) => {
                 const isAssistant = x.message.role === 'assistant';
                 return (
-                  <Stack
-                    key={idx}
-                    sx={{
-                      width: '100%',
-                      alignItems: isAssistant ? 'start' : 'end',
-                    }}
-                  >
+                  <Stack key={idx} sx={{ width: '100%', alignItems: isAssistant ? 'start' : 'end' }}>
                     <Stack direction="row" spacing={1} sx={{ alignItems: 'end' }}>
                       <Paper
                         elevation={12}
-                        sx={{
-                          p: 1,
-                          borderRadius: 3,
-                          textAlign: isAssistant ? 'left' : 'right',
-                          width: '100%',
-                        }}
+                        sx={{ p: 1, borderRadius: 3, textAlign: isAssistant ? 'left' : 'right', width: '100%' }}
                       >
                         {isAssistant ? (
                           <Box ref={idx === chat.data.length - 1 ? lastMsgRef : undefined}>
@@ -170,13 +141,7 @@ export default function Image({ selectedChat, onChatSave, setSavedPromptOpen }) 
                         )}
                       </Paper>
                     </Stack>
-                    <Typography
-                      sx={{
-                        fontSize: '0.6rem',
-                        textAlign: 'end',
-                        color: 'grey',
-                      }}
-                    >
+                    <Typography sx={{ fontSize: '0.6rem', textAlign: 'end', color: 'grey' }}>
                       {dayjs(x.metadata.ts).format('h:mm a')}
                     </Typography>
                   </Stack>
@@ -187,24 +152,17 @@ export default function Image({ selectedChat, onChatSave, setSavedPromptOpen }) 
           </Stack>
           <Stack
             className="no-scrollbar"
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              width: '100%',
-            }}
+            sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}
           >
-            <Stack
-              direction="row"
-              sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                width: '100%',
-              }}
-            >
+            <Stack direction="row" sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
               <Box>
                 {isMobile && (
-                  <Fab size="small" color="primary" onClick={() => setSavedPromptOpen((prev) => !prev)} sx={{ transform: 'scale(0.8)' }}>
+                  <Fab
+                    size="small"
+                    color="primary"
+                    onClick={() => setSavedPromptOpen((prev) => !prev)}
+                    sx={{ transform: 'scale(0.8)' }}
+                  >
                     <ChevronRightIcon />
                   </Fab>
                 )}

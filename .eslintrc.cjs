@@ -3,8 +3,7 @@ module.exports = {
     browser: true,
     es2021: true,
   },
-  extends: ['airbnb', 'plugin:prettier/recommended'],
-  plugins: ['prettier'],
+  extends: ['airbnb', 'prettier'],
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module',
@@ -17,7 +16,14 @@ module.exports = {
     'react/no-array-index-key': 'off',
     'react/prop-types': 'off',
     'no-shadow': 'off',
-    'no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' }],
+    'no-unused-vars': [
+      'warn',
+      {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        caughtErrorsIgnorePattern: '^_',
+      },
+    ],
     'no-plusplus': 'off',
     'react/jsx-props-no-spreading': 'off',
     'no-underscore-dangle': 'off',

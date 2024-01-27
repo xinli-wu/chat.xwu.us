@@ -4,7 +4,6 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 import React, { useContext, useEffect, useRef } from 'react';
 import { isMobile } from 'react-device-detect';
-import { renderToString } from 'react-dom/server';
 import AppContext from '../contexts/AppContext';
 import UserContext from '../contexts/UserContext';
 import { useChat, useModels } from '../hooks/useAPI';
@@ -15,8 +14,8 @@ import LoadingProgress from './LoadingProgress';
 
 const { VITE_CHAT_API_URL } = import.meta.env;
 
-const streamChatCompletion = async ({ user, body }) => {
-  return fetch(`${VITE_CHAT_API_URL}/openai/chat/completion`, {
+const streamChatCompletion = async ({ user, body }) =>
+  fetch(`${VITE_CHAT_API_URL}/openai/chat/completion`, {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
@@ -25,7 +24,6 @@ const streamChatCompletion = async ({ user, body }) => {
     },
     body,
   });
-};
 
 export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
   document.title = 'chat';
@@ -223,7 +221,8 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
                             borderRadius: 3,
                             textAlign: isAssistant ? 'left' : 'right',
                             width: '100%',
-                            backgroundColor: theme.palette.mode === 'light' ? 'rgba(225, 232, 239)' : 'rgba(44, 44, 44)',
+                            backgroundColor:
+                              theme.palette.mode === 'light' ? 'rgba(225, 232, 239)' : 'rgba(44, 44, 44)',
                             ...(isAssistant && {
                               backgroundColor: 'rgb(63, 147, 120)',
                             }),
@@ -241,18 +240,28 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
                           )}
                         </Paper>
                       </Stack>
-                      <Typography sx={{ fontSize: '0.6rem', textAlign: 'end', color: 'grey' }}>{dayjs(x.metadata.ts).format('h:mm a')}</Typography>
+                      <Typography sx={{ fontSize: '0.6rem', textAlign: 'end', color: 'grey' }}>
+                        {dayjs(x.metadata.ts).format('h:mm a')}
+                      </Typography>
                     </Stack>
                   );
                 })}
               </Stack>
               <div ref={bottomRef} />
             </Stack>
-            <Stack className="no-scrollbar" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+            <Stack
+              className="no-scrollbar"
+              sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}
+            >
               <Stack direction="row" sx={{ display: 'flex', justifyContent: 'right', width: '100%' }}>
                 <Box>
                   {isMobile && (
-                    <Fab size="small" color="primary" onClick={() => setSavedPromptOpen((prev) => !prev)} sx={{ transform: 'scale(0.8)' }}>
+                    <Fab
+                      size="small"
+                      color="primary"
+                      onClick={() => setSavedPromptOpen((prev) => !prev)}
+                      sx={{ transform: 'scale(0.8)' }}
+                    >
                       <ChevronRightIcon />
                     </Fab>
                   )}

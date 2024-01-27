@@ -39,7 +39,12 @@ export default function NavMenu() {
       }}
     >
       {menuItems.map((x, i) => (
-        <MenuItem key={x} selected={x === menuItem} sx={{ textTransform: 'capitalize', borderRadius: 1, ml: 1 }} onClick={() => onMenuItemClick(i)}>
+        <MenuItem
+          key={x}
+          selected={x === menuItem}
+          sx={{ textTransform: 'capitalize', borderRadius: 1, ml: 1 }}
+          onClick={() => onMenuItemClick(i)}
+        >
           {t(x)}
         </MenuItem>
       ))}

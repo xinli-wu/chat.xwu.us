@@ -31,5 +31,7 @@ export default function Logo() {
     if (location.pathname !== '/') navigate({ pathname: '/' });
   };
 
-  return <img src={logoH[mode][altLogo]} alt="Logo" onClick={onLogoClick} style={{ cursor: 'pointer', height: '100%' }} />;
+  return (
+    <img src={logoH[mode][altLogo]} alt="Logo" onClick={onLogoClick} style={{ cursor: 'pointer', height: '100%' }} />
+  );
 }

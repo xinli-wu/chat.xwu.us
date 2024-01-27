@@ -34,7 +34,7 @@ axios.interceptors.request.use(
     config.withCredentials = true;
     return config;
   },
-  (error) => Promise.reject(error),
+  (error) => Promise.reject(error)
 );
 
 const queryClient = new QueryClient();
@@ -53,7 +53,7 @@ function App() {
             token: localStorage.token,
           }
         : null,
-    [],
+    []
   );
 
   const [user, setUser] = React.useState(assumedUser);
@@ -96,7 +96,7 @@ function App() {
         setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
       },
     }),
-    [],
+    []
   );
 
   const theme = React.useMemo(
@@ -106,9 +106,9 @@ function App() {
           // @ts-ignore
           palette: { mode },
         },
-        lang[i18n.language],
+        lang[i18n.language]
       ),
-    [mode, lang, i18n.language],
+    [mode, lang, i18n.language]
   );
 
   useEffect(() => {
@@ -137,7 +137,7 @@ function App() {
           })();
         }
       },
-      1000 * 60 * 5,
+      1000 * 60 * 5
     );
     return () => clearInterval(id);
   }, [user]);
