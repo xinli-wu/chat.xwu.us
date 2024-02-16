@@ -6,7 +6,7 @@ import React, { useContext, useEffect, useRef } from 'react';
 import { isMobile } from 'react-device-detect';
 import AppContext from '../contexts/AppContext';
 import UserContext from '../contexts/UserContext';
-import { useChat, useModels } from '../hooks/useAPI';
+import { useChat, useChatModels } from '../hooks/useAPI';
 import AssistantMsgMarkdown from './AssistantMsgMarkdown';
 import './Chat.css';
 import InputBox from './InputBox';
@@ -36,7 +36,7 @@ export default function Chat({ selectedChat, onChatSave, setSavedPromptOpen }) {
   const theme = useTheme();
   const { setToast } = useContext(AppContext);
 
-  const models = useModels();
+  const models = useChatModels();
   const [model, setModel] = React.useState(models.data?.data?.data[0]);
   const [chat, setChat] = React.useState([]);
   const [isCompletionLoading, setIsCompletionLoading] = React.useState(false);

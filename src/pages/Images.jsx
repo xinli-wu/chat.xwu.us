@@ -33,13 +33,7 @@ export default function Images() {
   return (
     <ChatsArea>
       {isMobile ? (
-        <Box
-          className="no-scrollbar"
-          sx={{
-            height: '100%',
-            width: '90%',
-          }}
-        >
+        <Box className="no-scrollbar" sx={{ height: '100%', width: '90%' }}>
           <Drawer
             sx={{ backdropFilter: 'blur(.15rem)' }}
             anchor="left"
@@ -52,16 +46,7 @@ export default function Images() {
           <Image selectedChat={selectedChat} onChatSave={mutate} setSavedPromptOpen={setSavedPromptOpen} />
         </Box>
       ) : (
-        <Grid
-          className="no-scrollbar"
-          container
-          spacing={2}
-          sx={{
-            height: '100%',
-            width: '90%',
-            maxWidth: 1680,
-          }}
-        >
+        <Grid className="no-scrollbar" container spacing={2} sx={{ height: '100%', width: '90%', maxWidth: 1680 }}>
           <LeftPanel isLoading={isValidating} setSelectedChat={onChatSelect} chats={chats} />
           <Image selectedChat={selectedChat} onChatSave={mutate} setSavedPromptOpen={setSavedPromptOpen} />
         </Grid>

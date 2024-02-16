@@ -4,7 +4,9 @@ import useSWRImmutable from 'swr/immutable';
 
 const { VITE_CHAT_API_URL } = import.meta.env;
 
-export const useModels = () => useSWRImmutable(`${VITE_CHAT_API_URL}/openai/chat/getModels`, axios);
+export const useChatModels = () => useSWRImmutable(`${VITE_CHAT_API_URL}/openai/chat/models`, axios);
+
+export const useImageModels = () => useSWRImmutable(`${VITE_CHAT_API_URL}/openai/image/models`, axios);
 
 export const useChats = () => useSWR(`${VITE_CHAT_API_URL}/my/chat`, axios);
 

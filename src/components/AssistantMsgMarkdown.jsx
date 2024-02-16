@@ -11,7 +11,7 @@ function AssistantMsgMarkdown({ content, canCopy = false }) {
     return !inline && match ? (
       <Stack sx={{ overflowX: 'scroll' }}>
         {canCopy && <CopyCode language={match[1]} code={String(children)} />}
-        <SyntaxHighlighter showLineNumbers style={vscDarkPlus} language={match[1]} PreTag="div" {...props}>
+        <SyntaxHighlighter showLineNumbers style={vscDarkPlus} language={match[1]} PreTag="span" {...props}>
           {String(children).replace(/\n$/, '')}
         </SyntaxHighlighter>
       </Stack>
