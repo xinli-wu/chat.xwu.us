@@ -26,3 +26,5 @@ export const useStripePrices = () => useSWRImmutable(`${VITE_CHAT_API_URL}/strip
 export const usePlans = () => useSWRImmutable(`${VITE_CHAT_API_URL}/stripe/plans`, axios);
 
 export const useFeatures = () => useSWRImmutable(`${VITE_CHAT_API_URL}/stripe/features`, axios);
+
+export const deleteChatById = (objectId) => axios.delete(`${VITE_CHAT_API_URL}/my/chat/${objectId}`);
