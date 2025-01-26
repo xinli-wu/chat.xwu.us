@@ -9,6 +9,7 @@ function SupoortChannel({ channel }) {
   const onChannelClick = () => {
     if (channel.clickable) window.open(channel.url, '_blank');
   };
+
   return (
     <Button size="small" sx={{ color: 'text.secondary', p: 2 }} onClick={onChannelClick}>
       <Stack spacing={1}>

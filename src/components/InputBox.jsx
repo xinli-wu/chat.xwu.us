@@ -103,7 +103,7 @@ export default function InputBox({
   const filteredSuggestions = suggestions.filter((x) => x.q.toLocaleLowerCase().includes(q.toLocaleLowerCase()));
 
   return (
-    <Paper elevation={suggestOpen ? 24 : 6} component="form" onSubmit={onQSubmit}>
+    <Paper elevation={suggestOpen ? 24 : 6} component="form" onSubmit={onQSubmit} sx={{ borderRadius: 3 }}>
       {!!suggestions.length && !disabled && (
         <Collapse in={suggestOpen} timeout={150}>
           <Stack
